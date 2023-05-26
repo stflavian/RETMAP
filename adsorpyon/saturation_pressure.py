@@ -20,11 +20,10 @@ Usage:
 
 import warnings
 
+from . import physics
+
 import numpy
 import scipy.optimize
-
-
-UNIVERSAL_GAS_CONSTANT = 8.31446  # [J/(mol*K)] or [m3*Pa/(mol*K)]
 
 
 def dubinin(temperature: float, temperature_critical: float, pressure_critical: float) -> float:
@@ -35,7 +34,7 @@ def dubinin(temperature: float, temperature_critical: float, pressure_critical: 
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
     :return: Saturation pressure in MPa.
     """
-    return pressure_critical * (temperature / temperature_critical)**2
+    return pressure_critical * (temperature / temperature_critical) ** 2
 
 
 def amankwah(temperature: float, temperature_critical: float, pressure_critical: float, k: float) -> float:
@@ -48,7 +47,7 @@ def amankwah(temperature: float, temperature_critical: float, pressure_critical:
     :param k: Exponent of the reduced temperature. k=2 results in Dubinin's method.
     :return: Saturation pressure in MPa.
     """
-    return pressure_critical * (temperature / temperature_critical)**k
+    return pressure_critical * (temperature / temperature_critical) ** k
 
 
 def extrapolation(temperature: float, file: str) -> float:
@@ -100,42 +99,101 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
     # Ignore warning regarding Deprecation since Python3.7 is used
     warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
 
-    # Create the function for the root finder
-    def peng_robinson_polynomial(p_critical, t_critical, t, p_guess):
-        a = 0.45724 * (UNIVERSAL_GAS_CONSTANT * t_critical) ** 2 / p_critical
-        b = 0.07780 * UNIVERSAL_GAS_CONSTANT * t_critical / p_critical
-        kappa = 0.37464 + 1.54226 * acentric_factor - 0.26992 * acentric_factor ** 2
-        alpha = (1 + kappa * (1 - (t / t_critical) ** 0.5)) ** 2
-        A = a * alpha * p_guess / (UNIVERSAL_GAS_CONSTANT * t) ** 2
-        B = b * p_guess / (UNIVERSAL_GAS_CONSTANT * t)
-        return [1, B - 1, A - 3 * B ** 2 - 2 * B, B ** 3 + B ** 2 - A * B]
-
-    # Create the function to calculate the fugacity coefficient
-    def fugacity_coefficient(Z, p_critical, t_critical, t, p_guess):
-        a = 0.45724 * (UNIVERSAL_GAS_CONSTANT * t_critical) ** 2 / p_critical
-        b = 0.07780 * UNIVERSAL_GAS_CONSTANT * t_critical / p_critical
-        kappa = 0.37464 + 1.54226 * acentric_factor - 0.26992 * acentric_factor ** 2
-        alpha = (1 + kappa * (1 - (t / t_critical) ** 0.5)) ** 2
-        A = a * alpha * p_guess / (UNIVERSAL_GAS_CONSTANT * t) ** 2
-        B = b * p_guess / (UNIVERSAL_GAS_CONSTANT * t)
-        return np.exp(Z - 1 - np.log(Z - B) - A / (B * 2 * 2 ** 0.5) * np.log((Z + 2.414 * B) / (Z - 0.414 * B)))
-
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
-        roots = np.roots(peng_robinson_polynomial(p_critical=pressure_critical,
-                                                  t_critical=temperature_critical, t=temperature,
-                                                  p_guess=p_guess))
+        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, method='pr',
+                                                            temperature_critical=temperature_critical,
+                                                            temperature=temperature, pressure=p_guess,
+                                                            acentric_factor=acentric_factor, state='vapor')
 
-        abs_roots = np.absolute(roots)
+        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, method='pr',
+                                                             temperature_critical=temperature_critical,
+                                                             temperature=temperature, pressure=p_guess,
+                                                             acentric_factor=acentric_factor, state='liquid')
 
-        fugacity_vapor = fugacity_coefficient(Z=np.max(abs_roots), p_critical=pressure_critical,
-                                              t_critical=temperature_critical, t=temperature,
-                                              p_guess=p_guess)
+        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, method='pr',
+                                                          pressure_critical=pressure_critical,
+                                                          temperature_critical=temperature_critical,
+                                                          temperature=temperature, pressure=p_guess,
+                                                          acentric_factor=acentric_factor)
 
-        fugacity_liquid = fugacity_coefficient(Z=np.min(abs_roots), p_critical=pressure_critical,
-                                               t_critical=temperature_critical, t=temperature,
-                                               p_guess=p_guess)
+        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, method='pr',
+                                                           pressure_critical=pressure_critical,
+                                                           temperature_critical=temperature_critical,
+                                                           temperature=temperature, pressure=p_guess,
+                                                           acentric_factor=acentric_factor)
 
         return fugacity_vapor / fugacity_liquid - 1
 
-    return fsolve(func=fugacity_ratio, x0=np.array(pressure_guess))[0]
+    return scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0]
+
+
+def prsv1(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
+          acentric_factor: float) -> float:
+    """
+    Calculates the temperature dependent saturation pressure by equilibrating the fugacities of the vapor and liquid
+    phases according to the Peng-Robinson equation of state. It calculates the roots of the compressibility polynomial
+    form of the EoS and uses them to determine the fugacity coefficients in liquid and vapor phase. It then solves for
+    the pressure at which the two coefficients are equal to each other, thus satisfying saturation conditions.
+    :param temperature: Temperature at which the experiment is conducted in K.
+    :param temperature_critical: Critical temperature of the adsorbate in K.
+    :param pressure_critical: Critical pressure of the adsorbate in MPa.
+    :param pressure_guess: Saturation pressure in MPa.
+    :param acentric_factor: The acentric factor of the adsorbate.
+    :return: Saturation pressure in MPa.
+    """
+
+    # Ignore warning regarding Deprecation since Python3.7 is used
+    warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
+
+    # Create a function for the solver to determine the saturation pressure
+    def fugacity_ratio(p_guess):
+        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, method='prsv1',
+                                                            temperature_critical=temperature_critical,
+                                                            temperature=temperature, pressure=p_guess,
+                                                            acentric_factor=acentric_factor, state='vapor')
+
+        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, method='prsv1',
+                                                             temperature_critical=temperature_critical,
+                                                             temperature=temperature, pressure=p_guess,
+                                                             acentric_factor=acentric_factor, state='liquid')
+
+        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, method='prsv1',
+                                                          pressure_critical=pressure_critical,
+                                                          temperature_critical=temperature_critical,
+                                                          temperature=temperature, pressure=p_guess,
+                                                          acentric_factor=acentric_factor)
+
+        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, method='prsv1',
+                                                           pressure_critical=pressure_critical,
+                                                           temperature_critical=temperature_critical,
+                                                           temperature=temperature, pressure=p_guess,
+                                                           acentric_factor=acentric_factor)
+
+        return fugacity_vapor / fugacity_liquid - 1
+
+    return scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0]
+
+
+def extrapolation_experimental(temperature: float, temperature_critical: float, pressure_critical: float,
+                               acentric_factor: float) -> float:
+
+    temp_range = numpy.linspace(start=50, stop=temperature_critical, num=200)
+    temp_range = numpy.flipud(temp_range)
+
+    pressure_guess = 1
+
+    subcritical_pressures = []
+    for index, temp in enumerate(temp_range):
+        subcritical_pressures.append(pengrobinson(temperature=temp, temperature_critical=temperature_critical,
+                                                  pressure_critical=pressure_critical, pressure_guess=pressure_guess,
+                                                  acentric_factor=acentric_factor))
+        pressure_guess = subcritical_pressures[index]
+
+    def fit_function(x, a, b, c, d):
+        return a * x ** 3 + b * x ** 2 + c * x + d
+
+    # noinspection PyTupleAssignmentBalance
+    popt, pcov = scipy.optimize.curve_fit(fit_function, temp_range, subcritical_pressures)
+    return fit_function(temperature, *popt)
+

@@ -1,3 +1,4 @@
+import numpy
 import numpy as np
 from scipy.optimize import fsolve
 import json
@@ -6,7 +7,7 @@ import warnings
 # Ignore warning regarding Deprecation since Python3.7 is used
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
-adsorbate_data = json.load(open("../Properties/CO2_carbon_dioxide.prop"))
+adsorbate_data = json.load(open("../adsorpyon/Properties/CO2.prop"))
 
 # Adsorbate properties and general constants
 UNIVERSAL_GAS_CONSTANT = 8.31446  # [J/(mol*K)] or [m3*Pa/(mol*K)]
@@ -44,13 +45,13 @@ def fugacity_ratio(pressure_guess):
                                               temperature_critical=TEMPERATURE_CRITICAL, temperature=TEMPERATURE,
                                               pressure_guess=pressure_guess))
 
-    abs_roots = np.absolute(roots)
+    abs_roots = numpy.absolute(roots)
 
-    fugacity_vapor = fugacity_coefficient(Z=np.max(abs_roots), pressure_critical=PRESSURE_CRITICAL,
+    fugacity_vapor = fugacity_coefficient(Z=numpy.max(abs_roots), pressure_critical=PRESSURE_CRITICAL,
                                           temperature_critical=TEMPERATURE_CRITICAL, temperature=TEMPERATURE,
                                           pressure_guess=pressure_guess)
 
-    fugacity_liquid = fugacity_coefficient(Z=np.min(abs_roots), pressure_critical=PRESSURE_CRITICAL,
+    fugacity_liquid = fugacity_coefficient(Z=numpy.min(abs_roots), pressure_critical=PRESSURE_CRITICAL,
                                            temperature_critical=TEMPERATURE_CRITICAL, temperature=TEMPERATURE,
                                            pressure_guess=pressure_guess)
 

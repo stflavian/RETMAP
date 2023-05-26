@@ -1,12 +1,12 @@
 {
-  "data_files": ["CO2_adsorption-Co-MOF-74_T.dat"],
+  "data_files": ["../CO2_adsorption-Co-MOF-74_T.dat"],
   "data_names": ["300K, Exp"],
   "temperatures": [300],
   "data_types": ["isotherm"],
   "column1_units": ["kPa"],
   "column2_units": ["mol/kg"],
 
-  "adsorbate_data_file": "Properties/CO2_carbon_dioxide.prop",
+  "adsorbate_data_file": "../Properties/CO2_carbon_dioxide.prop",
 
   "adsorbate_saturation_pressure": "peng-robinson",
   "saturation_pressure_file": "SaturationProperties/CO2-saturation_properties.dat",

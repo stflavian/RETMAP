@@ -1,6 +1,6 @@
 .idea/
-CO2_adsorption-Co-MOF-74_T.dat
-Properties/
+examples/run/CO2_adsorption-Co-MOF-74_T.dat
+adsorpyon/Properties/
 SaturationProperties/
 __pycache__/
 

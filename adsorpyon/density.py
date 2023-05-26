@@ -18,7 +18,7 @@ Usage:
 
 import math
 
-GAS_CONSTANT = 8.205  # [cm3*MPa/(mol*K)]
+from . import constants
 
 
 def ozawa(temperature: float, temperature_boiling: float, density_boiling: float) -> float:
@@ -41,15 +41,17 @@ def empirical(pressure_critical: float, temperature_critical: float, molecular_m
     :param molecular_mass: Molecular mass of the adsorbate in g/mol.
     :return: Density in kg/m3.
     """
-    return 8 * pressure_critical * molecular_mass / (GAS_CONSTANT * temperature_critical) * 1000
+    return 8 * pressure_critical * molecular_mass / (constants.GAS_CONSTANT * temperature_critical) * 1000
 
 
-def hauer(temperature: float, temperature_reference: float, density_boiling: float) -> float:
+def hauer(temperature: float, temperature_reference: float, density_boiling: float,
+          thermal_expansion_coefficient: float) -> float:
     """
     Calculates the temperature dependent adsorbate density based on
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_reference: Boiling temperature of the adsorbate in K.
+    :param thermal_expansion_coefficient: Thermal expansion coefficient in the adsorbed phase in 1/K.
     :param density_boiling: Density of the adsorbate at the boiling point in kg/m3.
     :return: Density in kg/m3.
     """
-    return density_boiling * (1 - 3.871 * 10**-4 * (temperature - temperature_reference))
+    return density_boiling * (1 - thermal_expansion_coefficient * (temperature - temperature_reference))

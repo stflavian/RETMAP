@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import minimize
 import json
 
-adsorbate_data = json.load(open("../Properties/CO2_carbon_dioxide.prop"))
+adsorbate_data = json.load(open("../adsorpyon/Properties/CO2.prop"))
 
 # Adsorbate properties and general constants
 UNIVERSAL_GAS_CONSTANT = 8.31446  # [J/(mol*K)] or [m3*Pa/(mol*K)]
