@@ -20,7 +20,7 @@ Usage:
 
 import warnings
 
-from . import physics
+import physics
 
 import numpy
 import scipy.optimize
@@ -175,10 +175,10 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
     return scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0]
 
 
-def extrapolation_experimental(temperature: float, temperature_critical: float, pressure_critical: float,
-                               acentric_factor: float) -> float:
+def preos_extrapolation(temperature: float, temperature_critical: float, pressure_critical: float,
+                        acentric_factor: float, temperature_boiling: float) -> float:
 
-    temp_range = numpy.linspace(start=50, stop=temperature_critical, num=200)
+    temp_range = numpy.linspace(start=temperature_boiling, stop=temperature_critical, num=200)
     temp_range = numpy.flipud(temp_range)
 
     pressure_guess = 1
@@ -190,8 +190,8 @@ def extrapolation_experimental(temperature: float, temperature_critical: float, 
                                                   acentric_factor=acentric_factor))
         pressure_guess = subcritical_pressures[index]
 
-    def fit_function(x, a, b, c, d):
-        return a * x ** 3 + b * x ** 2 + c * x + d
+    def fit_function(x, a, b, c):
+        return a * x ** 2 + b * x + c
 
     # noinspection PyTupleAssignmentBalance
     popt, pcov = scipy.optimize.curve_fit(fit_function, temp_range, subcritical_pressures)

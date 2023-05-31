@@ -37,12 +37,13 @@ def get_saturation_pressure(data: dict, index: int, adsorbate_data: dict) -> flo
                                                 pressure_guess=1,
                                                 acentric_factor=adsorbate_data["acentric_factor"])
     elif data[index]["saturation_pressure_function"] == "preos-extrapolation":
-        return saturation_pressure.extrapolation_experimental(temperature=data[index]["temperature"],
-                                                              temperature_critical=adsorbate_data["temperature_critical"],
-                                                              pressure_critical=adsorbate_data["pressure_critical"],
-                                                              acentric_factor=adsorbate_data["acentric_factor"])
+        return saturation_pressure.preos_extrapolation(temperature=data[index]["temperature"],
+                                                       temperature_critical=adsorbate_data["temperature_critical"],
+                                                       pressure_critical=adsorbate_data["pressure_critical"],
+                                                       acentric_factor=adsorbate_data["acentric_factor"],
+                                                       temperature_boiling=adsorbate_data["temperature_boiling"])
     else:
-        raise ValueError(f"Input string {data[index]['saturation_pressure_function']} does not coresspond to a valid"
+        raise ValueError(f"Input string {data[index]['saturation_pressure_function']} does not correspond to a valid"
                          f"method of determining the saturation pressure")
 
 
@@ -57,11 +58,16 @@ def get_density(data: dict, index: int, adsorbate_data: dict) -> float:
                                  molecular_mass=adsorbate_data["molecular_mass"])
     elif data[index]["density_function"] == "hauer":
         return density.hauer(temperature=data[index]["temperature"],
-                             temperature_reference=adsorbate_data["temperature_reference"],
+                             temperature_boiling=adsorbate_data["temperature_boiling"],
                              density_boiling=adsorbate_data["density_boiling"],
                              thermal_expansion_coefficient=adsorbate_data["thermal_expansion_coefficient"])
+    elif data[index]["density_function"] == "ozawa-modified":
+        return density.ozawa_modified(temperature=data[index]["temperature"],
+                                      temperature_boiling=adsorbate_data["temperature_boiling"],
+                                      density_boiling=adsorbate_data["density_boiling"],
+                                      thermal_expansion_coefficient=adsorbate_data["thermal_expansion_coefficient"])
     else:
-        raise ValueError(f"Input string {data[index]['density_function']} does not coresspond to a valid"
+        raise ValueError(f"Input string {data[index]['density_function']} does not correspond to a valid"
                          f"method of determining the density")
 
 

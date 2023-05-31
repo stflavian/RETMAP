@@ -18,7 +18,7 @@ Usage:
 
 import math
 
-from . import constants
+import constants
 
 
 def ozawa(temperature: float, temperature_boiling: float, density_boiling: float) -> float:
@@ -44,14 +44,28 @@ def empirical(pressure_critical: float, temperature_critical: float, molecular_m
     return 8 * pressure_critical * molecular_mass / (constants.GAS_CONSTANT * temperature_critical) * 1000
 
 
-def hauer(temperature: float, temperature_reference: float, density_boiling: float,
+def hauer(temperature: float, temperature_boiling: float, density_boiling: float,
           thermal_expansion_coefficient: float) -> float:
     """
     Calculates the temperature dependent adsorbate density based on
     :param temperature: Temperature at which the experiment is conducted in K.
-    :param temperature_reference: Boiling temperature of the adsorbate in K.
+    :param temperature_boiling: Boiling temperature of the adsorbate in K.
     :param thermal_expansion_coefficient: Thermal expansion coefficient in the adsorbed phase in 1/K.
     :param density_boiling: Density of the adsorbate at the boiling point in kg/m3.
     :return: Density in kg/m3.
     """
-    return density_boiling * (1 - thermal_expansion_coefficient * (temperature - temperature_reference))
+    return density_boiling * (1 - thermal_expansion_coefficient * (temperature - temperature_boiling))
+
+
+def ozawa_modified(temperature: float, temperature_boiling: float, density_boiling: float,
+                   thermal_expansion_coefficient: float) -> float:
+    """
+    Calculates the temperature dependent adsorbate density based on Ozawa's method, represented by an exponential
+    formula.
+    :param temperature: Temperature at which the experiment is conducted in K.
+    :param temperature_boiling: Boiling temperature of the adsorbate in K.
+    :param density_boiling: Density of the adsorbate at the boiling point in kg/m3.
+    :param thermal_expansion_coefficient: Thermal expansion coefficient in 1/K.
+    :return: Density in kg/m3.
+    """
+    return density_boiling * math.exp(-thermal_expansion_coefficient * (temperature - temperature_boiling))

@@ -7,6 +7,8 @@ Usage:
 
 import os
 
+import numpy
+import scipy.optimize
 import matplotlib.pyplot as plt
 
 
@@ -117,3 +119,14 @@ def convert_output(unit: str, adsorbate_data: dict) -> float:
     :return: A number that the input is multiplied with to be converted to the intended unit.
     """
     return 1 / convert_input(unit=unit, adsorbate_data=adsorbate_data)
+
+
+def evaluate(data: dict, adsorbate_data: dict) -> float:
+
+    def fit_function(x, a, b, c):
+        return a / (1 + numpy.exp(-b * (x - c)))
+
+    for key in data:
+        scipy.optimize.curve_fit()
+    return 0
+

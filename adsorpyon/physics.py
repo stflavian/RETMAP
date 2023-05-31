@@ -9,7 +9,7 @@ are part of the numpy package to facilitate the usage of arrays.
 Usage:
 """
 
-from . import constants
+import constants
 
 import numpy
 
