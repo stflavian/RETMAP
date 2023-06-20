@@ -37,11 +37,41 @@ def get_saturation_pressure(data: dict, index: int, adsorbate_data: dict) -> flo
                                                 pressure_guess=1,
                                                 acentric_factor=adsorbate_data["acentric_factor"])
     elif data[index]["saturation_pressure_function"] == "preos-extrapolation":
-        return saturation_pressure.preos_extrapolation(temperature=data[index]["temperature"],
-                                                       temperature_critical=adsorbate_data["temperature_critical"],
-                                                       pressure_critical=adsorbate_data["pressure_critical"],
-                                                       acentric_factor=adsorbate_data["acentric_factor"],
-                                                       temperature_boiling=adsorbate_data["temperature_boiling"])
+        return saturation_pressure.equation_extrapolation(temperature=data[index]["temperature"],
+                                                          temperature_critical=adsorbate_data["temperature_critical"],
+                                                          pressure_critical=adsorbate_data["pressure_critical"],
+                                                          acentric_factor=adsorbate_data["acentric_factor"],
+                                                          temperature_boiling=adsorbate_data["temperature_boiling"],
+                                                          equation="preos", kappa1=adsorbate_data["kappa1"],
+                                                          kappa2=adsorbate_data["kappa2"],
+                                                          kappa3=adsorbate_data["kappa3"],
+                                                          function="polynomial2")
+    elif data[index]["saturation_pressure_function"] == "prsv1-extrapolation":
+        return saturation_pressure.equation_extrapolation(temperature=data[index]["temperature"],
+                                                          temperature_critical=adsorbate_data["temperature_critical"],
+                                                          pressure_critical=adsorbate_data["pressure_critical"],
+                                                          acentric_factor=adsorbate_data["acentric_factor"],
+                                                          temperature_boiling=adsorbate_data["temperature_boiling"],
+                                                          equation="prsv1", kappa1=adsorbate_data["kappa1"],
+                                                          kappa2=adsorbate_data["kappa2"],
+                                                          kappa3=adsorbate_data["kappa3"],
+                                                          function="polynomial2")
+    elif data[index]["saturation_pressure_function"] == "prsv2-extrapolation":
+        return saturation_pressure.equation_extrapolation(temperature=data[index]["temperature"],
+                                                          temperature_critical=adsorbate_data["temperature_critical"],
+                                                          pressure_critical=adsorbate_data["pressure_critical"],
+                                                          acentric_factor=adsorbate_data["acentric_factor"],
+                                                          temperature_boiling=adsorbate_data["temperature_triple_point"],
+                                                          equation="prsv2", kappa1=adsorbate_data["kappa1"],
+                                                          kappa2=adsorbate_data["kappa2"],
+                                                          kappa3=adsorbate_data["kappa3"],
+                                                          function="custom")
+    elif data[index]["saturation_pressure_function"] == "widom-banuti":
+        return saturation_pressure.widombanuti(temperature=data[index]["temperature"],
+                                               temperature_critical=adsorbate_data["temperature_critical"],
+                                               pressure_critical=adsorbate_data["pressure_critical"],
+                                               species_parameter=5.589,
+                                               acentric_factor=adsorbate_data["acentric_factor"])
     else:
         raise ValueError(f"Input string {data[index]['saturation_pressure_function']} does not correspond to a valid"
                          f"method of determining the saturation pressure")
@@ -92,6 +122,8 @@ def main():
             data[index]["saturation_pressure_file"] = config["saturation_pressure_file"]
         data[index]["density_function"] = config["adsorbate_density"]
         data[index]["adsorbate_data_file"] = config["adsorbate_data_file"]
+        data[index]["adsorbent"] = config["adsorbent"]
+        data[index]["adsorbate"] = config["adsorbate"]
 
         # Calculate the saturation pressure and density based on the desired functions
         data[index]["saturation_pressure"] = get_saturation_pressure(data=data, index=index, adsorbate_data=adsorbate_data)
@@ -112,6 +144,13 @@ def main():
 
             data[index]["adsorption_volume"] = physics.get_adsorption_volume(adsorbed_amount=data[index]["adsorbed_amount"],
                                                                              adsorbate_density=data[index]["density"])  # [ml/g]
+
+            data[index]["adsorption_enthalpy"] = physics.get_adsorption_enthalpy(enthalpy_vaporization=15,
+                                                                                 temperature=data[index]["temperature"],
+                                                                                 adsorption_volume=data[index]["adsorption_volume"],
+                                                                                 adsorption_potential=data[index]["adsorption_potential"],
+                                                                                 thermal_expansion_coefficient=adsorbate_data["thermal_expansion_coefficient"])
+
         if data[index]["data_type"] == "characteristic curve":
             data[index]["adsorption_potential"] = file_data[:, 0] * utils.convert_input(unit=config["column1_units"][index],
                                                                                         adsorbate_data=adsorbate_data)  # [kJ/mol]
@@ -125,6 +164,12 @@ def main():
 
             data[index]["adsorbed_amount"] = physics.get_adsorbed_amount(adsorption_volume=data[index]["adsorption_volume"],
                                                                          adsorbate_density=data[index]["density"])  # [mg/g]
+
+            data[index]["adsorption_enthalpy"] = physics.get_adsorption_enthalpy(enthalpy_vaporization=15,
+                                                                                 temperature=data[index]["temperature"],
+                                                                                 adsorption_volume=data[index]["adsorption_volume"],
+                                                                                 adsorption_potential=data[index]["adsorption_potential"],
+                                                                                 thermal_expansion_coefficient=adsorbate_data["thermal_expansion_coefficient"])
             
         if config["write_results"][index].lower() == "yes":
             utils.write_data(data=data, index=index)
@@ -134,9 +179,23 @@ def main():
         plot_presence = True
         utils.plot_isotherm(data=data, logarithmic=config["logarithmic_isotherm"], save=config["save_isotherm"])
 
+    if config["show_specific_enthalpy"].lower() == "yes":
+        plot_presence = True
+        utils.plot_enthalpy(data=data, save=config["save_specific_enthalpy"])
+
     if config["show_characteristic_curve"].lower() == "yes":
         plot_presence = True
         utils.plot_characteristic_curve(data=data, save=config["save_characteristic_curve"])
+
+    if config["evaluate_characteristic_curve"].lower() == "yes":
+        plot_presence = True
+        utils.evaluate_characteristic_curve(data=data, save=config["save_evaluation"],
+                                            temperature_reference_isotherm=config["temperature_reference_isotherm"])
+
+    if config["predict_isotherms"].lower() == "yes":
+        plot_presence = True
+        utils.predict_isotherms(data=data, logarithmic=config["logarithmic_isotherm"],  save=config["save_predictions"],
+                                temperature_reference_isotherm=config["temperature_reference_isotherm"])
 
     if plot_presence is True:
         utils.show_plots()

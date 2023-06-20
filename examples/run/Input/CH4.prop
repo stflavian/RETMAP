@@ -1,0 +1,19 @@
+{
+  "name": "CH4",
+  "molecular_mass": 16.042,
+  "temperature_critical" : 190.56,
+  "pressure_critical" : 4.5992,
+  "temperature_boiling": 111.51,
+  "temperature_triple_point": 90.69,
+  "temperature_reference": 100,
+  "density_boiling": 422.6,
+  "acentric_factor": 0.01142,
+  "thermal_expansion_coefficient": 0.00128,
+  "amankwah_exponent": 2.3,
+  "van_der_waals_b": 0.04301,
+  "kappa1": -0.00159,
+  "kappa2": 0.1521,
+  "kappa3": 0.517,
+  "__units__": ["g/mol", "K", "MPa", "K", "kg/m3", "-"],
+  "__source__": "https://www.engineeringtoolbox.com/methane-d_1420.html"
+}

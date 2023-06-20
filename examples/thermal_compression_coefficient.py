@@ -13,7 +13,7 @@ import numpy
 import matplotlib.pyplot as plt
 import scipy.optimize
 
-MATERIAL = "CO2"
+MATERIAL = "N2"
 MOF_FILES = [f"sim-{MATERIAL}-Co-MOF-74-cCO2-saturation_T.load",
              f"sim-{MATERIAL}-IRMOF-1-saturation_T.load",
              f"sim-{MATERIAL}-MIL-47-saturation_T.load",
@@ -24,7 +24,7 @@ NAMES = ["Co-MOF-74", "IRMOF-1", "MIL-47", "MOF-1", "ZJU-198-LP"]
 
 temperature_range = numpy.linspace(start=253, stop=393, num=15, endpoint=True)
 
-with open(f"../adsorpyon/Properties/CO2.prop") as adsorbate_file:
+with open(f"../adsorpyon/Properties/N2.prop") as adsorbate_file:
     adsorbate_data = json.load(adsorbate_file)
 
 mof_loading = [None for _ in MOF_FILES]

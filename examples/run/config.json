@@ -1,23 +1,36 @@
 {
-  "data_files": ["../CO2_adsorption-Co-MOF-74_T.dat"],
-  "data_names": ["300K, Exp"],
-  "temperatures": [300],
-  "data_types": ["isotherm"],
-  "column1_units": ["kPa"],
-  "column2_units": ["mol/kg"],
+  "adsorbate": "CH4",
+  "adsorbent": "ZJU-198",
+  "data_files": ["Input/s_sim-methane-ZJU-198-273K.load","Input/sim-methane-ZJU-198-300K.load","Input/s_sim-methane-ZJU-198-333K.load","Input/s_sim-methane-ZJU-198-373K.load"],
+  "data_names": ["273K","300K","333K","373K"],
+  "temperatures": [273, 300, 333, 373],
+  "data_types": ["isotherm","isotherm","isotherm","isotherm"],
+  "column1_units": ["kPa","kPa","kPa","kPa"],
+  "column2_units": ["mol/kg","mol/kg","mol/kg","mol/kg"],
 
-  "adsorbate_data_file": "../Properties/CO2_carbon_dioxide.prop",
+  "adsorbate_data_file": "Input/CH4.prop",
 
-  "adsorbate_saturation_pressure": "peng-robinson",
-  "saturation_pressure_file": "SaturationProperties/CO2-saturation_properties.dat",
-  "adsorbate_density": "empirical",
+  "adsorbate_saturation_pressure": "preos-extrapolation",
+  "adsorbate_density": "hauer",
 
-  "write_results":  ["no"],
+  "write_results":  ["yes","yes","yes","yes"],
 
   "show_isotherm": "yes",
   "logarithmic_isotherm": "no",
-  "save_isotherm": "no",
+  "save_isotherm": "yes",
+
+  "show_specific_enthalpy": "yes",
+  "save_specific_enthalpy": "yes",
 
   "show_characteristic_curve": "yes",
-  "save_characteristic_curve": "no"
+  "save_characteristic_curve": "yes",
+
+  "evaluate_characteristic_curve": "yes",
+  "save_evaluation": "yes",
+
+  "predict_isotherms": "yes",
+  "temperature_reference_isotherm": 300,
+  "save_predictions": "yes"
+
 }
+

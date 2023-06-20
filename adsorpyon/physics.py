@@ -70,35 +70,54 @@ def _peng_robinson_coefficients(temperature_critical: float, pressure_critical: 
     return [a, b, A, B]
 
 
-def _prsv1_coefficients(temperature_critical: float, pressure_critical: float, acentric_factor: float, kappa1: float,
-                        temperature: float, pressure: float):
+def _prsv1_coefficients(temperature_critical: float, pressure_critical: float, acentric_factor: float,
+                        temperature: float, pressure: float, kappa1: float) -> list:
     a = 0.45724 * (constants.UNIVERSAL_GAS_CONSTANT * temperature_critical) ** 2 / pressure_critical
     b = 0.07780 * constants.UNIVERSAL_GAS_CONSTANT * temperature_critical / pressure_critical
     kappa0 = 0.378893 + 1.4897153 * acentric_factor - 0.17131848 * acentric_factor**2 + 0.0196554 * acentric_factor**3
-    if temperature/temperature_critical <= 0.7:
-        kappa = kappa0 \
-                + kappa1 * (1 + (temperature/temperature_critical)**0.5) * (0.7 - (temperature/temperature_critical))
+    reduced_temperature = temperature/temperature_critical
+    if reduced_temperature <= 0.7:
+        kappa = kappa0 + kappa1 * (1 + reduced_temperature**0.5) * (0.7 - reduced_temperature)
     else:
         kappa = kappa0
-    alpha = (1 + kappa * (1 - (temperature / temperature_critical) ** 0.5)) ** 2
+    alpha = (1 + kappa * (1 - reduced_temperature**0.5)) ** 2
+    A = a * alpha * pressure / (constants.UNIVERSAL_GAS_CONSTANT * temperature) ** 2
+    B = b * pressure / (constants.UNIVERSAL_GAS_CONSTANT * temperature)
+    return [a, b, A, B]
+
+
+def _prsv2_coefficients(temperature_critical: float, pressure_critical: float, acentric_factor: float,
+                        temperature: float, pressure: float, kappa1: float, kappa2: float, kappa3: float) -> list:
+    a = 0.45724 * (constants.UNIVERSAL_GAS_CONSTANT * temperature_critical) ** 2 / pressure_critical
+    b = 0.07780 * constants.UNIVERSAL_GAS_CONSTANT * temperature_critical / pressure_critical
+    kappa0 = 0.378893 + 1.4897153 * acentric_factor - 0.17131848 * acentric_factor**2 + 0.0196554 * acentric_factor**3
+    reduced_temperature = temperature / temperature_critical
+    kappa = kappa0 + (kappa1 + kappa2 * (kappa3 - reduced_temperature) * (1 - reduced_temperature**0.5)) * (1 + reduced_temperature**0.5) * (0.7 - reduced_temperature)
+    alpha = (1 + kappa * (1 - reduced_temperature**0.5)) ** 2
     A = a * alpha * pressure / (constants.UNIVERSAL_GAS_CONSTANT * temperature) ** 2
     B = b * pressure / (constants.UNIVERSAL_GAS_CONSTANT * temperature)
     return [a, b, A, B]
 
 
 def get_fugacity_coefficient(compressibility: float, pressure_critical: float, temperature_critical: float,
-                             temperature: float, pressure: float, acentric_factor: float, method: str) -> float:
+                             temperature: float, pressure: float, acentric_factor: float, kappa1: float,
+                             kappa2: float, kappa3: float, equation: str) -> float:
 
-    if method == "pr":
+    if equation == "preos":
         coefficients = _peng_robinson_coefficients(temperature_critical=temperature_critical,
                                                    pressure_critical=pressure_critical, acentric_factor=acentric_factor,
                                                    temperature=temperature, pressure=pressure)
-    elif method == "prsv1":
-        coefficients = _prsv1_coefficients(temperature_critical=temperature_critical, kappa1=0.04285,
+    elif equation == "prsv1":
+        coefficients = _prsv1_coefficients(temperature_critical=temperature_critical,
                                            pressure_critical=pressure_critical, acentric_factor=acentric_factor,
-                                           temperature=temperature, pressure=pressure)
+                                           temperature=temperature, pressure=pressure, kappa1=kappa1)
+    elif equation == "prsv2":
+        coefficients = _prsv2_coefficients(temperature_critical=temperature_critical,
+                                           pressure_critical=pressure_critical, acentric_factor=acentric_factor,
+                                           temperature=temperature, pressure=pressure, kappa1=kappa1, kappa2=kappa2,
+                                           kappa3=kappa3)
     else:
-        raise ValueError(f"Method {method} is not supported! Check the string for typos!")
+        raise ValueError(f"Equation {equation} is not a known equation! Check the string for typos!")
     A = coefficients[2]
     B = coefficients[3]
     return numpy.exp(compressibility - 1 - numpy.log(compressibility - B)
@@ -106,19 +125,25 @@ def get_fugacity_coefficient(compressibility: float, pressure_critical: float, t
 
 
 def get_compressibility(pressure_critical: float, temperature_critical: float, temperature: float, pressure: float,
-                        acentric_factor: float, method: str, state: str) -> float:
+                        acentric_factor: float, kappa1: float, kappa2: float, kappa3: float, equation: str,
+                        state: str) -> float:
     def peng_robinson_polynomial(p):
-        if method == "pr":
+        if equation == "preos":
             coefficients = _peng_robinson_coefficients(temperature_critical=temperature_critical,
                                                        pressure_critical=pressure_critical,
                                                        acentric_factor=acentric_factor,
                                                        temperature=temperature, pressure=p)
-        elif method == "prsv1":
-            coefficients = _prsv1_coefficients(temperature_critical=temperature_critical, kappa1=0.04285,
+        elif equation == "prsv1":
+            coefficients = _prsv1_coefficients(temperature_critical=temperature_critical,
                                                pressure_critical=pressure_critical, acentric_factor=acentric_factor,
-                                               temperature=temperature, pressure=p)
+                                               temperature=temperature, pressure=pressure, kappa1=kappa1)
+        elif equation == "prsv2":
+            coefficients = _prsv2_coefficients(temperature_critical=temperature_critical,
+                                               pressure_critical=pressure_critical, acentric_factor=acentric_factor,
+                                               temperature=temperature, pressure=pressure, kappa1=kappa1, kappa2=kappa2,
+                                               kappa3=kappa3)
         else:
-            raise ValueError(f"Method {method} is not supported! Check the string for typos!")
+            raise ValueError(f"Method {equation} is not supported! Check the string for typos!")
         A = coefficients[2]
         B = coefficients[3]
         return [1, B - 1, A - 3 * B ** 2 - 2 * B, B ** 3 + B ** 2 - A * B]
@@ -131,4 +156,11 @@ def get_compressibility(pressure_critical: float, temperature_critical: float, t
         return numpy.max(compressibility_roots)
     else:
         raise ValueError(f"Selected state {state} is not valid! Supported states are liquid and vapor!")
+
+
+def get_adsorption_enthalpy(enthalpy_vaporization: float, adsorption_potential: numpy.ndarray, temperature: float,
+                            adsorption_volume: numpy.ndarray, thermal_expansion_coefficient: float) -> float:
+     entropy = thermal_expansion_coefficient * adsorption_volume * numpy.gradient(adsorption_potential, adsorption_volume)
+     return enthalpy_vaporization + adsorption_potential - temperature * entropy
+
 

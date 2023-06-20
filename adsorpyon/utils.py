@@ -7,8 +7,11 @@ Usage:
 
 import os
 
+import physics
+
 import numpy
-import scipy.optimize
+import scipy.interpolate
+import scipy.stats
 import matplotlib.pyplot as plt
 
 
@@ -31,7 +34,19 @@ def plot_isotherm(data: dict, logarithmic: str, save: str):
     plt.legend()
     if save.lower() == "yes":
         os.makedirs(name="Plots", exist_ok=True)
-        plt.savefig("Plots/isotherm.png")
+        plt.savefig(f"Plots/{data[0]['adsorbate']}_in_{data[0]['adsorbent']}_isotherms.png")
+
+
+def plot_enthalpy(data: dict, save: str):
+    plt.figure()
+    for index in data:
+        plt.scatter(data[index]["adsorbed_amount"], data[index]["adsorption_enthalpy"], label=data[index]["name"])
+    plt.xlabel("Adsorbed amount [mg/g]")
+    plt.ylabel("Adsorption enthalpy [kJ/mol]")
+    plt.legend()
+    if save.lower() == "yes":
+        os.makedirs(name="Plots", exist_ok=True)
+        plt.savefig(f"Plots/{data[0]['adsorbate']}_in_{data[0]['adsorbent']}_enthalpy.png")
 
 
 def plot_characteristic_curve(data: dict, save: str):
@@ -51,7 +66,7 @@ def plot_characteristic_curve(data: dict, save: str):
     plt.legend()
     if save.lower() == "yes":
         os.makedirs(name="Plots", exist_ok=True)
-        plt.savefig("Plots/characteristic_curve.png")
+        plt.savefig(f"Plots/{data[0]['adsorbate']}_in_{data[0]['adsorbent']}_characteristic_curve.png")
 
 
 def show_plots():
@@ -61,12 +76,12 @@ def show_plots():
 def write_data(data: dict, index: int):
     os.makedirs(name="Output", exist_ok=True)
     if data[index]["data_type"] == "isotherm":
-        with open(file=f"Output/char_curve_{data[index]['name']}.dat", mode="w") as file:
+        with open(file=f"Output/{data[index]['adsorbate']}_in_{data[index]['adsorbent']}_char_curve_{data[index]['temperature']}.dat", mode="w") as file:
             file.write("#Adsorption_potential [kJ/mol]    Adsorption_volume [ml/g] \n")
             for potential, volume in zip(data[index]["adsorption_potential"], data[index]["adsorption_volume"]):
                 file.write(f"{potential}       {volume} \n")
     elif data[index]["data_type"] == "characteristic curve":
-        with open(file=f"Output/isotherm_{data[index]['name']}.dat", mode="w") as file:
+        with open(file=f"Output/{data[index]['adsorbate']}_in_{data[index]['adsorbent']}_isotherm_{data[index]['temperature']}.dat", mode="w") as file:
             file.write("#Pressure [MPa]       Adsorbed_amount [mg/g] \n")
             for pressure, amount in zip(data[index]["pressure"], data[index]["adsorbed_amount"]):
                 file.write(f"{pressure}       {amount} \n")
@@ -121,12 +136,133 @@ def convert_output(unit: str, adsorbate_data: dict) -> float:
     return 1 / convert_input(unit=unit, adsorbate_data=adsorbate_data)
 
 
-def evaluate(data: dict, adsorbate_data: dict) -> float:
+def evaluate_characteristic_curve(data: dict, temperature_reference_isotherm: float, save: str):
+    """
+    Calculate the accuracy of the characteristic curves.
+    :param data:
+    :param temperature_reference_isotherm:
+    :param save:
+    :return:
+    """
+    plt.figure()
+    for index in data:
+        if temperature_reference_isotherm == data[index]["temperature"]:
+            index_reference = index
 
-    def fit_function(x, a, b, c):
-        return a / (1 + numpy.exp(-b * (x - c)))
+    interpolation_function = scipy.interpolate.interp1d(x=data[index_reference]["adsorption_potential"],
+                                                        y=data[index_reference]["adsorption_volume"],
+                                                        fill_value="extrapolate")
 
-    for key in data:
-        scipy.optimize.curve_fit()
-    return 0
+    amount_reference = numpy.array([])
+    amount_predicted = numpy.array([])
+    for index in data:
+        if index is not index_reference:
+            amount_reference = numpy.append(amount_reference, data[index]["adsorption_volume"])
+            amount_predicted = numpy.append(amount_predicted, interpolation_function(data[index]["adsorption_potential"]))
 
+    r_score = scipy.stats.linregress(x=amount_reference, y=amount_predicted).rvalue
+    rss_score = numpy.sum(numpy.square(numpy.subtract(amount_reference, amount_predicted)))
+
+    os.makedirs(name="Output", exist_ok=True)
+    with open(file=f"Output/{data[index_reference]['adsorbate']}_in_{data[index_reference]['adsorbent']}_evaluation.log", mode="w") as file:
+        file.write(f"Characteristic curve evaluation metrics \n")
+        file.write("\n")
+        file.write(f"Adsorbate: {data[index_reference]['adsorbate']}            Adsorbent: {data[index_reference]['adsorbent']} \n")
+        file.write(f"Temperature of the reference isotherm: {data[index_reference]['temperature']}K \n")
+        file.write("========================================================================= \n")
+        file.write(f"Correlation coefficient (r): {r_score} \n")
+        file.write(f"Residual sum of squares (RSS): {rss_score} \n")
+        file.write("\n")
+
+    plt.scatter(x=amount_predicted, y=amount_reference)
+    plt.plot(data[index_reference]["adsorption_volume"], data[index_reference]["adsorption_volume"],
+             linestyle="dashed", color="red")
+
+    plt.xlabel("Predicted adsorption volume [ml/g]")
+    plt.ylabel(f"Reference adsorption volume at {data[index_reference]['temperature']}K [ml/g]")
+    if save.lower() == "yes":
+        os.makedirs(name="Plots", exist_ok=True)
+        plt.savefig(f"Plots/{data[index_reference]['adsorbate']}_in_{data[index_reference]['adsorbent']}_evaluation.png")
+
+
+def predict_isotherms(data: dict, temperature_reference_isotherm: float, logarithmic: str, save: str):
+    """
+    Calculate the accuracy of the characteristic curves.
+    :param data:
+    :param temperature_reference_isotherm:
+    :param logarithmic:
+    :param save:
+    :return:
+    """
+    plt.figure()
+    for index in data:
+        if temperature_reference_isotherm == data[index]["temperature"]:
+            index_reference = index
+
+    interpolation_function = scipy.interpolate.interp1d(x=data[index_reference]["adsorption_potential"],
+                                                        y=data[index_reference]["adsorption_volume"],
+                                                        fill_value="extrapolate")
+
+    for index in data:
+        max_potential = numpy.max(data[index]["adsorption_potential"])
+        min_potential = numpy.min(data[index]["adsorption_potential"])
+        adsorption_potential = numpy.linspace(start=min_potential, stop=max_potential, num=50)
+
+        pressure = physics.get_pressure(adsorption_potential=adsorption_potential,
+                                        saturation_pressure=data[index]["saturation_pressure"],
+                                        temperature=data[index]["temperature"])
+
+        amount = physics.get_adsorbed_amount(adsorption_volume=interpolation_function(adsorption_potential),
+                                             adsorbate_density=data[index]["density"])
+
+        predicted_amount = physics.get_adsorbed_amount(adsorption_volume=interpolation_function(data[index]["adsorption_potential"]),
+                                                       adsorbate_density=data[index]["density"])
+
+        plt.scatter(x=data[index]["pressure"], y=data[index]["adsorbed_amount"],
+                    label=f"{data[index]['name']} Simulated")
+
+        plt.plot(pressure, amount, label=f"{data[index]['name']} Predicted", linestyle='dashed')
+
+        predicted_amount[predicted_amount < 0] = 0
+        relative_error = numpy.absolute(numpy.divide(predicted_amount, data[index]["adsorbed_amount"]) - 1)
+        relative_error[numpy.isnan(relative_error)] = numpy.nanmean(relative_error)
+        mape_score = numpy.sum(relative_error) / len(relative_error) * 100
+
+        absolute_error = numpy.absolute(numpy.subtract(predicted_amount, data[index]["adsorbed_amount"]))
+        absolute_error[numpy.isnan(absolute_error)] = numpy.nanmean(absolute_error)
+        mae_score = numpy.sum(absolute_error) / len(absolute_error)
+
+        mae_score_scaled = mae_score / numpy.max(data[index]["adsorbed_amount"])
+
+        rmse_score = numpy.sqrt(numpy.sum(numpy.square(absolute_error)) / len(absolute_error))
+
+        os.makedirs(name="Output", exist_ok=True)
+        with open(file=f"Output/{data[index_reference]['adsorbate']}_in_{data[index_reference]['adsorbent']}_prediction_{data[index]['temperature']}K.log", mode="w") as file:
+            file.write(f"Isotherm prediction metrics \n")
+            file.write("\n")
+            file.write(f"Adsorbate: {data[index_reference]['adsorbate']}            Adsorbent: {data[index_reference]['adsorbent']} \n")
+            file.write(f"Temperature of the reference isotherm: {data[index_reference]['temperature']}K \n")
+            file.write("========================================================================= \n")
+            file.write(f"Mean absolute percentage error (MAPE): {mape_score} \n")
+            file.write(f"Mean absolute error (MAE): {mae_score} \n")
+            file.write(f"Root mean squared error (RMSE): {rmse_score} \n")
+            file.write(f"Mean absolute error scaled (MAE / maximum_loading): {mae_score_scaled} \n")
+            file.write(f"Maximum recorded loading: {numpy.max(data[index]['adsorbed_amount'])} \n")
+            file.write(f"Maximum absolute error loading: {numpy.max(absolute_error)} \n")
+            file.write("\n")
+
+
+        with open(file=f"Output/{data[index_reference]['adsorbate']}_in_{data[index_reference]['adsorbent']}_prediction_{data[index]['temperature']}K.dat", mode="w") as file:
+            file.write("#Pressure [MPa]       Adsorbed_amount [mg/g] \n")
+            for amount_point, pressure_point in zip(amount, pressure):
+                file.write(f"{pressure_point}           {amount_point} \n")
+
+
+    if logarithmic.lower() == "yes":
+        plt.xscale('log')
+    plt.legend()
+    plt.xlabel("Pressure [MPa]")
+    plt.ylabel("Adsorbed amount [mg/g]")
+    if save.lower() == "yes":
+        os.makedirs(name="Plots", exist_ok=True)
+        plt.savefig(f"Plots/{data[index_reference]['adsorbate']}_in_{data[index_reference]['adsorbent']}_predictions.png")
