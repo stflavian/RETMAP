@@ -1,27 +1,32 @@
-"""Adsorbate Saturation Pressure Calculator
+"""Saturation Pressure Methods
 
-This script contains the implemented methods of calculating the temperature dependent saturation pressure of the
-adsorbate. All subsequent method of calculating the aforementioned value should be added in this file.
+This file contains a library of methods that can be used for calculating the temperature dependent saturation pressure
+of an adsorbate. Further methods of determining this value should be added in this file.
 
-The methods supported are:
-    1. Dubinin's method
-    2. Amankwah's method
-    3. Extrapolation of experimental data
-    4. Polynomial expression for water
-    5. Fugacity equilibration using the Peng-Robinson equation of state
+Currently supported methods are:
+    1. Dubinin's method;
+    2. Amankwah's method;
+    3. Extrapolation of experimental data;
+    4. Polynomial expression for water;
+    5. Fugacity equilibration using the polynomial form of the Peng-Robinson equation of state;
+    6. Fugacity equilibration using the PRSV1 equation;
+    7. Fugacity equilibration using the PRSV2 equation;
+    8. Extrapolation of data obtained using Peng-Robinson, PRSV1, and PRSV2 below the critical temperature;
+    9. Banuti's equation for the Widom line.
 
-All methods take in a set of material dependent and environmental parameters and return a float value representing the
-saturation pressure of the adsorbate in MPa. In case of different units needed, the output value can be converted using
-an external function. Changing the units in the functions is not recommended, as it may impact the functionality of the
-other modules using this code.
-
-Usage:
+All methods take as input the temperature and a set of material dependent parameters and return a float value
+representing the saturation pressure of the adsorbate in megapascals (MPa). In case different pressure units are needed,
+the output value can be converted from MPa using the function utils.convert_output(). Changing the units inside the
+functions is not recommended, as it may break other modules that make use of this file.
 """
 
+# Standard libraries
 import warnings
 
+# Local libraries
 import physics
 
+# Third-party libraries
 import numpy
 import scipy.optimize
 import scipy.interpolate
@@ -29,7 +34,8 @@ import scipy.interpolate
 
 def dubinin(temperature: float, temperature_critical: float, pressure_critical: float) -> float:
     """
-    Calculates the temperature dependent saturation pressure based on Dubinin's method.
+    Calculates the saturation pressure based on Dubinin's method.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
@@ -40,12 +46,15 @@ def dubinin(temperature: float, temperature_critical: float, pressure_critical: 
 
 def amankwah(temperature: float, temperature_critical: float, pressure_critical: float, k: float) -> float:
     """
-    Calculates the temperature dependent saturation pressure based on Amankwah's method, a modified version of Dubinin's
-    method where the exponent is unique for each individual adsorbate-adsorbent pair.
+    Calculates the saturation pressure based on Amankwah's method.
+
+    Amankwah's method is a modified version of Dubinin's method where the exponent 2 is replaced by a unique value for
+    each individual adsorbate-adsorbent pair.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
-    :param k: Exponent of the reduced temperature. k=2 results in Dubinin's method.
+    :param k: Exponent of the reduced temperature; k=2 results in Dubinin's method.
     :return: Saturation pressure in MPa.
     """
     return pressure_critical * (temperature / temperature_critical) ** k
@@ -53,11 +62,14 @@ def amankwah(temperature: float, temperature_critical: float, pressure_critical:
 
 def extrapolation(temperature: float, file: str) -> float:
     """
-    Calculates the temperature dependent saturation pressure by extrapolating experimental data. The file should contain
-    two columns, where the first one is the temperature and the second is the saturation pressure. For the extrapolation
-    a second degree polynomial is used.
+    Calculates the saturation pressure by extrapolating the data found in a data file.
+
+    The target should be a two-column file, where the first column contains the temperature and the second one the
+    saturation pressure. For the extrapolation, a second order polynomial is used. If the input temperature is found in
+    the temperature range covered by the data file, interpolation is used to determine the value.
+
     :param temperature: Temperature at which the experiment is conducted in K.
-    :param file: Path to file containing the experimental data.
+    :param file: Path to file containing reference data.
     :return: Saturation pressure in MPa.
     """
     data = numpy.genfromtxt(file)
@@ -66,7 +78,7 @@ def extrapolation(temperature: float, file: str) -> float:
         return a * x**2 + b * x + c
 
     if temperature <= numpy.max(data[:, 0]):
-        interpolation_function = scipy.interpolate.interp1d(data[:, 0], data[:, 1])
+        interpolation_function = scipy.interpolate.interp1d(data[:, 0], data[:, 1], fill_value="extrapolate")
         return interpolation_function(temperature)
     else:
         # noinspection PyTupleAssignmentBalance
@@ -76,27 +88,34 @@ def extrapolation(temperature: float, file: str) -> float:
 
 def polynomial_water(temperature: float) -> float:
     """
-    Calculates the temperature dependent saturation pressure based on empirical formula represented by a seventh degree
-    polynomial.
+    Calculates the saturation pressure of water based on an empirically determined seventh order polynomial.
+
+    This function SHOULD NOT be used for any adsorbent other than water, NOR should it be used for
+    temperatures above the critical temperature of water.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :return: Saturation pressure in MPa.
     """
-    return (- 1.14798e-11*temperature**7 + 2.23756e-8*temperature**6 - 1.54376e-5*temperature**5
-            + 0.00443279*temperature**4 - 0.177671*temperature**3 - 193.14*temperature**2
-            + 42890.6*temperature - 2.87726e+6) / 1000 / 1000
+    return (- 1.14798e-11 * temperature**7 + 2.23756e-8 * temperature**6 - 1.54376e-5 * temperature**5
+            + 0.00443279 * temperature**4 - 0.177671 * temperature**3 - 193.14 * temperature**2
+            + 42890.6 * temperature - 2.87726e+6) / 1_000_000
 
 
 def pengrobinson(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
                  acentric_factor: float) -> float:
     """
-    Calculates the temperature dependent saturation pressure by equilibrating the fugacities of the vapor and liquid
-    phases according to the Peng-Robinson equation of state. It calculates the roots of the compressibility polynomial
-    form of the EoS and uses them to determine the fugacity coefficients in liquid and vapor phase. It then solves for
-    the pressure at which the two coefficients are equal to each other, thus satisfying saturation conditions.
+    Calculates the saturation pressure using the polynomial form of Peng-Robinson's equation of state.
+
+    Calculates the saturation pressure by equilibrating the fugacities of the vapor and liquid phases of the adsorbate
+    according to the Peng-Robinson equation of state. It calculates the roots of the polynomial, which represent the
+    compressibilities of the vapor and liquid phases, and uses them to determine the fugacity coefficients for the
+    two phases. It then solves for the pressure at which the two coefficients are equal to each other, thus satisfying
+    saturation conditions.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
-    :param pressure_guess: Saturation pressure in MPa.
+    :param pressure_guess: Initial guess of the saturation pressure in MPa.
     :param acentric_factor: The acentric factor of the adsorbate.
     :return: Saturation pressure in MPa.
     """
@@ -143,6 +162,7 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
     phases according to the Peng-Robinson equation of state. It calculates the roots of the compressibility polynomial
     form of the EoS and uses them to determine the fugacity coefficients in liquid and vapor phase. It then solves for
     the pressure at which the two coefficients are equal to each other, thus satisfying saturation conditions.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
@@ -293,7 +313,7 @@ def equation_extrapolation(temperature: float, temperature_critical: float, pres
 
 def widombanuti(temperature: float, temperature_critical: float, pressure_critical: float,
                 species_parameter: float, acentric_factor: float) -> float:
-    if temperature <= temperature_critical:
+    if temperature >= temperature_critical:
         return numpy.exp(species_parameter*(temperature/temperature_critical - 1)) * pressure_critical
     else:
         return pengrobinson(temperature=temperature, temperature_critical=temperature_critical,

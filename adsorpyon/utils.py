@@ -14,6 +14,12 @@ import scipy.interpolate
 import scipy.stats
 import matplotlib.pyplot as plt
 
+AXES_SIZE = 19
+TICK_SIZE = 13
+LEGEND_SIZE = 14
+FIGURE_SIZE = (7, 6)
+LEFT_LIMIT = None
+RIGHT_LIMIT = None
 
 def plot_isotherm(data: dict, logarithmic: str, save: str):
     """
@@ -24,7 +30,13 @@ def plot_isotherm(data: dict, logarithmic: str, save: str):
     It is case-insensitive.
     :return: A plot with the adsorption isotherms from the experimental data.
     """
-    plt.figure()
+    plt.figure(figsize=FIGURE_SIZE)
+    plt.rc('axes', labelsize=AXES_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=TICK_SIZE)  # fontsize of the x tick labels
+    plt.rc('ytick', labelsize=TICK_SIZE)  # fontsize of the y tick labels
+    plt.rc('legend', fontsize=LEGEND_SIZE)  # fontsize of the legend
+    # plt.xlim(left=LEFT_LIMIT)
+    # plt.xlim(right=RIGHT_LIMIT)
     for index in data:
         plt.scatter(data[index]["pressure"], data[index]["adsorbed_amount"], label=data[index]["name"])
     plt.xlabel("Pressure [MPa]")
@@ -38,7 +50,11 @@ def plot_isotherm(data: dict, logarithmic: str, save: str):
 
 
 def plot_enthalpy(data: dict, save: str):
-    plt.figure()
+    plt.figure(figsize=FIGURE_SIZE)
+    plt.rc('axes', labelsize=AXES_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=TICK_SIZE)  # fontsize of the x tick labels
+    plt.rc('ytick', labelsize=TICK_SIZE)  # fontsize of the y tick labels
+    plt.rc('legend', fontsize=LEGEND_SIZE)  # fontsize of the legend
     for index in data:
         plt.scatter(data[index]["adsorbed_amount"], data[index]["adsorption_enthalpy"], label=data[index]["name"])
     plt.xlabel("Adsorbed amount [mg/g]")
@@ -57,7 +73,11 @@ def plot_characteristic_curve(data: dict, save: str):
     It is case-insensitive.
     :return: A plot with the characteristic curves from the experimental data.
     """
-    plt.figure()
+    plt.figure(figsize=FIGURE_SIZE)
+    plt.rc('axes', labelsize=AXES_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=TICK_SIZE)  # fontsize of the x tick labels
+    plt.rc('ytick', labelsize=TICK_SIZE)  # fontsize of the y tick labels
+    plt.rc('legend', fontsize=LEGEND_SIZE)  # fontsize of the legend
     for index in data:
         plt.scatter(data[index]["adsorption_potential"], data[index]["adsorption_volume"], label=data[index]["name"])
     plt.gca().set_xlim(left=0)
@@ -144,7 +164,11 @@ def evaluate_characteristic_curve(data: dict, temperature_reference_isotherm: fl
     :param save:
     :return:
     """
-    plt.figure()
+    plt.figure(figsize=FIGURE_SIZE)
+    plt.rc('axes', labelsize=AXES_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=TICK_SIZE)  # fontsize of the x tick labels
+    plt.rc('ytick', labelsize=TICK_SIZE)  # fontsize of the y tick labels
+    plt.rc('legend', fontsize=LEGEND_SIZE)  # fontsize of the legend
     for index in data:
         if temperature_reference_isotherm == data[index]["temperature"]:
             index_reference = index
@@ -179,7 +203,7 @@ def evaluate_characteristic_curve(data: dict, temperature_reference_isotherm: fl
              linestyle="dashed", color="red")
 
     plt.xlabel("Predicted adsorption volume [ml/g]")
-    plt.ylabel(f"Reference adsorption volume at {data[index_reference]['temperature']}K [ml/g]")
+    plt.ylabel(f"Reference adsorption volume [ml/g]")
     if save.lower() == "yes":
         os.makedirs(name="Plots", exist_ok=True)
         plt.savefig(f"Plots/{data[index_reference]['adsorbate']}_in_{data[index_reference]['adsorbent']}_evaluation.png")
@@ -194,7 +218,14 @@ def predict_isotherms(data: dict, temperature_reference_isotherm: float, logarit
     :param save:
     :return:
     """
-    plt.figure()
+    plt.figure(figsize=FIGURE_SIZE)
+    plt.rc('axes', labelsize=AXES_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=TICK_SIZE)  # fontsize of the x tick labels
+    plt.rc('ytick', labelsize=TICK_SIZE)  # fontsize of the y tick labels
+    plt.rc('legend', fontsize=LEGEND_SIZE)  # fontsize of the legend
+    #plt.xlim(left=9*10**-4)
+    #plt.xlim(right=3*10**1)
+    #plt.ylim((0, 150))
     for index in data:
         if temperature_reference_isotherm == data[index]["temperature"]:
             index_reference = index
@@ -221,7 +252,7 @@ def predict_isotherms(data: dict, temperature_reference_isotherm: float, logarit
         plt.scatter(x=data[index]["pressure"], y=data[index]["adsorbed_amount"],
                     label=f"{data[index]['name']} Simulated")
 
-        plt.plot(pressure, amount, label=f"{data[index]['name']} Predicted", linestyle='dashed')
+        plt.plot(pressure, amount, label=f"{data[index]['name']} Predicted", linestyle="--")
 
         predicted_amount[predicted_amount < 0] = 0
         relative_error = numpy.absolute(numpy.divide(predicted_amount, data[index]["adsorbed_amount"]) - 1)
