@@ -36,6 +36,9 @@ def dubinin(temperature: float, temperature_critical: float, pressure_critical: 
     """
     Calculates the saturation pressure based on Dubinin's method.
 
+    Dubinin's method matches the reduced saturation pressure at a given temperature with the square of the
+    reduced temperature. Source material: https://doi.org/10.1021/cr60204a006.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
@@ -49,7 +52,7 @@ def amankwah(temperature: float, temperature_critical: float, pressure_critical:
     Calculates the saturation pressure based on Amankwah's method.
 
     Amankwah's method is a modified version of Dubinin's method where the exponent 2 is replaced by a unique value for
-    each individual adsorbate-adsorbent pair.
+    each individual adsorbate-adsorbent pair. Source material: https://doi.org/10.1016/0008-6223(95)00079-S.
 
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
@@ -70,7 +73,7 @@ def extrapolation(temperature: float, file: str) -> float:
 
     :param temperature: Temperature at which the experiment is conducted in K.
     :param file: Path to file containing reference data.
-    :return: Saturation pressure in MPa.
+    :return: Saturation pressure in the same units as the input file.
     """
     data = numpy.genfromtxt(file)
 
@@ -110,7 +113,7 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
     according to the Peng-Robinson equation of state. It calculates the roots of the polynomial, which represent the
     compressibilities of the vapor and liquid phases, and uses them to determine the fugacity coefficients for the
     two phases. It then solves for the pressure at which the two coefficients are equal to each other, thus satisfying
-    saturation conditions.
+    saturation conditions. Source material: https://doi.org/10.1021/i160057a011.
 
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
@@ -158,16 +161,20 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
 def prsv1(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
           acentric_factor: float, kappa1: float) -> float:
     """
-    Calculates the temperature dependent saturation pressure by equilibrating the fugacities of the vapor and liquid
-    phases according to the Peng-Robinson equation of state. It calculates the roots of the compressibility polynomial
-    form of the EoS and uses them to determine the fugacity coefficients in liquid and vapor phase. It then solves for
-    the pressure at which the two coefficients are equal to each other, thus satisfying saturation conditions.
+    Calculates the saturation pressure using the PRSV1 equation.
+
+    Calculates the saturation pressure by equilibrating the fugacities of the vapor and liquid phases of the adsorbate
+    according to the PRSV1 equation, a modified version of the Peng-Robinson equation of state. It calculates the roots
+    of the polynomial, which represent the compressibilities of the vapor and liquid phases, and uses them to determine
+    the fugacity coefficients for the two phases. It then solves for the pressure at which the two coefficients are
+    equal to each other, thus satisfying saturation conditions. Source material: https://doi.org/10.1002/cjce.5450640224.
 
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
     :param pressure_guess: Saturation pressure in MPa.
     :param acentric_factor: The acentric factor of the adsorbate.
+    :param kappa1: First molecule specific constant, given in the PRSV1 paper.
     :return: Saturation pressure in MPa.
     """
 
@@ -210,15 +217,22 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
 def prsv2(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
           acentric_factor: float, kappa1: float, kappa2: float, kappa3: float) -> float:
     """
-    Calculates the temperature dependent saturation pressure by equilibrating the fugacities of the vapor and liquid
-    phases according to the Peng-Robinson equation of state. It calculates the roots of the compressibility polynomial
-    form of the EoS and uses them to determine the fugacity coefficients in liquid and vapor phase. It then solves for
-    the pressure at which the two coefficients are equal to each other, thus satisfying saturation conditions.
+    Calculates the saturation pressure using the PRSV2 equation.
+
+    Calculates the saturation pressure by equilibrating the fugacities of the vapor and liquid phases of the adsorbate
+    according to the PRSV2 equation, a modified version of the PRSV1 equation. It calculates the roots of the
+    polynomial, which represent the compressibilities of the vapor and liquid phases, and uses them to determine
+    the fugacity coefficients for the two phases. It then solves for the pressure at which the two coefficients are
+    equal to each other, thus satisfying saturation conditions. Source material: https://doi.org/10.1002/cjce.5450640516.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
     :param pressure_guess: Saturation pressure in MPa.
     :param acentric_factor: The acentric factor of the adsorbate.
+    :param kappa1: First molecule specific constant, given in the PRSV1 paper.
+    :param kappa2: Second molecule specific constant, given in the PRSV2 paper.
+    :param kappa3: Third molecule specific constant, given in the PRSV2 paper.
     :return: Saturation pressure in MPa.
     """
 
@@ -261,6 +275,26 @@ def prsv2(temperature: float, temperature_critical: float, pressure_critical: fl
 def equation_extrapolation(temperature: float, temperature_critical: float, pressure_critical: float,
                            acentric_factor: float, temperature_boiling: float, equation: str, kappa1: float,
                            kappa2: float, kappa3: float, function: str) -> float:
+    """
+    Calculates the saturation pressure above the critical point by extrapolating the results of Peng-Robinson's
+    equation of state, PRSV1 equation or PRSV2 equation.
+
+    For the extrapolation, the user can choose between a second order polynomial, Amankwah's equation, and a custom
+    equation. If the input temperature is found in the temperature range covered by the data file, interpolation is used
+    to determine the value.
+
+    :param temperature: Temperature at which the experiment is conducted in K.
+    :param temperature_critical: Critical temperature of the adsorbate in K.
+    :param pressure_critical: Critical pressure of the adsorbate in MPa.
+    :param acentric_factor: The acentric factor of the adsorbate.
+    :param temperature_boiling: Boiling temperature of the adsorbate in K.
+    :param equation: Equation used below the critical point; preos, prsv1, or prsv2.
+    :param kappa1: First molecule specific constant, given in the PRSV1 paper.
+    :param kappa2: Second molecule specific constant, given in the PRSV2 paper.
+    :param kappa3: Third molecule specific constant, given in the PRSV2 paper.
+    :param function: Function used for the extrapolation of the results above the critical temperature.
+    :return: Saturation pressure in MPa.
+    """
 
     temp_range = numpy.linspace(start=temperature_boiling, stop=temperature_critical, num=50)
     temp_range = numpy.flipud(temp_range)
@@ -313,6 +347,18 @@ def equation_extrapolation(temperature: float, temperature_critical: float, pres
 
 def widombanuti(temperature: float, temperature_critical: float, pressure_critical: float,
                 species_parameter: float, acentric_factor: float) -> float:
+    """
+    Calculates the saturation pressure using Banuti's empirical equation.
+
+    Source material: https://doi.org/10.1103/PhysRevE.95.052120.
+
+    :param temperature: Temperature at which the experiment is conducted in K.
+    :param temperature_critical: Critical temperature of the adsorbate in K.
+    :param pressure_critical: Critical pressure of the adsorbate in MPa.
+    :param species_parameter: Molecule specific constant, given in the source material.
+    :param acentric_factor: The acentric factor of the adsorbate.
+    :return: Saturation pressure in MPa.
+    """
     if temperature >= temperature_critical:
         return numpy.exp(species_parameter*(temperature/temperature_critical - 1)) * pressure_critical
     else:
