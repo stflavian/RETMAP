@@ -9,14 +9,17 @@ are part of the numpy package to facilitate the usage of arrays.
 Usage:
 """
 
+# Local libraries
 import constants
 
+# Third-party libraries
 import numpy
 
 
 def get_adsorption_volume(adsorbed_amount: float, adsorbate_density: float) -> float:
     """
     Calculates the adsorption volume in terms of the adsorbed amount and adsorbate density.
+
     :param adsorbed_amount: Amount of adsorbate adsorbed, measured in mg/g or g/kg.
     :param adsorbate_density: Density of the adsorbate measured in kg/m3, g/l or mg/ml.
     :return: Adsorption volume in ml/g.
@@ -27,6 +30,7 @@ def get_adsorption_volume(adsorbed_amount: float, adsorbate_density: float) -> f
 def get_adsorption_potential(temperature: float, saturation_pressure: float, pressure: float) -> float:
     """
     Calculates the adsorption potential in terms of the temperature, pressure, and saturation pressure.
+
     :param temperature: Temperature at which the experiment is conducted in K.
     :param saturation_pressure: Saturation pressure at given temperature in MPa.
     :param pressure: Pressure at which the experiment is conducted in MPa.
@@ -39,6 +43,7 @@ def get_adsorbed_amount(adsorption_volume: float, adsorbate_density: float) -> f
     """
     The inverse function of get_adsorption_volume. Calculates the adsorbed amount given the adsorption volume and
     adsorbate density.
+
     :param adsorption_volume: Adsorption volume in ml/g.
     :param adsorbate_density: Density of the adsorbate in kg/m3, g/l or mg/ml.
     :return: Amount of adsorbate adsorbed in mg/g or g/kg.
@@ -50,6 +55,7 @@ def get_pressure(adsorption_potential: float, saturation_pressure: float, temper
     """
     The inverse function of get_adsorption_potential. Calculates the pressure at which the experiment is conducted
     given the adsorption potential, saturation pressure of the adsorbate, and temperature of the environment.
+
     :param adsorption_potential: The adsorption potential in kJ/mol.
     :param saturation_pressure: The saturation pressure of the adsorbate in MPa.
     :param temperature: The temperature at which the experiment is conducted in K.
@@ -57,6 +63,19 @@ def get_pressure(adsorption_potential: float, saturation_pressure: float, temper
     """
     return saturation_pressure * numpy.exp(-adsorption_potential * 1000
                                            / (constants.UNIVERSAL_GAS_CONSTANT * temperature))
+
+
+def get_temperature(adsorption_potential: float, saturation_pressure: float, pressure: float) -> float:
+    """
+    The inverse function of get_adsorption_potential. Calculates the temperature at which the experiment is conducted
+    given the adsorption potential, saturation pressure of the adsorbate, and pressure of the environment.
+
+    :param adsorption_potential: The adsorption potential in kJ/mol.
+    :param saturation_pressure: The saturation pressure of the adsorbate in MPa.
+    :param pressure: The pressure at which the experiment is conducted in MPa.
+    :return: Temperature in K.
+    """
+    return 1000 * adsorption_potential / constants.UNIVERSAL_GAS_CONSTANT / numpy.log(saturation_pressure / pressure)
 
 
 def _peng_robinson_coefficients(temperature_critical: float, pressure_critical: float, acentric_factor: float,

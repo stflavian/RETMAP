@@ -16,8 +16,10 @@ other modules using this code.
 Usage:
 """
 
+# Standard libraries
 import math
 
+# Local libraries
 import constants
 
 

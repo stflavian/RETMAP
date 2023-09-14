@@ -10,6 +10,8 @@ DEFAULT_INPUT_DICTIONARY = {
     "DATA_FILES": None,
     "DATA_TYPES": None,
     "ADSORBATE_DATA_FILE": None,
+    "PRESSURES": None,
+    "TEMPERATURES": None,
     "ADSORBATE": None,
     "ADSORBENT": None,
     "SOURCE": None,
@@ -30,21 +32,17 @@ DEFAULT_INPUT_DICTIONARY = {
     "COMPUTE_SPECIFIC_ENTHALPY": "no",
         "PLOT_SPECIFIC_ENTHALPY": "yes",
         "SAVE_SPECIFIC_ENTHALPY": "no",
-        "SHOW_SPECIFIC_ENTHALPY_PLOT": "yes",
         "SAVE_SPECIFIC_ENTHALPY_PLOT": "no",
     "COMPUTE_CHARACTERISTIC_CURVE": "no",
         "ADSORBATE_SATURATION_PRESSURE": None,
         "SATURATION_PRESSURE_FILE": None,
         "ADSORBATE_DENSITY": None,
-        "TEMPERATURES": None,
         "PLOT_CHARACTERISTIC_CURVE": "yes",
         "SAVE_CHARACTERISTIC_CURVE_DATA": "no",
-        "SHOW_CHARACTERISTIC_CURVE_PLOT": "yes",
         "SAVE_CHARACTERISTIC_CURVE_PLOT": "no",
     "EVALUATE_CHARACTERISTIC_CURVE": "no",
         "PLOT_EVALUATION": "yes",
         "SAVE_EVALUATION_DATA": "no",
-        "SHOW_EVALUATION_PLOT": "yes",
         "SAVE_EVALUATION_PLOT": "no",
     "PREDICT_ISOTHERMS": "no",
         "PREDICTION_TEMPERATURES": None,
@@ -52,7 +50,6 @@ DEFAULT_INPUT_DICTIONARY = {
         "REFERENCE_ISOTHERMS": None,
         "PLOT_PREDICTED_ISOTHERMS": "yes",
         "SAVE_PREDICTED_ISOTHERMS_DATA": "no",
-        "SHOW_PREDICTED_ISOTHERMS_PLOT": "yes",
         "SAVE_PREDICTED_ISOTHERMS_PLOT": "no",
     "PREDICT_ISOBARS": "no",
         "PREDICTION_PRESSURES": None,
@@ -60,7 +57,6 @@ DEFAULT_INPUT_DICTIONARY = {
         "REFERENCE_ISOBARS": None,
         "PLOT_PREDICTED_ISOBARS": "yes",
         "SAVE_PREDICTED_ISOBARS_DATA": "no",
-        "SHOW_PREDICTED_ISOBARS_PLOT": "yes",
         "SAVE_PREDICTED_ISOBARS_PLOT": "no",
     "PREDICT_ISOSURFACE": "no",
         "REFERENCE_ISOSURFACES": None,
@@ -69,8 +65,21 @@ DEFAULT_INPUT_DICTIONARY = {
         "REFERENCE_LOADING_UNITS": None,
         "PLOT_PREDICTED_ISOSURFACES": "yes",
         "SAVE_PREDICTED_ISOSURFACES_DATA": "no",
-        "SHOW_PREDICTED_ISOSURFACES_PLOT": "yes",
-        "SAVE_PREDICTED_ISOSURFACES_PLOT": "no"
+        "SAVE_PREDICTED_ISOSURFACES_PLOT": "no",
+    "SHOW_PLOTS": "no",
+    "DATA_NAMES": None,
+    "WRITE_RESULTS": "yes",
+    "SHOW_ISOTHERM": "no",
+    "LOGARITHMIC_ISOTHERM": "no",
+    "SAVE_ISOTHERM": "yes",
+    "SHOW_SPECIFIC_ENTHALPY": "no",
+    "SHOW_CHARACTERISTIC_CURVE": "no",
+    "SAVE_CHARACTERISTIC_CURVE": "yes",
+    "SAVE_EVALUATION": "yes",
+    "TEMPERATURE_REFERENCE_ISOTHERM": None,
+    "SAVE_PREDICTIONS": "no",
+    "COLUMN_1_UNITS": None,
+    "COLUMN_2_UNITS": None
 }
 
 DEFAULT_PROPERTIES_DICTIONARY = {
@@ -112,15 +121,25 @@ def create_input_dictionary(path: str) -> dict:
                 key_word = line_input[0]
                 line_input.pop(0)
 
-                if key_word is "DATA_FILES":
+                if key_word == "DATA_FILES":
                     for index, _ in enumerate(line_input):
                         input_dictionary[index] = DEFAULT_INPUT_DICTIONARY.copy()
 
                 for index in input_dictionary.keys():
                     if key_word in DEFAULT_INPUT_DICTIONARY and len(line_input) == len(input_dictionary):
-                        input_dictionary[index][key_word] = line_input[index]
+                        try:
+                            converted_type = float(line_input[index])
+                        except ValueError:
+                            input_dictionary[index][key_word] = line_input[index]
+                        else:
+                            input_dictionary[index][key_word] = converted_type
                     elif key_word in DEFAULT_INPUT_DICTIONARY and len(line_input) == 1:
-                        input_dictionary[index][key_word] = line_input[0]
+                        try:
+                            converted_type = float(line_input[0])
+                        except ValueError:
+                            input_dictionary[index][key_word] = line_input[0]
+                        else:
+                            input_dictionary[index][key_word] = converted_type
     return input_dictionary
 
 
@@ -146,7 +165,12 @@ def create_properties_dictionary(path: str) -> dict:
                 line_input.pop(0)
 
                 if key_word in properties_dictionary:
-                    properties_dictionary[key_word] = line_input[0]
+                    try:
+                        converted_type = float(line_input[0])
+                    except ValueError:
+                        properties_dictionary[key_word] = line_input[0]
+                    else:
+                        properties_dictionary[key_word] = converted_type
                 else:
                     raise ValueError(f"{key_word} in {path} is not a recognised tag for a properties file. Remove the "
                                      f"tag or check for spelling errors!")
