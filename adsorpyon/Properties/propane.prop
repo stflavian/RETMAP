@@ -1,0 +1,19 @@
+{
+  "name": "propane",
+  "molecular_mass": 44.097,
+  "temperature_critical" : 369.15,
+  "pressure_critical" : 4.26,
+  "temperature_boiling": 230.95,
+  "temperature_triple_point": 0.0,
+  "temperature_reference": 0.0,
+  "density_boiling": 580.88,
+  "acentric_factor": 0.1524,
+  "thermal_expansion_coefficient": 0.00165,
+  "amankwah_exponent": 0.0,
+  "van_der_waals_b": 0.0,
+  "kappa1": 0.0,
+  "kappa2": 0.0,
+  "kappa3": 0.0,
+  "__units__": ["g/mol", "K", "MPa", "K", "kg/m3", "-"],
+  "__source__": "https://www.engineeringtoolbox.com/propane-d_1423.html"
+}

@@ -1,0 +1,12 @@
+Isotherm prediction metrics 
+
+Adsorbate: CH4            Adsorbent: ZJU-198 
+Temperature of the reference isotherm: 300.0K 
+========================================================================= 
+Mean absolute percentage error (MAPE): 4.383213528247652 
+Mean absolute error (MAE): 0.7051834089925544 
+Root mean squared error (RMSE): 0.9142804321797117 
+Mean absolute error scaled (MAE / maximum_loading): 0.008863330069164992 
+Maximum recorded loading: 79.5619032 
+Maximum absolute error loading: 2.4301667684520396 
+
