@@ -1,4 +1,6 @@
 .idea/
 __pycache__/
-
-v
+/trial_scripts/
+/tests/
+/examples/saturation_stuff/
+/docs/

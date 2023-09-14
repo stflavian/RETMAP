@@ -107,11 +107,11 @@ def write_data(data: dict, index: int):
                 file.write(f"{pressure}       {amount} \n")
 
 
-def convert_input(unit: str, adsorbate_data: dict) -> float:
+def convert_input(unit: str, molecular_mass: float) -> float:
     """
     Returns a conversion factor for the input units to the standard ones: MPa, mg/g, kJ/mol, ml/g.
     :param unit: The unit of the input data.
-    :param adsorbate_data: The dictionary containing the adsorbate data.
+    :param molecular_mass: The molecular mass of the molecule.
     :return: A number that the input is multiplied with to be converted to the intended unit.
     """
     # Pressure
@@ -128,7 +128,7 @@ def convert_input(unit: str, adsorbate_data: dict) -> float:
     elif unit in ["mg/g", "g/kg"]:
         conversion_factor = 1
     elif unit in ["mol/kg", "mmol/g"]:
-        conversion_factor = adsorbate_data["molecular_mass"]
+        conversion_factor = molecular_mass
 
     # Adsorption potential
     elif unit == "kJ/mol":
@@ -146,14 +146,14 @@ def convert_input(unit: str, adsorbate_data: dict) -> float:
     return conversion_factor
 
 
-def convert_output(unit: str, adsorbate_data: dict) -> float:
+def convert_output(unit: str, molecular_mass: float) -> float:
     """
     Returns a conversion factor for the standard units to the user defined ones.
     :param unit: The unit of the input data.
-    :param adsorbate_data: The dictionary containing the adsorbate data.
+    :param molecular_mass: The molecular mass of the molecule.
     :return: A number that the input is multiplied with to be converted to the intended unit.
     """
-    return 1 / convert_input(unit=unit, adsorbate_data=adsorbate_data)
+    return 1 / convert_input(unit=unit, molecular_mass=molecular_mass)
 
 
 def evaluate_characteristic_curve(data: dict, temperature_reference_isotherm: float, save: str):
