@@ -364,3 +364,15 @@ def widombanuti(temperature: float, temperature_critical: float, pressure_critic
     else:
         return pengrobinson(temperature=temperature, temperature_critical=temperature_critical,
                             pressure_critical=pressure_critical, pressure_guess=0.001, acentric_factor=acentric_factor)
+
+
+def critical_isochore_model(temperature: float, temperature_critical: float, pressure_critical: float) -> float:
+    """
+    Calculate the pressure on the critical isochore using an empirical model.
+    :param temperature: Temperature at which the experiment is conducted in K.
+    :param temperature_critical: Critical temperature of the adsorbate in K.
+    :param pressure_critical: Critical pressure of the adsorbate in MPa.
+    :return: Saturation pressure in MPa.
+    """
+    return temperature * 5.65 * pressure_critical / temperature_critical
+
