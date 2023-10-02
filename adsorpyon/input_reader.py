@@ -82,6 +82,11 @@ DEFAULT_INPUT_DICTIONARY = {
     "COLUMN_2_UNITS": None
 }
 
+LONG_INPUT_TAGS = {
+    "PREDICTION_PRESSURES": None,
+    "PREDICTION_TEMPERATURES": None
+}
+
 DEFAULT_PROPERTIES_DICTIONARY = {
     "NAME": None,
     "MOLECULAR_MASS": None,
@@ -140,6 +145,16 @@ def create_input_dictionary(path: str) -> dict:
                             input_dictionary[index][key_word] = line_input[0]
                         else:
                             input_dictionary[index][key_word] = converted_type
+                    elif key_word in LONG_INPUT_TAGS:
+                        input_dictionary[index][key_word] = []
+                        for line_input_index, _ in enumerate(line_input):
+                            try:
+                                converted_type = float(line_input[line_input_index])
+                            except ValueError:
+                                input_dictionary[index][key_word].append(line_input[line_input_index])
+                            else:
+                                input_dictionary[index][key_word].append(converted_type)
+
     return input_dictionary
 
 
