@@ -171,7 +171,7 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
     return adsorbate_saturation_pressure
 
 
-def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str) -> None:
+def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str, save: str) -> None:
     """
 
     :param source_dictionary:
@@ -229,6 +229,11 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str)
             plot_isosurface(index)
 
     plt.legend()
+
+    if save == "yes":
+        os.makedirs(name="Plots", exist_ok=True)
+        figure_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}_{plot_format}"
+        plt.savefig(f"Plots/{figure_name}.png")
 
 
 
@@ -352,7 +357,7 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 temperature=temperature,
                 potential=data_dictionary[0]["potential"])
 
-            prediction_dictionary[index]["pressure"] = numpy.linspace(
+            prediction_dictionary[index]["pressure"] = numpy.geomspace(
                 start=pressure_boundaries[0],
                 stop=pressure_boundaries[1])
 

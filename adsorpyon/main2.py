@@ -54,7 +54,7 @@ def main():
 
     if input_dict[0]["PLOT_DATA"] == "yes":
         interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
-                              plot_format=input_dict[0]["DATA_TYPES"])
+                              plot_format=input_dict[0]["DATA_TYPES"], save=input_dict[0]["SAVE_DATA_PLOT"])
 
     if input_dict[0]["COMPUTE_SPECIFIC_ENTHALPY"] is "yes":
         print("This function is not implemented yet!")
@@ -112,10 +112,7 @@ def main():
 
         if input_dict[0]["PLOT_CHARACTERISTIC_CURVE"] == "yes":
             interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
-                                  plot_format="characteristic")
-
-        if input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"] == "yes":
-            print("Save characteristic curve plot!")
+                                  plot_format="characteristic", save=input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"])
 
     if input_dict[0]["EVALUATE_CHARACTERISTIC_CURVE"] == "yes":
         print("Evaluate characteristic curve")
@@ -128,14 +125,11 @@ def main():
 
         if input_dict[0]["PLOT_PREDICTED_ISOTHERMS"] == "yes":
             interpreter.plot_data(source_dictionary=predicted_isotherms, input_dictionary=input_dict,
-                                  plot_format="isotherm")
+                                  plot_format="isotherm", save=input_dict[0]["SAVE_PREDICTED_ISOTHERMS_PLOT"])
 
         if input_dict[0]["SAVE_PREDICTED_ISOTHERMS_DATA"] == "yes":
             interpreter.write_data(source_dictionary=predicted_isotherms, input_dictionary=input_dict,
                                    write_format="isotherm")
-
-        if input_dict[0]["SAVE_PREDICTED_ISOTHERMS_PLOT"] == "yes":
-            print("Save prediction plot!")
 
     if input_dict[0]["PREDICT_ISOBARS"] == "yes":
         predicted_isobars = interpreter.predict_data(data_dictionary=data_dict,
@@ -145,14 +139,11 @@ def main():
 
         if input_dict[0]["PLOT_PREDICTED_ISOBARS"] == "yes":
             interpreter.plot_data(source_dictionary=predicted_isobars, input_dictionary=input_dict,
-                                  plot_format="isobar")
+                                  plot_format="isobar", save=input_dict[0]["SAVE_PREDICTED_ISOBARS_PLOT"])
 
         if input_dict[0]["SAVE_PREDICTED_ISOBARS_DATA"] == "yes":
             interpreter.write_data(source_dictionary=predicted_isobars, input_dictionary=input_dict,
                                    write_format="isobar")
-
-        if input_dict[0]["SAVE_PREDICTED_ISOBARS_PLOT"] == "yes":
-            print("Save prediction plot!")
 
     if input_dict[0]["PREDICT_ISOSURFACE"] == "yes":
         print("Predict isosurface")
