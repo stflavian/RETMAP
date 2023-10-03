@@ -32,21 +32,24 @@ def compute_density_from_method(method: str, temperature: float, properties_dict
     """
 
     def density_empirical() -> float:
-        return density.empirical(pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-                                 temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                 molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        return density.empirical(
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
 
     def density_hauer() -> float:
-        return density.hauer(temperature=temperature,
-                             temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
-                             density_boiling=properties_dictionary["DENSITY_BOILING"],
-                             thermal_expansion_coefficient=properties_dictionary["THERMAL_EXPANSION_COEFFICIENT"])
+        return density.hauer(
+            temperature=temperature,
+            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            density_boiling=properties_dictionary["DENSITY_BOILING"],
+            thermal_expansion_coefficient=properties_dictionary["THERMAL_EXPANSION_COEFFICIENT"])
 
     def density_ozawa() -> float:
-        return density.ozawa_modified(temperature=temperature,
-                                      temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
-                                      density_boiling=properties_dictionary["DENSITY_BOILING"],
-                                      thermal_expansion_coefficient=properties_dictionary["THERMAL_EXPANSION_COEFFICIENT"])
+        return density.ozawa_modified(
+            temperature=temperature,
+            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            density_boiling=properties_dictionary["DENSITY_BOILING"],
+            thermal_expansion_coefficient=properties_dictionary["THERMAL_EXPANSION_COEFFICIENT"])
 
     density_methods = {
         "empirical": density_empirical,
@@ -77,77 +80,85 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
     """
 
     def saturation_pressure_dubinin() -> float:
-        return saturation_pressure.dubinin(temperature=temperature,
-                                           temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                           pressure_critical=properties_dictionary["PRESSURE_CRITICAL"])
+        return saturation_pressure.dubinin(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"])
 
     def saturation_pressure_amankwah() -> float:
-        return saturation_pressure.amankwah(temperature=temperature,
-                                            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-                                            k=properties_dictionary["AMANKWAH_EXPONENT"])
+        return saturation_pressure.amankwah(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            k=properties_dictionary["AMANKWAH_EXPONENT"])
 
     def saturation_pressure_extrapolation() -> float:
-        return saturation_pressure.extrapolation(temperature=temperature,
-                                                 file=saturation_pressure_file)
+        return saturation_pressure.extrapolation(temperature=temperature, file=saturation_pressure_file)
 
     def saturation_pressure_polynomial_water() -> float:
         return saturation_pressure.polynomial_water(temperature=temperature)
 
     def saturation_pressure_peng_robinson() -> float:
-        return saturation_pressure.pengrobinson(temperature=temperature,
-                                                temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                                pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-                                                pressure_guess=1,
-                                                acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
+        return saturation_pressure.pengrobinson(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            pressure_guess=1,
+            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
 
     def saturation_pressure_preos_extrapolation() -> float:
-        return saturation_pressure.equation_extrapolation(temperature=temperature,
-                                                          temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                                          pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-                                                          acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
-                                                          temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
-                                                          equation="preos",
-                                                          kappa1=properties_dictionary["PRSV_KAPPA1"],
-                                                          kappa2=properties_dictionary["PRSV_KAPPA2"],
-                                                          kappa3=properties_dictionary["PRSV_KAPPA3"],
-                                                          function="polynomial2")
+        return saturation_pressure.equation_extrapolation(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
+            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            equation="preos",
+            kappa1=properties_dictionary["PRSV_KAPPA1"],
+            kappa2=properties_dictionary["PRSV_KAPPA2"],
+            kappa3=properties_dictionary["PRSV_KAPPA3"],
+            function="polynomial2")
 
     def saturation_pressure_prsv1_extrapolation() -> float:
-        return saturation_pressure.equation_extrapolation(temperature=temperature,
-                                                          temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                                          pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-                                                          acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
-                                                          temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
-                                                          equation="prsv1",
-                                                          kappa1=properties_dictionary["PRSV_KAPPA1"],
-                                                          kappa2=properties_dictionary["PRSV_KAPPA2"],
-                                                          kappa3=properties_dictionary["PRSV_KAPPA3"],
-                                                          function="polynomial2")
+        return saturation_pressure.equation_extrapolation(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
+            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            equation="prsv1",
+            kappa1=properties_dictionary["PRSV_KAPPA1"],
+            kappa2=properties_dictionary["PRSV_KAPPA2"],
+            kappa3=properties_dictionary["PRSV_KAPPA3"],
+            function="polynomial2")
 
     def saturation_pressure_prsv2_extrapolation() -> float:
-        return saturation_pressure.equation_extrapolation(temperature=temperature,
-                                                          temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                                          pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-                                                          acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
-                                                          temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
-                                                          equation="prsv2",
-                                                          kappa1=properties_dictionary["PRSV_KAPPA1"],
-                                                          kappa2=properties_dictionary["PRSV_KAPPA2"],
-                                                          kappa3=properties_dictionary["PRSV_KAPPA3"],
-                                                          function="polynomial2")
+        return saturation_pressure.equation_extrapolation(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
+            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            equation="prsv2",
+            kappa1=properties_dictionary["PRSV_KAPPA1"],
+            kappa2=properties_dictionary["PRSV_KAPPA2"],
+            kappa3=properties_dictionary["PRSV_KAPPA3"],
+            function="polynomial2")
 
     def saturation_pressure_widom_banuti() -> float:
-        return saturation_pressure.widombanuti(temperature=temperature,
-                                               temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                               pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-                                               species_parameter=5.589,
-                                               acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
+        return saturation_pressure.widombanuti(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            species_parameter=5.589,
+            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
 
     def satuartion_pressure_isochore() -> float:
-        return saturation_pressure.critical_isochore_model(temperature=temperature,
-                                                           temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-                                                           pressure_critical=properties_dictionary["PRESSURE_CRITICAL"])
+        return saturation_pressure.critical_isochore_model(
+            temperature=temperature,
+            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
+            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
 
     saturation_pressure_methods = {
         "dubinin": saturation_pressure_dubinin,
@@ -173,11 +184,11 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
 
 def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str, save: str) -> None:
     """
-
-    :param source_dictionary:
+    Create plot based on the input data type. Supports between isotherm, isobar, and characteristic curve.
+    :param source_dictionary: The
     :param input_dictionary:
     :param plot_format:
-    :return:
+    :param save:
     """
 
     def plot_isotherm(index):
@@ -234,7 +245,6 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         os.makedirs(name="Plots", exist_ok=True)
         figure_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}_{plot_format}"
         plt.savefig(f"Plots/{figure_name}.png")
-
 
 
 def write_data(source_dictionary: dict, input_dictionary: dict, write_format: str) -> None:
@@ -386,23 +396,23 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 start=temperature_boundaries[0],
                 stop=temperature_boundaries[1])
 
-            prediction_dictionary[index]["saturation_pressure"] = []
-            prediction_dictionary[index]["density"] = []
+            saturation_pressure_list = []
+            density_list = []
 
             for temperature in prediction_dictionary[index]["temperature"]:
-                prediction_dictionary[index]["saturation_pressure"].append(compute_saturation_pressure_from_method(
+                saturation_pressure_list.append(compute_saturation_pressure_from_method(
                     method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
                     temperature=temperature,
                     properties_dictionary=properties_dictionary,
                     saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"]))
 
-                prediction_dictionary[index]["density"].append(compute_density_from_method(
+                density_list.append(compute_density_from_method(
                     method=input_dictionary[0]["ADSORBATE_DENSITY"],
                     temperature=temperature,
                     properties_dictionary=properties_dictionary))
 
-            prediction_dictionary[index]["saturation_pressure"] = numpy.array(prediction_dictionary[index]["saturation_pressure"])
-            prediction_dictionary[index]["density"] = numpy.array(prediction_dictionary[index]["density"])
+            prediction_dictionary[index]["saturation_pressure"] = numpy.array(saturation_pressure_list)
+            prediction_dictionary[index]["density"] = numpy.array(density_list)
 
             potential_range = physics.get_adsorption_potential(
                 temperature=prediction_dictionary[index]["temperature"],

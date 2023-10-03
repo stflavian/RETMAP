@@ -13,6 +13,7 @@ Currently supported methods are:
     7. Fugacity equilibration using the PRSV2 equation;
     8. Extrapolation of data obtained using Peng-Robinson, PRSV1, and PRSV2 below the critical temperature;
     9. Banuti's equation for the Widom line.
+    10. Linear equation for critical isochore after the critical point.
 
 All methods take as input the temperature and a set of material dependent parameters and return a float value
 representing the saturation pressure of the adsorbate in megapascals (MPa). In case different pressure units are needed,
@@ -366,13 +367,19 @@ def widombanuti(temperature: float, temperature_critical: float, pressure_critic
                             pressure_critical=pressure_critical, pressure_guess=0.001, acentric_factor=acentric_factor)
 
 
-def critical_isochore_model(temperature: float, temperature_critical: float, pressure_critical: float) -> float:
+def critical_isochore_model(temperature: float, temperature_critical: float, pressure_critical: float,
+                            acentric_factor: float) -> float:
     """
     Calculate the pressure on the critical isochore using an empirical model.
     :param temperature: Temperature at which the experiment is conducted in K.
     :param temperature_critical: Critical temperature of the adsorbate in K.
     :param pressure_critical: Critical pressure of the adsorbate in MPa.
+    :param acentric_factor: The acentric factor of the adsorbate.
     :return: Saturation pressure in MPa.
     """
-    return temperature * 5.65 * pressure_critical / temperature_critical
+    if temperature >= temperature_critical:
+        return temperature * 5.65 * pressure_critical / temperature_critical
+    else:
+        return pengrobinson(temperature=temperature, temperature_critical=temperature_critical,
+                            pressure_critical=pressure_critical, pressure_guess=0.001, acentric_factor=acentric_factor)
 
