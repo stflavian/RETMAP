@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 
 # Local libraries
 import input_reader
@@ -56,9 +55,6 @@ def main():
         interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
                               plot_format=input_dict[0]["DATA_TYPES"], save=input_dict[0]["SAVE_DATA_PLOT"])
 
-    if input_dict[0]["COMPUTE_SPECIFIC_ENTHALPY"] is "yes":
-        print("This function is not implemented yet!")
-
     if input_dict[0]["COMPUTE_CHARACTERISTIC_CURVE"] == "yes":
 
         for index in data_dict:
@@ -114,9 +110,6 @@ def main():
             interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
                                   plot_format="characteristic", save=input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"])
 
-    if input_dict[0]["EVALUATE_CHARACTERISTIC_CURVE"] == "yes":
-        print("Evaluate characteristic curve")
-
     if input_dict[0]["PREDICT_ISOTHERMS"] == "yes":
         predicted_isotherms = interpreter.predict_data(data_dictionary=data_dict,
                                                        input_dictionary=input_dict,
@@ -145,10 +138,8 @@ def main():
             interpreter.write_data(source_dictionary=predicted_isobars, input_dictionary=input_dict,
                                    write_format="isobar")
 
-    if input_dict[0]["PREDICT_ISOSURFACE"] == "yes":
-        print("Predict isosurface")
-
-    interpreter.show_plots()
+    if input_dict[0]["SHOW_PLOTS"] == "yes":
+        interpreter.show_plots()
 
 
 if __name__ == "__main__":

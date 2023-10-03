@@ -20,19 +20,9 @@ DEFAULT_INPUT_DICTIONARY = {
     "LOADING_UNITS": None,
     "POTENTIAL_UNITS": None,
     "VOLUME_UNITS": None,
-    "OUTPUT_TEMPERATURE_UNITS": "K",
-    "OUTPUT_PRESSURE_UNITS": "MPa",
-    "OUTPUT_LOADING_UNITS": "mg/g",
-    "OUTPUT_POTENTIAL_UNITS": "kJ/mol",
-    "OUTPUT_VOLUME_UNITS": "ml/g",
     "PLOT_DATA": "no",
         "LOGARITHMIC_PLOT": "no",
-        "SHOW_DATA_PLOT": "yes",
         "SAVE_DATA_PLOT": "no",
-    "COMPUTE_SPECIFIC_ENTHALPY": "no",
-        "PLOT_SPECIFIC_ENTHALPY": "yes",
-        "SAVE_SPECIFIC_ENTHALPY": "no",
-        "SAVE_SPECIFIC_ENTHALPY_PLOT": "no",
     "COMPUTE_CHARACTERISTIC_CURVE": "no",
         "ADSORBATE_SATURATION_PRESSURE": None,
         "SATURATION_PRESSURE_FILE": None,
@@ -40,32 +30,20 @@ DEFAULT_INPUT_DICTIONARY = {
         "PLOT_CHARACTERISTIC_CURVE": "yes",
         "SAVE_CHARACTERISTIC_CURVE_DATA": "no",
         "SAVE_CHARACTERISTIC_CURVE_PLOT": "no",
-    "EVALUATE_CHARACTERISTIC_CURVE": "no",
-        "PLOT_EVALUATION": "yes",
-        "SAVE_EVALUATION_DATA": "no",
-        "SAVE_EVALUATION_PLOT": "no",
     "PREDICT_ISOTHERMS": "no",
         "PREDICTION_TEMPERATURES": None,
         "PREDICTION_PRESSURE_RANGE": None,
-        "REFERENCE_ISOTHERMS": None,
+        "NUMBER_PRESSURE_POINTS": 50,
         "PLOT_PREDICTED_ISOTHERMS": "yes",
         "SAVE_PREDICTED_ISOTHERMS_DATA": "no",
         "SAVE_PREDICTED_ISOTHERMS_PLOT": "no",
     "PREDICT_ISOBARS": "no",
         "PREDICTION_PRESSURES": None,
         "PREDICTION_TEMPERATURE_RANGE": None,
-        "REFERENCE_ISOBARS": None,
+        "NUMBER_TEMPERATURE_POINTS": 50,
         "PLOT_PREDICTED_ISOBARS": "yes",
         "SAVE_PREDICTED_ISOBARS_DATA": "no",
         "SAVE_PREDICTED_ISOBARS_PLOT": "no",
-    "PREDICT_ISOSURFACE": "no",
-        "REFERENCE_ISOSURFACES": None,
-        "REFERENCE_PRESSURE_UNITS": None,
-        "REFERENCE_TEMPERATURE_UNITS": None,
-        "REFERENCE_LOADING_UNITS": None,
-        "PLOT_PREDICTED_ISOSURFACES": "yes",
-        "SAVE_PREDICTED_ISOSURFACES_DATA": "no",
-        "SAVE_PREDICTED_ISOSURFACES_PLOT": "no",
     "SHOW_PLOTS": "no",
     "DATA_NAMES": None,
     "WRITE_RESULTS": "yes",
@@ -82,9 +60,11 @@ DEFAULT_INPUT_DICTIONARY = {
     "COLUMN_2_UNITS": None
 }
 
-LONG_INPUT_TAGS = {
+LIST_INPUT_TAGS = {
     "PREDICTION_PRESSURES": None,
-    "PREDICTION_TEMPERATURES": None
+    "PREDICTION_TEMPERATURES": None,
+    "PREDICTION_PRESSURE_RANGE": None,
+    "PREDICTION_TEMPERATURE_RANGE": None,
 }
 
 DEFAULT_PROPERTIES_DICTIONARY = {
@@ -131,21 +111,21 @@ def create_input_dictionary(path: str) -> dict:
                         input_dictionary[index] = DEFAULT_INPUT_DICTIONARY.copy()
 
                 for index in input_dictionary.keys():
-                    if key_word in DEFAULT_INPUT_DICTIONARY and len(line_input) == len(input_dictionary):
+                    if key_word in DEFAULT_INPUT_DICTIONARY and key_word not in LIST_INPUT_TAGS and len(line_input) == len(input_dictionary):
                         try:
                             converted_type = float(line_input[index])
                         except ValueError:
                             input_dictionary[index][key_word] = line_input[index]
                         else:
                             input_dictionary[index][key_word] = converted_type
-                    elif key_word in DEFAULT_INPUT_DICTIONARY and len(line_input) == 1:
+                    elif key_word in DEFAULT_INPUT_DICTIONARY and key_word not in LIST_INPUT_TAGS and len(line_input) == 1:
                         try:
                             converted_type = float(line_input[0])
                         except ValueError:
                             input_dictionary[index][key_word] = line_input[0]
                         else:
                             input_dictionary[index][key_word] = converted_type
-                    elif key_word in LONG_INPUT_TAGS:
+                    elif key_word in LIST_INPUT_TAGS:
                         input_dictionary[index][key_word] = []
                         for line_input_index, _ in enumerate(line_input):
                             try:

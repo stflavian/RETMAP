@@ -185,10 +185,12 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
 def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str, save: str) -> None:
     """
     Create plot based on the input data type. Supports between isotherm, isobar, and characteristic curve.
-    :param source_dictionary: The
-    :param input_dictionary:
-    :param plot_format:
-    :param save:
+
+    :param source_dictionary: Dictionary containing the source data for the plotting.
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
+    :param plot_format: Format of the plot, given by the source data format. Can be isobar, isotherm or characteristic
+    curve.
+    :param save: Dictates if the plot is saved. Saved if "yes", otherwise do not save.
     """
 
     def plot_isotherm(index):
@@ -201,11 +203,6 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         label = f"{source_dictionary[index]['pressure']}MPa"
         plt.scatter(source_dictionary[index]["temperature"], source_dictionary[index]["loading"], label=label)
         plt.xlabel("Temperature [K]")
-        plt.ylabel("Adsorbed amount [mg/g]")
-
-    def plot_isosurface(index):
-        plt.scatter(source_dictionary[index]["pressure"], source_dictionary[index]["loading"])
-        plt.xlabel("Pressure [MPa]")
         plt.ylabel("Adsorbed amount [mg/g]")
 
     def plot_characteristic(index):
@@ -228,16 +225,10 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
 
     for index in source_dictionary:
         if plot_format in plot_formats:
-
             plot_formats[plot_format](index)
 
-            if plot_format == "isotherm" and input_dictionary[0]["LOGARITHMIC_PLOT"] == "yes":
-                plt.xscale('log')
-
-        elif plot_format == "isosurface":
-            plt.figure(figsize=FIGURE_SIZE).add_subplot(projection='3d')
-
-            plot_isosurface(index)
+    if plot_format == "isotherm" and input_dictionary[0]["LOGARITHMIC_PLOT"] == "yes":
+        plt.xscale('log')
 
     plt.legend()
 
@@ -249,11 +240,12 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
 
 def write_data(source_dictionary: dict, input_dictionary: dict, write_format: str) -> None:
     """
+    Create data files based on the input data type. Supports between isotherm, isobar, and characteristic curve.
 
-    :param source_dictionary:
-    :param input_dictionary:
-    :param write_format:
-    :return:
+    :param source_dictionary: Dictionary containing the source data for the plotting.
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
+    :param write_format: Format of the file, given by the source data format. Can be isobar, isotherm or characteristic
+    curve.
     """
 
     def write_isotherm(index, base_name) -> None:
@@ -269,13 +261,6 @@ def write_data(source_dictionary: dict, input_dictionary: dict, write_format: st
             file.write("#Temperature [K]         Loading [mg/g] \n")
             for temperature, loading in zip(source_dictionary[index]["temperature"], source_dictionary[index]["loading"]):
                 file.write(f"{temperature}         {loading} \n")
-
-    def write_isosurface(index, base_name) -> None:
-        file_name = f"{base_name}_isotherm_{input_dictionary[index]['TEMPERATURES']}K.dat"
-        with open(file=f"Output/{file_name}", mode="w") as file:
-            file.write("#Pressure [MPa]         Loading [mg/g] \n")
-            for pressure, loading in zip(source_dictionary[index]["loading"], source_dictionary[index]["pressure"]):
-                file.write(f"{pressure}         {loading} \n")
 
     def write_characteristic(index, base_name) -> None:
         file_name = f"{base_name}_characteristic_{input_dictionary[index]['TEMPERATURES']}K.dat"
@@ -296,8 +281,6 @@ def write_data(source_dictionary: dict, input_dictionary: dict, write_format: st
         base_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}"
         if write_format in file_write_formats:
             file_write_formats[write_format](index, base_name)
-        elif write_format == "isosurface":
-            write_isosurface(index, base_name)
 
 
 def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type: str, properties_dictionary: dict) -> dict:
@@ -320,7 +303,7 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
         return [minimum_pressure, maximum_pressure]
 
     def _get_temperature_boundaries(pressure: float, potential: numpy.ndarray) -> list:
-        def minimum_temperature(temperature_guess: float) -> float:
+        def minimum_temperature_function(temperature_guess: float) -> float:
             sat_pres = compute_saturation_pressure_from_method(
                 method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
                 temperature=temperature_guess,
@@ -332,7 +315,7 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                                                                   pressure=pressure)
             return numpy.min(potential) - potential_computed
 
-        def maximum_temperature(temperature_guess: float) -> float:
+        def maximum_temperature_function(temperature_guess: float) -> float:
             sat_pres = compute_saturation_pressure_from_method(
                 method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
                 temperature=temperature_guess,
@@ -344,7 +327,10 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                                                                   pressure=pressure)
             return numpy.max(potential) - potential_computed
 
-        return [scipy.optimize.fsolve(minimum_temperature, x0=273)[0], scipy.optimize.fsolve(maximum_temperature, x0=273)[0]]
+        minimum_temperature = scipy.optimize.fsolve(minimum_temperature_function, x0=273)[0]
+        maximum_temperature = scipy.optimize.fsolve(maximum_temperature_function, x0=273)[0]
+
+        return [minimum_temperature, maximum_temperature]
 
     def predict_isotherm():
 
@@ -363,13 +349,26 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 temperature=temperature,
                 properties_dictionary=properties_dictionary)
 
-            pressure_boundaries = _get_pressure_boundaries(
+            boundaries = _get_pressure_boundaries(
                 temperature=temperature,
                 potential=data_dictionary[0]["potential"])
 
+            if (input_dictionary[0]["PREDICTION_PRESSURE_RANGE"] is not None and
+                    boundaries[0] <= input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][0] <= boundaries[1]):
+                start_pressure = input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][0]
+            else:
+                start_pressure = boundaries[0]
+
+            if (input_dictionary[0]["PREDICTION_PRESSURE_RANGE"] is not None and
+                    start_pressure <= input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][1] <= boundaries[1]):
+                end_pressure = input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][1]
+            else:
+                end_pressure = boundaries[1]
+
             prediction_dictionary[index]["pressure"] = numpy.geomspace(
-                start=pressure_boundaries[0],
-                stop=pressure_boundaries[1])
+                start=start_pressure,
+                stop=end_pressure,
+                num=int(input_dictionary[0]["NUMBER_PRESSURE_POINTS"]))
 
             potential_range = physics.get_adsorption_potential(
                 temperature=prediction_dictionary[index]["temperature"],
@@ -388,13 +387,26 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
         for index, pressure in enumerate(input_dictionary[0]["PREDICTION_PRESSURES"]):
             prediction_dictionary[index] = {}
             prediction_dictionary[index]["pressure"] = pressure
-            temperature_boundaries = _get_temperature_boundaries(
+            boundaries = _get_temperature_boundaries(
                 pressure=pressure,
                 potential=data_dictionary[0]["potential"])
 
+            if (input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"] is not None and
+                    boundaries[0] <= input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][0] <= boundaries[1]):
+                start_temperature = input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][0]
+            else:
+                start_temperature = boundaries[0]
+
+            if (input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"] is not None and
+                    start_temperature <= input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][1] <= boundaries[1]):
+                end_temperature = input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][1]
+            else:
+                end_temperature = boundaries[1]
+
             prediction_dictionary[index]["temperature"] = numpy.linspace(
-                start=temperature_boundaries[0],
-                stop=temperature_boundaries[1])
+                start=start_temperature,
+                stop=end_temperature,
+                num=int(input_dictionary[0]["NUMBER_TEMPERATURE_POINTS"]))
 
             saturation_pressure_list = []
             density_list = []
