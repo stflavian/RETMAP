@@ -1,134 +1,145 @@
-"""Main
 
-This represents the main script.
-
-Usage: run
-"""
-
-import utils
-import interpreter
+# Local libraries
 import input_reader
+import interpreter
+import utils
 import physics
 
+# Third-party libraries
 from numpy import genfromtxt, nan
 
 
+INPUT_FILE_NAME = "config.in"
+
+
 def main():
+    input_dict = input_reader.create_input_dictionary(INPUT_FILE_NAME)
+    properties_dict = input_reader.create_properties_dictionary(input_dict[0]["ADSORBATE_DATA_FILE"])
+    data_dict = {}
 
-    # Read the config and adsorbate data files
-    config = input_reader.create_input_dictionary("config.in")
-    adsorbate_data = input_reader.create_properties_dictionary(config[0]["ADSORBATE_DATA_FILE"])
+    for index in input_dict:
+        data_dict[index] = {}
+        properties_dict = input_reader.create_properties_dictionary(input_dict[index]["ADSORBATE_DATA_FILE"])
 
-    # Create the data array and assign values
-    data = {}
-    for index in config:
-        data[index] = {}
+        file_data = genfromtxt(fname=input_dict[index]["DATA_FILES"], filling_values=nan)
+        if input_dict[index]["DATA_TYPES"] == "isotherm":
+            data_dict[index]["temperature"] = input_dict[index]["TEMPERATURES"]
+            data_dict[index]["pressure"] = file_data[:, 0] * utils.convert_input(
+                                                                    unit=input_dict[index]["PRESSURE_UNITS"],
+                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
 
-        # Assign data from the config file
-        data[index]["data_file"] = config[index]["DATA_FILES"]
-        data[index]["name"] = config[index]["DATA_NAMES"]
-        data[index]["temperature"] = config[index]["TEMPERATURES"]
-        data[index]["data_type"] = config[index]["DATA_TYPES"]
-        data[index]["saturation_pressure_function"] = config[index]["ADSORBATE_SATURATION_PRESSURE"]
-        data[index]["saturation_pressure_file"] = config[index]["SATURATION_PRESSURE_FILE"]
-        data[index]["density_function"] = config[index]["ADSORBATE_DENSITY"]
-        data[index]["adsorbate_data_file"] = config[index]["ADSORBATE_DATA_FILE"]
-        data[index]["adsorbent"] = config[index]["ADSORBENT"]
-        data[index]["adsorbate"] = config[index]["ADSORBATE"]
+            data_dict[index]["loading"] = file_data[:, 1] * utils.convert_input(
+                                                                    unit=input_dict[index]["LOADING_UNITS"],
+                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
+        elif input_dict[index]["DATA_TYPES"] == "isobar":
+            data_dict[index]["pressure"] = input_dict[index]["PRESSURES"]
+            data_dict[index]["temperature"] = file_data[:, 0] * utils.convert_input(
+                                                                    unit=input_dict[index]["TEMPERATURE_UNITS"],
+                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
 
-        # Calculate the saturation pressure and density based on the desired functions
-        data[index]["saturation_pressure"] = interpreter.compute_saturation_pressure_from_method(
-                                                    method=data[index]["saturation_pressure_function"],
-                                                    temperature=data[index]["temperature"],
-                                                    properties_dictionary=adsorbate_data,
-                                                    saturation_pressure_file=data[index]["saturation_pressure_file"])
+            data_dict[index]["loading"] = file_data[:, 1] * utils.convert_input(
+                                                                    unit=input_dict[index]["LOADING_UNITS"],
+                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
+        elif input_dict[index]["DATA_TYPES"] == "characteristic":
+            data_dict[index]["potential"] = file_data[:, 0] * utils.convert_input(
+                                                                    unit=input_dict[index]["POTENTIAL_UNITS"],
+                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
 
-        data[index]["density"] = interpreter.compute_density_from_method(
-                                                    method=data[index]["density_function"],
-                                                    temperature=data[index]["temperature"],
-                                                    properties_dictionary=adsorbate_data)
+            data_dict[index]["volume"] = file_data[:, 1] * utils.convert_input(
+                                                                    unit=input_dict[index]["VOLUME_UNITS"],
+                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
+        else:
+            raise ValueError(f"{input_dict[index]['DATA_TYPES']} is not a recognized argument!")
 
-        # Read the input data and calculate the isotherm or characteristic curve depending on data type
-        file_data = genfromtxt(fname=data[index]["data_file"], filling_values=nan)
-        if data[index]["data_type"] == "isotherm":
-            data[index]["pressure"] = file_data[:, 0] * utils.convert_input(
-                                                                        unit=config[index]["COLUMN_1_UNITS"],
-                                                                        molecular_mass=adsorbate_data["MOLECULAR_MASS"])
+    if input_dict[0]["PLOT_DATA"] == "yes":
+        interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
+                              plot_format=input_dict[0]["DATA_TYPES"], save=input_dict[0]["SAVE_DATA_PLOT"])
 
-            data[index]["adsorbed_amount"] = file_data[:, 1] * utils.convert_input(
-                                                                        unit=config[index]["COLUMN_2_UNITS"],
-                                                                        molecular_mass=adsorbate_data["MOLECULAR_MASS"])
+    if input_dict[0]["COMPUTE_CHARACTERISTIC_CURVE"] == "yes":
 
-            data[index]["adsorption_potential"] = physics.get_adsorption_potential(
-                                                                temperature=data[index]["temperature"],
-                                                                saturation_pressure=data[index]["saturation_pressure"],
-                                                                pressure=data[index]["pressure"])
+        for index in data_dict:
+            if input_dict[index]["DATA_TYPES"] == "isotherm":
+                data_dict[index]["saturation_pressure"] = interpreter.compute_saturation_pressure_from_method(
+                                                method=input_dict[index]["ADSORBATE_SATURATION_PRESSURE"],
+                                                temperature=input_dict[index]["TEMPERATURES"],
+                                                properties_dictionary=properties_dict,
+                                                saturation_pressure_file=input_dict[index]["SATURATION_PRESSURE_FILE"])
 
-            data[index]["adsorption_volume"] = physics.get_adsorption_volume(
-                                                                        adsorbed_amount=data[index]["adsorbed_amount"],
-                                                                        adsorbate_density=data[index]["density"])
+                data_dict[index]["density"] = interpreter.compute_density_from_method(
+                                                                        method=input_dict[index]["ADSORBATE_DENSITY"],
+                                                                        temperature=input_dict[index]["TEMPERATURES"],
+                                                                        properties_dictionary=properties_dict)
 
-            data[index]["adsorption_enthalpy"] = physics.get_adsorption_enthalpy(
-                                        enthalpy_vaporization=15,
-                                        temperature=data[index]["temperature"],
-                                        adsorption_volume=data[index]["adsorption_volume"],
-                                        adsorption_potential=data[index]["adsorption_potential"],
-                                        thermal_expansion_coefficient=adsorbate_data["THERMAL_EXPANSION_COEFFICIENT"])
+            elif input_dict[index]["DATA_TYPES"] == "isobar":
+                saturation_pressure_array = []
+                density_array = []
+                for temperature in data_dict[index]["temperature"]:
+                    saturation_pressure = interpreter.compute_saturation_pressure_from_method(
+                                                method=input_dict[index]["ADSORBATE_SATURATION_PRESSURE"],
+                                                temperature=temperature,
+                                                properties_dictionary=properties_dict,
+                                                saturation_pressure_file=input_dict[index]["SATURATION_PRESSURE_FILE"])
+                    saturation_pressure_array.append(saturation_pressure)
 
-        if data[index]["data_type"] == "characteristic":
-            data[index]["adsorption_potential"] = file_data[:, 0] * utils.convert_input(
-                                                                        unit=config[index]["COLUMN_1_UNITS"],
-                                                                        molecular_mass=adsorbate_data["MOLECULAR_MASS"])
+                    density = interpreter.compute_density_from_method(
+                                                method=input_dict[index]["ADSORBATE_DENSITY"],
+                                                temperature=temperature,
+                                                properties_dictionary=properties_dict)
+                    density_array.append(density)
 
-            data[index]["adsorption_volume"] = file_data[:, 1] * utils.convert_input(
-                                                                        unit=config[index]["COLUMN_2_UNITS"],
-                                                                        molecular_mass=adsorbate_data["MOLECULAR_MASS"])
+                data_dict[index]["saturation_pressure"] = saturation_pressure_array
+                data_dict[index]["density"] = density_array
 
-            data[index]["pressure"] = physics.get_pressure(
-                                                            adsorption_potential=data[index]["adsorption_potential"],
-                                                            saturation_pressure=data[index]["saturation_pressure"],
-                                                            temperature=data[index]["temperature"])
+            elif input_dict[index]["DATA_TYPE"] == "characteristic":
+                continue
 
-            data[index]["adsorbed_amount"] = physics.get_adsorbed_amount(
-                                                                    adsorption_volume=data[index]["adsorption_volume"],
-                                                                    adsorbate_density=data[index]["density"])
+            data_dict[index]["potential"] = physics.get_adsorption_potential(
+                                                            temperature=input_dict[index]["TEMPERATURES"],
+                                                            saturation_pressure=data_dict[index]["saturation_pressure"],
+                                                            pressure=data_dict[index]["pressure"])
 
-            data[index]["adsorption_enthalpy"] = physics.get_adsorption_enthalpy(
-                                        enthalpy_vaporization=15,
-                                        temperature=data[index]["temperature"],
-                                        adsorption_volume=data[index]["adsorption_volume"],
-                                        adsorption_potential=data[index]["adsorption_potential"],
-                                        thermal_expansion_coefficient=adsorbate_data["thermal_expansion_coefficient"])
-            
-        if config[0]["WRITE_RESULTS"].lower() == "yes":
-            utils.write_data(data=data, index=index)
+            data_dict[index]["volume"] = physics.get_adsorption_volume(
+                                                            adsorbed_amount=data_dict[index]["loading"],
+                                                            adsorbate_density=data_dict[index]["density"])
 
-    plot_presence = False
-    if config[0]["SHOW_ISOTHERM"].lower() == "yes":
-        plot_presence = True
-        utils.plot_isotherm(data=data, logarithmic=config[0]["LOGARITHMIC_ISOTHERM"], save=config[0]["SAVE_ISOTHERM"])
+        if input_dict[0]["SAVE_CHARACTERISTIC_CURVE_DATA"] == "yes":
+            interpreter.write_data(source_dictionary=data_dict, input_dictionary=input_dict,
+                                   write_format="characteristic")
 
-    if config[0]["SHOW_SPECIFIC_ENTHALPY"].lower() == "yes":
-        plot_presence = True
-        utils.plot_enthalpy(data=data, save=config[0]["SAVE_SPECIFIC_ENTHALPY"])
+        if input_dict[0]["PLOT_CHARACTERISTIC_CURVE"] == "yes":
+            interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
+                                  plot_format="characteristic", save=input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"])
 
-    if config[0]["SHOW_CHARACTERISTIC_CURVE"].lower() == "yes":
-        plot_presence = True
-        utils.plot_characteristic_curve(data=data, save=config[0]["SAVE_CHARACTERISTIC_CURVE"])
+    if input_dict[0]["PREDICT_ISOTHERMS"] == "yes":
+        predicted_isotherms = interpreter.predict_data(data_dictionary=data_dict,
+                                                       input_dictionary=input_dict,
+                                                       prediction_type="isotherm",
+                                                       properties_dictionary=properties_dict)
 
-    if config[0]["EVALUATE_CHARACTERISTIC_CURVE"].lower() == "yes":
-        plot_presence = True
-        utils.evaluate_characteristic_curve(data=data, save=config[0]["SAVE_EVALUATION"],
-                                            temperature_reference_isotherm=config[0]["TEMPERATURE_REFERENCE_ISOTHERM"])
+        if input_dict[0]["PLOT_PREDICTED_ISOTHERMS"] == "yes":
+            interpreter.plot_data(source_dictionary=predicted_isotherms, input_dictionary=input_dict,
+                                  plot_format="isotherm", save=input_dict[0]["SAVE_PREDICTED_ISOTHERMS_PLOT"])
 
-    if config[0]["PREDICT_ISOTHERMS"].lower() == "yes":
-        plot_presence = True
-        utils.predict_isotherms(data=data, logarithmic=config[0]["LOGARITHMIC_ISOTHERM"],
-                                save=config[0]["SAVE_PREDICTIONS"],
-                                temperature_reference_isotherm=config[0]["TEMPERATURE_REFERENCE_ISOTHERM"])
+        if input_dict[0]["SAVE_PREDICTED_ISOTHERMS_DATA"] == "yes":
+            interpreter.write_data(source_dictionary=predicted_isotherms, input_dictionary=input_dict,
+                                   write_format="isotherm")
 
-    if plot_presence is True:
-        utils.show_plots()
+    if input_dict[0]["PREDICT_ISOBARS"] == "yes":
+        predicted_isobars = interpreter.predict_data(data_dictionary=data_dict,
+                                                     input_dictionary=input_dict,
+                                                     prediction_type="isobar",
+                                                     properties_dictionary=properties_dict)
+
+        if input_dict[0]["PLOT_PREDICTED_ISOBARS"] == "yes":
+            interpreter.plot_data(source_dictionary=predicted_isobars, input_dictionary=input_dict,
+                                  plot_format="isobar", save=input_dict[0]["SAVE_PREDICTED_ISOBARS_PLOT"])
+
+        if input_dict[0]["SAVE_PREDICTED_ISOBARS_DATA"] == "yes":
+            interpreter.write_data(source_dictionary=predicted_isobars, input_dictionary=input_dict,
+                                   write_format="isobar")
+
+    if input_dict[0]["SHOW_PLOTS"] == "yes":
+        interpreter.show_plots()
 
 
 if __name__ == "__main__":
