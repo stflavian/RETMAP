@@ -206,7 +206,11 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         plt.ylabel("Adsorbed amount [mg/g]")
 
     def plot_characteristic(index):
-        label = f"{input_dictionary[index]['TEMPERATURES']}K"
+        if type(source_dictionary[index]["temperature"]) is not numpy.ndarray:
+            label = f"{source_dictionary[index]['temperature']}K"
+        else:
+            label = f"{source_dictionary[index]['pressure']}MPa"
+
         plt.scatter(source_dictionary[index]["potential"], source_dictionary[index]["volume"], label=label)
         plt.xlabel("Adsorption potential [kJ/mol]")
         plt.ylabel("Adsorption volume [ml/g]")

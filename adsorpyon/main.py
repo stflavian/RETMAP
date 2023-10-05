@@ -6,7 +6,7 @@ import utils
 import physics
 
 # Third-party libraries
-from numpy import genfromtxt, nan
+from numpy import genfromtxt, nan, array
 
 
 INPUT_FILE_NAME = "config.in"
@@ -61,40 +61,38 @@ def main():
             if input_dict[index]["DATA_TYPES"] == "isotherm":
                 data_dict[index]["saturation_pressure"] = interpreter.compute_saturation_pressure_from_method(
                                                 method=input_dict[index]["ADSORBATE_SATURATION_PRESSURE"],
-                                                temperature=input_dict[index]["TEMPERATURES"],
+                                                temperature=data_dict[index]["temperature"],
                                                 properties_dictionary=properties_dict,
                                                 saturation_pressure_file=input_dict[index]["SATURATION_PRESSURE_FILE"])
 
                 data_dict[index]["density"] = interpreter.compute_density_from_method(
                                                                         method=input_dict[index]["ADSORBATE_DENSITY"],
-                                                                        temperature=input_dict[index]["TEMPERATURES"],
+                                                                        temperature=data_dict[index]["temperature"],
                                                                         properties_dictionary=properties_dict)
 
             elif input_dict[index]["DATA_TYPES"] == "isobar":
                 saturation_pressure_array = []
                 density_array = []
                 for temperature in data_dict[index]["temperature"]:
-                    saturation_pressure = interpreter.compute_saturation_pressure_from_method(
+                    saturation_pressure_array.append(interpreter.compute_saturation_pressure_from_method(
                                                 method=input_dict[index]["ADSORBATE_SATURATION_PRESSURE"],
                                                 temperature=temperature,
                                                 properties_dictionary=properties_dict,
-                                                saturation_pressure_file=input_dict[index]["SATURATION_PRESSURE_FILE"])
-                    saturation_pressure_array.append(saturation_pressure)
+                                                saturation_pressure_file=input_dict[index]["SATURATION_PRESSURE_FILE"]))
 
-                    density = interpreter.compute_density_from_method(
+                    density_array.append(interpreter.compute_density_from_method(
                                                 method=input_dict[index]["ADSORBATE_DENSITY"],
                                                 temperature=temperature,
-                                                properties_dictionary=properties_dict)
-                    density_array.append(density)
+                                                properties_dictionary=properties_dict))
 
-                data_dict[index]["saturation_pressure"] = saturation_pressure_array
-                data_dict[index]["density"] = density_array
+                data_dict[index]["saturation_pressure"] = array(saturation_pressure_array)
+                data_dict[index]["density"] = array(density_array)
 
             elif input_dict[index]["DATA_TYPE"] == "characteristic":
                 continue
 
             data_dict[index]["potential"] = physics.get_adsorption_potential(
-                                                            temperature=input_dict[index]["TEMPERATURES"],
+                                                            temperature=data_dict[index]["temperature"],
                                                             saturation_pressure=data_dict[index]["saturation_pressure"],
                                                             pressure=data_dict[index]["pressure"])
 

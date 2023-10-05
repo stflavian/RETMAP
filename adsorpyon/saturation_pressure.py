@@ -338,7 +338,7 @@ def equation_extrapolation(temperature: float, temperature_critical: float, pres
         raise ValueError(f"No known function {function}!")
 
     if temperature <= temperature_critical:
-        interpolation_function = scipy.interpolate.interp1d(temp_range, subcritical_pressures)
+        interpolation_function = scipy.interpolate.interp1d(temp_range, subcritical_pressures, fill_value="extrapolate")
         return interpolation_function(temperature)
     else:
         # noinspection PyTupleAssignmentBalance

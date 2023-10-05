@@ -124,6 +124,10 @@ def convert_input(unit: str, molecular_mass: float) -> float:
     elif unit == "bar":
         conversion_factor = 0.1
 
+    # Temperature
+    if unit == "K":
+        conversion_factor = 1
+
     # Adsorbed amount
     elif unit in ["mg/g", "g/kg"]:
         conversion_factor = 1
