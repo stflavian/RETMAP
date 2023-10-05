@@ -1,0 +1,14 @@
+site_name: Adsorpyon
+site_url: https://adsorpyon.com
+
+nav:
+  - Home: index.md
+  - About: about.md
+
+theme:
+  name: material
+  palette:
+    primary: teal
+  features:
+    - navigation.tabs
+    - navigation.path
