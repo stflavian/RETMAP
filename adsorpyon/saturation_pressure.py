@@ -129,6 +129,7 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
 
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
+        p_guess = abs(p_guess[0])
         compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation='preos',
                                                             temperature_critical=temperature_critical,
                                                             temperature=temperature, pressure=p_guess,
@@ -155,8 +156,8 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
                                                            kappa3=0)
 
         return fugacity_vapor / fugacity_liquid - 1
-
-    return scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0]
+    
+    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0])
 
 
 def prsv1(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
@@ -184,6 +185,7 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
 
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
+        p_guess = abs(p_guess[0])
         compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation='prsv1',
                                                             temperature_critical=temperature_critical,
                                                             temperature=temperature, pressure=p_guess,
@@ -212,7 +214,7 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
 
         return fugacity_vapor / fugacity_liquid - 1
 
-    return scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0]
+    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0])
 
 
 def prsv2(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
@@ -242,6 +244,7 @@ def prsv2(temperature: float, temperature_critical: float, pressure_critical: fl
 
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
+        p_guess = abs(p_guess[0])
         compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation='prsv2',
                                                             temperature_critical=temperature_critical,
                                                             temperature=temperature, pressure=p_guess,
@@ -270,7 +273,7 @@ def prsv2(temperature: float, temperature_critical: float, pressure_critical: fl
 
         return fugacity_vapor / fugacity_liquid - 1
 
-    return scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0]
+    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0])
 
 
 def equation_extrapolation(temperature: float, temperature_critical: float, pressure_critical: float,
@@ -324,6 +327,8 @@ def equation_extrapolation(temperature: float, temperature_critical: float, pres
             pressure_guess = subcritical_pressures[index]
     else:
         raise ValueError(f"Equation type {equation} is not 'preos', 'prsv1' or 'prsv2'. Check the string!")
+
+    subcritical_pressures = numpy.array(subcritical_pressures)
 
     if function == "polynomial2":
         def fit_function(x, a, b, c):

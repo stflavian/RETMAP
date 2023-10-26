@@ -200,16 +200,28 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         plt.ylabel("Adsorbed amount [mg/g]")
 
     def plot_isobar(index):
-        label = f"{source_dictionary[index]['pressure']}MPa"
+        label = f"{source_dictionary[index]['pressure']} MPa"
         plt.scatter(source_dictionary[index]["temperature"], source_dictionary[index]["loading"], label=label)
         plt.xlabel("Temperature [K]")
         plt.ylabel("Adsorbed amount [mg/g]")
+
+    def plot_isostere(index):
+        label = f"{source_dictionary[index]['loading']} mg/g"
+        plt.scatter(source_dictionary[index]["temperature"], source_dictionary[index]["pressure"], label=label)
+        plt.xlabel("Temperature [K]")
+        plt.ylabel("Pressure [MPa]")
+
+    def plot_enthalpy(index):
+        label = source_dictionary[index]["source"]
+        plt.scatter(source_dictionary[index]["loading"], source_dictionary[index]["enthalpy"], label=label)
+        plt.xlabel("Loading [mg/g]")
+        plt.ylabel("Enthalpy of adsorption [kJ/mol]")
 
     def plot_characteristic(index):
         if type(source_dictionary[index]["temperature"]) is not numpy.ndarray:
             label = f"{source_dictionary[index]['temperature']}K"
         else:
-            label = f"{source_dictionary[index]['pressure']}MPa"
+            label = f"{source_dictionary[index]['pressure']} MPa"
 
         plt.scatter(source_dictionary[index]["potential"], source_dictionary[index]["volume"], label=label)
         plt.xlabel("Adsorption potential [kJ/mol]")
@@ -218,6 +230,8 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
     plot_formats = {
         "isotherm": plot_isotherm,
         "isobar": plot_isobar,
+        "isostere": plot_isostere,
+        "enthalpy": plot_enthalpy,
         "characteristic": plot_characteristic
     }
 
@@ -266,17 +280,38 @@ def write_data(source_dictionary: dict, input_dictionary: dict, write_format: st
             for temperature, loading in zip(source_dictionary[index]["temperature"], source_dictionary[index]["loading"]):
                 file.write(f"{temperature}         {loading} \n")
 
+    def write_isostere(index, base_name) -> None:
+        file_name = f"{base_name}_isostere_{source_dictionary[index]['loading']}mgpg.dat"
+        with open(file=f"Output/{file_name}", mode="w") as file:
+            file.write("#Temperature [K]         Pressure [MPa] \n")
+            for temperature, pressure in zip(source_dictionary[index]["temperature"], source_dictionary[index]["pressure"]):
+                file.write(f"{temperature}         {pressure} \n")
+
     def write_characteristic(index, base_name) -> None:
-        file_name = f"{base_name}_characteristic_{input_dictionary[index]['TEMPERATURES']}K.dat"
+        if type(source_dictionary[index]["temperature"]) is not numpy.ndarray:
+            condition = f"{source_dictionary[index]['temperature']}K"
+        else:
+            condition = f"{source_dictionary[index]['pressure']}MPa"
+
+        file_name = f"{base_name}_characteristic_{condition}.dat"
         with open(file=f"Output/{file_name}", mode="w") as file:
             file.write("#Potential [kJ/mol]         Volume [ml/g] \n")
             for potential, volume in zip(source_dictionary[index]["potential"], source_dictionary[index]["volume"]):
                 file.write(f"{potential}         {volume} \n")
 
+    def write_enthalpy(index, base_name) -> None:
+        file_name = f"{base_name}_enthalpy_{source_dictionary[index]['source']}.dat"
+        with open(file=f"Output/{file_name}", mode="w") as file:
+            file.write("#Loading [mg/g]         Enthalpy of adsorption [kJ/mol] \n")
+            for loading, enthalpy in zip(source_dictionary[index]["loading"], source_dictionary[index]["enthalpy"]):
+                file.write(f"{loading}         {enthalpy} \n")
+
     file_write_formats = {
         "isotherm": write_isotherm,
         "isobar": write_isobar,
-        "characteristic": write_characteristic
+        "isostere": write_isostere,
+        "characteristic": write_characteristic,
+        "enthalpy": write_enthalpy
     }
 
     os.makedirs(name="Output", exist_ok=True)
@@ -287,22 +322,34 @@ def write_data(source_dictionary: dict, input_dictionary: dict, write_format: st
             file_write_formats[write_format](index, base_name)
 
 
-def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type: str, properties_dictionary: dict) -> dict:
+def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type: str,
+                 properties_dictionary: dict) -> dict:
+    """
+    Predict adsorption properties based on the data from the first file entered in the input file.
+
+    :param data_dictionary: Dictionary containing the data from the files.
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
+    :param prediction_type: Type of predicted data. Can be isobar or isotherm
+    :param properties_dictionary: Dictionary containing the properties of the molecule used.
+    :return: Dictionary containing the predicted data.
+    """
 
     def _get_pressure_boundaries(temperature: float, potential: numpy.ndarray) -> list:
         sat_pres = compute_saturation_pressure_from_method(
-                                            method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
-                                            temperature=temperature,
-                                            properties_dictionary=properties_dictionary,
-                                            saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"])
+            method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+            temperature=temperature,
+            properties_dictionary=properties_dictionary,
+            saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"])
 
-        minimum_pressure = physics.get_pressure(adsorption_potential=numpy.max(potential),
-                                                saturation_pressure=sat_pres,
-                                                temperature=temperature)
+        minimum_pressure = physics.get_pressure(
+            adsorption_potential=numpy.max(potential),
+            saturation_pressure=sat_pres,
+            temperature=temperature)
 
-        maximum_pressure = physics.get_pressure(adsorption_potential=numpy.min(potential),
-                                                saturation_pressure=sat_pres,
-                                                temperature=temperature)
+        maximum_pressure = physics.get_pressure(
+            adsorption_potential=numpy.min(potential),
+            saturation_pressure=sat_pres,
+            temperature=temperature)
 
         return [minimum_pressure, maximum_pressure]
 
@@ -314,9 +361,11 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 properties_dictionary=properties_dictionary,
                 saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"])
 
-            potential_computed = physics.get_adsorption_potential(temperature=temperature_guess,
-                                                                  saturation_pressure=sat_pres,
-                                                                  pressure=pressure)
+            potential_computed = physics.get_adsorption_potential(
+                temperature=temperature_guess,
+                saturation_pressure=sat_pres,
+                pressure=pressure)
+
             return numpy.min(potential) - potential_computed
 
         def maximum_temperature_function(temperature_guess: float) -> float:
@@ -326,10 +375,43 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 properties_dictionary=properties_dictionary,
                 saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"])
 
-            potential_computed = physics.get_adsorption_potential(temperature=temperature_guess,
-                                                                  saturation_pressure=sat_pres,
-                                                                  pressure=pressure)
+            potential_computed = physics.get_adsorption_potential(
+                temperature=temperature_guess,
+                saturation_pressure=sat_pres,
+                pressure=pressure)
+
             return numpy.max(potential) - potential_computed
+
+        minimum_temperature = scipy.optimize.fsolve(minimum_temperature_function, x0=273)[0]
+        maximum_temperature = scipy.optimize.fsolve(maximum_temperature_function, x0=273)[0]
+
+        return [minimum_temperature, maximum_temperature]
+
+    def _get_isostere_boundaries(loading: float, volume: numpy.ndarray) -> list:
+
+        def minimum_temperature_function(temperature_guess: float) -> float:
+            ads_dens = compute_density_from_method(
+                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                temperature=temperature_guess,
+                properties_dictionary=properties_dictionary)
+
+            volume_computed = physics.get_adsorption_volume(
+                adsorbed_amount=loading,
+                adsorbate_density=ads_dens)
+
+            return numpy.max(volume) - volume_computed
+
+        def maximum_temperature_function(temperature_guess: float) -> float:
+            ads_dens = compute_density_from_method(
+                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                temperature=temperature_guess,
+                properties_dictionary=properties_dictionary)
+
+            volume_computed = physics.get_adsorption_volume(
+                adsorbed_amount=loading,
+                adsorbate_density=ads_dens)
+
+            return numpy.min(volume) - volume_computed
 
         minimum_temperature = scipy.optimize.fsolve(minimum_temperature_function, x0=273)[0]
         maximum_temperature = scipy.optimize.fsolve(maximum_temperature_function, x0=273)[0]
@@ -380,7 +462,7 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 pressure=prediction_dictionary[index]["pressure"])
 
             prediction_dictionary[index]["loading"] = physics.get_adsorbed_amount(
-                adsorption_volume=interpolation_function(potential_range),
+                adsorption_volume=volume_interpolation_function(potential_range),
                 adsorbate_density=prediction_dictionary[index]["density"])
 
         return prediction_dictionary
@@ -436,19 +518,83 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 pressure=prediction_dictionary[index]["pressure"])
 
             prediction_dictionary[index]["loading"] = physics.get_adsorbed_amount(
-                adsorption_volume=interpolation_function(potential_range),
+                adsorption_volume=volume_interpolation_function(potential_range),
                 adsorbate_density=prediction_dictionary[index]["density"])
+
+        return prediction_dictionary
+
+    def predict_isostere():
+
+        prediction_dictionary = {}
+        for index, loading in enumerate(input_dictionary[0]["PREDICTION_LOADINGS"]):
+            prediction_dictionary[index] = {}
+            prediction_dictionary[index]["loading"] = loading
+
+            boundaries = _get_isostere_boundaries(
+                loading=loading,
+                volume=data_dictionary[0]["volume"])
+
+            if (input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"] is not None and
+                    boundaries[0] <= input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][0] <= boundaries[1]):
+                start_temperature = input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][0]
+            else:
+                start_temperature = boundaries[0]
+
+            if (input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"] is not None and
+                    start_temperature <= input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][1] <= boundaries[1]):
+                end_temperature = input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][1]
+            else:
+                end_temperature = boundaries[1]
+
+            prediction_dictionary[index]["temperature"] = numpy.linspace(
+                start=start_temperature,
+                stop=end_temperature,
+                num=int(input_dictionary[0]["NUMBER_ISOSTERE_POINTS"]))
+
+            saturation_pressure_list = []
+            density_list = []
+
+            for temperature in prediction_dictionary[index]["temperature"]:
+                saturation_pressure_list.append(compute_saturation_pressure_from_method(
+                    method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+                    temperature=temperature,
+                    properties_dictionary=properties_dictionary,
+                    saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"]))
+
+                density_list.append(compute_density_from_method(
+                    method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                    temperature=temperature,
+                    properties_dictionary=properties_dictionary))
+
+            prediction_dictionary[index]["saturation_pressure"] = numpy.array(saturation_pressure_list)
+            prediction_dictionary[index]["density"] = numpy.array(density_list)
+
+            volume_range = physics.get_adsorption_volume(
+                adsorbed_amount=loading,
+                adsorbate_density=prediction_dictionary[index]["density"])
+
+            prediction_dictionary[index]["pressure"] = physics.get_pressure(
+                adsorption_potential=potential_interpolation_function(volume_range),
+                saturation_pressure=prediction_dictionary[index]["saturation_pressure"],
+                temperature=prediction_dictionary[index]["temperature"])
 
         return prediction_dictionary
 
     prediction_formats = {
         "isotherm": predict_isotherm,
         "isobar": predict_isobar,
+        "isostere": predict_isostere
     }
 
-    interpolation_function = scipy.interpolate.interp1d(x=data_dictionary[0]["potential"],
-                                                        y=data_dictionary[0]["volume"],
-                                                        fill_value="extrapolate")
+    volume_interpolation_function = scipy.interpolate.interp1d(
+        x=data_dictionary[0]["potential"],
+        y=data_dictionary[0]["volume"],
+        fill_value="extrapolate")
+
+    potential_interpolation_function = scipy.interpolate.interp1d(
+        x=data_dictionary[0]["volume"],
+        y=data_dictionary[0]["potential"],
+        fill_value="extrapolate")
 
     if prediction_type in prediction_formats:
         prediction_dictionary = prediction_formats[prediction_type]()
@@ -457,6 +603,78 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                          f"for spelling errors!")
 
     return prediction_dictionary
+
+
+def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict) -> dict:
+
+    def isotherm_enthalpy():
+        enthalpy_dictionary = {}
+        old_interpolation_function = None
+        for index in data_dictionary:
+            new_interpolation_function = scipy.interpolate.interp1d(
+                x=data_dictionary[index]["loading"],
+                y=data_dictionary[index]["pressure"],
+                fill_value="extrapolate")
+
+            if index > 0:
+                enthalpy_dictionary[index-1] = {}
+                new_temperature = data_dictionary[index]["temperature"]
+                old_pressure = old_interpolation_function(data_dictionary[index]["loading"])
+                new_pressure = data_dictionary[index]["pressure"]
+
+                enthalpy_dictionary[index-1]["source"] = f"{old_temperature}K - {new_temperature}K"
+                enthalpy_dictionary[index-1]["loading"] = data_dictionary[index]["loading"]
+                enthalpy_dictionary[index-1]["enthalpy"] = physics.get_adsorption_enthalpy(
+                    temperature_1=old_temperature,
+                    temperature_2=new_temperature,
+                    pressure_1=old_pressure,
+                    pressure_2=new_pressure)
+
+            old_temperature = data_dictionary[index]["temperature"]
+            old_interpolation_function = new_interpolation_function
+
+        return enthalpy_dictionary
+
+    def isobar_enthalpy():
+        enthalpy_dictionary = {}
+        old_interpolation_function = None
+        for index in data_dictionary:
+            new_interpolation_function = scipy.interpolate.interp1d(
+                x=data_dictionary[index]["loading"],
+                y=data_dictionary[index]["temperature"],
+                fill_value="extrapolate")
+
+            enthalpy_dictionary[index] = {}
+            if index > 0:
+                new_pressure = data_dictionary[index]["pressure"]
+                old_temperature = old_interpolation_function(data_dictionary[index]["loading"])
+                new_temperature = data_dictionary[index]["temperature"]
+
+                enthalpy_dictionary[index-1]["source"] = f"{old_pressure}MPa - {new_pressure}MPa"
+                enthalpy_dictionary[index-1]["loading"] = data_dictionary[index]["loading"]
+                enthalpy_dictionary[index-1]["enthalpy"] = physics.get_adsorption_enthalpy(
+                    temperature_1=old_temperature,
+                    temperature_2=new_temperature,
+                    pressure_1=old_pressure,
+                    pressure_2=new_pressure)
+
+            old_pressure = data_dictionary[index]["pressure"]
+            old_interpolation_function = new_interpolation_function
+
+        return enthalpy_dictionary
+
+    data_types = {
+        "isotherm": isotherm_enthalpy,
+        "isobar": isobar_enthalpy
+    }
+
+    if input_dictionary[0]["DATA_TYPES"] in data_types:
+        enthalpy_dictionary = data_types[input_dictionary[0]["DATA_TYPES"]]()
+    else:
+        raise ValueError(f"{input_dictionary[0]['DATA_TYPES']} is not a valid data type for enthalpy calculations. "
+                         f"Change the method or check for spelling errors!")
+
+    return enthalpy_dictionary
 
 
 def show_plots() -> None:
