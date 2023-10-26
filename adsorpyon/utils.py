@@ -21,6 +21,7 @@ FIGURE_SIZE = (7, 6)
 LEFT_LIMIT = None
 RIGHT_LIMIT = None
 
+
 def plot_isotherm(data: dict, logarithmic: str, save: str):
     """
     Plots the adsorption isotherm from the experimental data read.
@@ -125,7 +126,7 @@ def convert_input(unit: str, molecular_mass: float) -> float:
         conversion_factor = 0.1
 
     # Temperature
-    if unit == "K":
+    elif unit == "K":
         conversion_factor = 1
 
     # Adsorbed amount

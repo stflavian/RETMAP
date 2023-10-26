@@ -177,9 +177,7 @@ def get_compressibility(pressure_critical: float, temperature_critical: float, t
         raise ValueError(f"Selected state {state} is not valid! Supported states are liquid and vapor!")
 
 
-def get_adsorption_enthalpy(enthalpy_vaporization: float, adsorption_potential: numpy.ndarray, temperature: float,
-                            adsorption_volume: numpy.ndarray, thermal_expansion_coefficient: float) -> float:
-     entropy = thermal_expansion_coefficient * adsorption_volume * numpy.gradient(adsorption_potential, adsorption_volume)
-     return enthalpy_vaporization + adsorption_potential - temperature * entropy
-
+def get_adsorption_enthalpy(temperature_1: float, pressure_1: float, temperature_2: float, pressure_2: float) -> float:
+    return (constants.UNIVERSAL_GAS_CONSTANT * numpy.log(pressure_2/pressure_1) *
+            temperature_1 * temperature_2 / (temperature_2 - temperature_1) / 1000)
 

@@ -1,9 +1,32 @@
 site_name: Adsorpyon
 site_url: https://adsorpyon.com
+site_author: Flavian Stavarache
+site_description: >-
+  A python tool for computing and predicting characteristic curves and 
+  isotherms from experimental and simulated data.
+
+repo_name: stflavian/adsorpyon
+repo_url: https://github.com/stflavian/adsorpyon
+
+copyright: Copyright (c) 2023 Flavian Stavarache, Azahara Luna-Triguero, Sofia Calero, Jose Manuel Vicent-Luna
 
 nav:
   - Home: index.md
-  - About: about.md
+  - Setup:
+      - installation.md
+      - Usage: usage.md
+  - "User Guide":
+      - "Configuration file": manual/configuration.md
+      - "Properties file": manual/properties_file.md
+      - "Compatible data formats": manual/data_formats.md
+      - "Units used": manual/units.md
+      - "Computing characteristic curves": manual/characteristic_curves.md
+      - "Predicting data": manual/predicting_data.md
+  - About:
+      - about.md
+      - "Release notes": release_notes.md
+      - License: license.md
+  - Contact: contact.md
 
 theme:
   name: material
@@ -12,3 +35,13 @@ theme:
   features:
     - navigation.tabs
     - navigation.path
+
+markdown_extensions:
+  - footnotes
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
