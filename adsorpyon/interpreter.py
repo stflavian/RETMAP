@@ -256,11 +256,12 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         plt.savefig(f"Plots/{figure_name}.png")
 
 
-def write_data(source_dictionary: dict, input_dictionary: dict, write_format: str) -> None:
+def write_data(source_dictionary: dict, properties_dictionary: dict, input_dictionary: dict, write_format: str) -> None:
     """
     Create data files based on the input data type. Supports between isotherm, isobar, and characteristic curve.
 
     :param source_dictionary: Dictionary containing the source data for the plotting.
+    :param properties_dictionary: Dictionary containing the properties of the source data.
     :param input_dictionary: Dictionary containing the arguments found in the input file.
     :param write_format: Format of the file, given by the source data format. Can be isobar, isotherm or characteristic
     curve.
@@ -269,23 +270,45 @@ def write_data(source_dictionary: dict, input_dictionary: dict, write_format: st
     def write_isotherm(index, base_name) -> None:
         file_name = f"{base_name}_isotherm_{source_dictionary[index]['temperature']}K.dat"
         with open(file=f"Output/{file_name}", mode="w") as file:
-            file.write("#Pressure [MPa]         Loading [mg/g] \n")
+            file.write(f"#Pressure [{input_dictionary[0]['OUTPUT_PRESSURE_UNITS']}]         Loading [{input_dictionary[0]['OUTPUT_LOADING_UNITS']}] \n")
+            cf_pressure = convert_output(
+                input_dictionary[0]['OUTPUT_PRESSURE_UNITS'],
+                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+            cf_loading = convert_output(
+                input_dictionary[0]['OUTPUT_LOADING_UNITS'],
+                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
             for pressure, loading in zip(source_dictionary[index]["pressure"], source_dictionary[index]["loading"]):
-                file.write(f"{pressure}         {loading} \n")
+                file.write(f"{pressure * cf_pressure}         {loading * cf_loading} \n")
 
     def write_isobar(index, base_name) -> None:
         file_name = f"{base_name}_isobar_{source_dictionary[index]['pressure']}MPa.dat"
+        cf_temperature = convert_output(
+            input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS'],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        cf_loading = convert_output(
+            input_dictionary[0]['OUTPUT_LOADING_UNITS'],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
         with open(file=f"Output/{file_name}", mode="w") as file:
-            file.write("#Temperature [K]         Loading [mg/g] \n")
+            file.write(f"#Temperature [{input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']}]         Loading [{input_dictionary[0]['OUTPUT_LOADING_UNITS']}] \n")
             for temperature, loading in zip(source_dictionary[index]["temperature"], source_dictionary[index]["loading"]):
-                file.write(f"{temperature}         {loading} \n")
+                file.write(f"{temperature * cf_temperature}         {loading * cf_loading} \n")
 
     def write_isostere(index, base_name) -> None:
         file_name = f"{base_name}_isostere_{source_dictionary[index]['loading']}mgpg.dat"
+        cf_temperature = convert_output(
+            input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS'],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        cf_pressure = convert_output(
+            input_dictionary[0]['OUTPUT_PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
         with open(file=f"Output/{file_name}", mode="w") as file:
-            file.write("#Temperature [K]         Pressure [MPa] \n")
+            file.write(f"#Temperature [{input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']}]         Pressure [{input_dictionary[0]['OUTPUT_PRESSURE_UNITS']}] \n")
             for temperature, pressure in zip(source_dictionary[index]["temperature"], source_dictionary[index]["pressure"]):
-                file.write(f"{temperature}         {pressure} \n")
+                file.write(f"{temperature * cf_temperature}         {pressure * cf_pressure} \n")
 
     def write_characteristic(index, base_name) -> None:
         if type(source_dictionary[index]["temperature"]) is not numpy.ndarray:
@@ -294,10 +317,17 @@ def write_data(source_dictionary: dict, input_dictionary: dict, write_format: st
             condition = f"{source_dictionary[index]['pressure']}MPa"
 
         file_name = f"{base_name}_characteristic_{condition}.dat"
+        cf_potential = convert_output(
+            input_dictionary[0]['OUTPUT_POTENTIAL_UNITS'],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        cf_volume = convert_output(
+            input_dictionary[0]['OUTPUT_VOLUME_UNITS'],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
         with open(file=f"Output/{file_name}", mode="w") as file:
-            file.write("#Potential [kJ/mol]         Volume [ml/g] \n")
+            file.write(f"#Potential [{input_dictionary[0]['OUTPUT_POTENTIAL_UNITS']}]         Volume [{input_dictionary[0]['OUTPUT_VOLUME_UNITS']}] \n")
             for potential, volume in zip(source_dictionary[index]["potential"], source_dictionary[index]["volume"]):
-                file.write(f"{potential}         {volume} \n")
+                file.write(f"{potential * cf_potential}         {volume * cf_volume} \n")
 
     def write_enthalpy(index, base_name) -> None:
         file_name = f"{base_name}_enthalpy_{source_dictionary[index]['source']}.dat"
@@ -675,6 +705,59 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict) -
                          f"Change the method or check for spelling errors!")
 
     return enthalpy_dictionary
+
+
+def convert_input(unit: str, molecular_mass: float) -> float:
+    """
+    Returns a conversion factor for the input units to the standard ones: MPa, mg/g, kJ/mol, ml/g.
+    :param unit: The unit of the input data.
+    :param molecular_mass: The molecular mass of the molecule.
+    :return: A number that the input is multiplied with to be converted to the intended unit.
+    """
+    # Pressure
+    if unit == "MPa":
+        conversion_factor = 1
+    elif unit == "kPa":
+        conversion_factor = 0.001
+    elif unit == "Pa":
+        conversion_factor = 0.000001
+    elif unit == "bar":
+        conversion_factor = 0.1
+
+    # Temperature
+    elif unit == "K":
+        conversion_factor = 1
+
+    # Adsorbed amount
+    elif unit in ["mg/g", "g/kg"]:
+        conversion_factor = 1
+    elif unit in ["mol/kg", "mmol/g"]:
+        conversion_factor = molecular_mass
+
+    # Adsorption potential
+    elif unit == "kJ/mol":
+        conversion_factor = 1
+    elif unit == "J/mol":
+        conversion_factor = 0.001
+
+    # Adsorption volume
+    elif unit in ["ml/g", "l/kg", "cm3/g", "dm3/kg"]:
+        conversion_factor = 1
+
+    # Not a recognized unit
+    else:
+        raise ValueError(f"Input unit {unit} is not a recognized unit!")
+    return conversion_factor
+
+
+def convert_output(unit: str, molecular_mass: float) -> float:
+    """
+    Returns a conversion factor for the standard units to the user defined ones.
+    :param unit: The unit of the input data.
+    :param molecular_mass: The molecular mass of the molecule.
+    :return: A number that the input is multiplied with to be converted to the intended unit.
+    """
+    return 1 / convert_input(unit=unit, molecular_mass=molecular_mass)
 
 
 def show_plots() -> None:

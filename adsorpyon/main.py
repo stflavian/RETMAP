@@ -2,7 +2,6 @@
 # Local libraries
 import input_reader
 import interpreter
-import utils
 import physics
 
 # Third-party libraries
@@ -24,28 +23,28 @@ def main():
         file_data = genfromtxt(fname=input_dict[index]["DATA_FILES"], filling_values=nan)
         if input_dict[index]["DATA_TYPES"] == "isotherm":
             data_dict[index]["temperature"] = input_dict[index]["TEMPERATURES"]
-            data_dict[index]["pressure"] = file_data[:, 0] * utils.convert_input(
+            data_dict[index]["pressure"] = file_data[:, 0] * interpreter.convert_input(
                                                                     unit=input_dict[index]["PRESSURE_UNITS"],
                                                                     molecular_mass=properties_dict["MOLECULAR_MASS"])
 
-            data_dict[index]["loading"] = file_data[:, 1] * utils.convert_input(
+            data_dict[index]["loading"] = file_data[:, 1] * interpreter.convert_input(
                                                                     unit=input_dict[index]["LOADING_UNITS"],
                                                                     molecular_mass=properties_dict["MOLECULAR_MASS"])
         elif input_dict[index]["DATA_TYPES"] == "isobar":
             data_dict[index]["pressure"] = input_dict[index]["PRESSURES"]
-            data_dict[index]["temperature"] = file_data[:, 0] * utils.convert_input(
+            data_dict[index]["temperature"] = file_data[:, 0] * interpreter.convert_input(
                                                                     unit=input_dict[index]["TEMPERATURE_UNITS"],
                                                                     molecular_mass=properties_dict["MOLECULAR_MASS"])
 
-            data_dict[index]["loading"] = file_data[:, 1] * utils.convert_input(
+            data_dict[index]["loading"] = file_data[:, 1] * interpreter.convert_input(
                                                                     unit=input_dict[index]["LOADING_UNITS"],
                                                                     molecular_mass=properties_dict["MOLECULAR_MASS"])
         elif input_dict[index]["DATA_TYPES"] == "characteristic":
-            data_dict[index]["potential"] = file_data[:, 0] * utils.convert_input(
+            data_dict[index]["potential"] = file_data[:, 0] * interpreter.convert_input(
                                                                     unit=input_dict[index]["POTENTIAL_UNITS"],
                                                                     molecular_mass=properties_dict["MOLECULAR_MASS"])
 
-            data_dict[index]["volume"] = file_data[:, 1] * utils.convert_input(
+            data_dict[index]["volume"] = file_data[:, 1] * interpreter.convert_input(
                                                                     unit=input_dict[index]["VOLUME_UNITS"],
                                                                     molecular_mass=properties_dict["MOLECULAR_MASS"])
         else:
@@ -64,7 +63,7 @@ def main():
 
         if input_dict[0]["SAVE_ENTHALPY_DATA"] == "yes":
             interpreter.write_data(source_dictionary=enthalpy, input_dictionary=input_dict,
-                                   write_format="enthalpy")
+                                   properties_dictionary=properties_dict, write_format="enthalpy")
 
     if input_dict[0]["COMPUTE_CHARACTERISTIC_CURVE"] == "yes":
 
@@ -113,7 +112,7 @@ def main():
 
         if input_dict[0]["SAVE_CHARACTERISTIC_CURVE_DATA"] == "yes":
             interpreter.write_data(source_dictionary=data_dict, input_dictionary=input_dict,
-                                   write_format="characteristic")
+                                   properties_dictionary=properties_dict, write_format="characteristic")
 
         if input_dict[0]["PLOT_CHARACTERISTIC_CURVE"] == "yes":
             interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
@@ -131,7 +130,7 @@ def main():
 
         if input_dict[0]["SAVE_PREDICTED_ISOTHERMS_DATA"] == "yes":
             interpreter.write_data(source_dictionary=predicted_isotherms, input_dictionary=input_dict,
-                                   write_format="isotherm")
+                                   properties_dictionary=properties_dict, write_format="isotherm")
 
     if input_dict[0]["PREDICT_ISOBARS"] == "yes":
         predicted_isobars = interpreter.predict_data(data_dictionary=data_dict,
@@ -145,7 +144,7 @@ def main():
 
         if input_dict[0]["SAVE_PREDICTED_ISOBARS_DATA"] == "yes":
             interpreter.write_data(source_dictionary=predicted_isobars, input_dictionary=input_dict,
-                                   write_format="isobar")
+                                   properties_dictionary=properties_dict, write_format="isobar")
 
     if input_dict[0]["PREDICT_ISOSTERES"] == "yes":
         predicted_isosteres = interpreter.predict_data(data_dictionary=data_dict,
@@ -159,11 +158,10 @@ def main():
 
         if input_dict[0]["SAVE_PREDICTED_ISOSTERES_DATA"] == "yes":
             interpreter.write_data(source_dictionary=predicted_isosteres, input_dictionary=input_dict,
-                                   write_format="isostere")
+                                   properties_dictionary=properties_dict, write_format="isostere")
 
     if input_dict[0]["SHOW_PLOTS"] == "yes":
         interpreter.show_plots()
-
 
 
 if __name__ == "__main__":
