@@ -35,6 +35,7 @@ else
     } >> run.sh
     chmod +x run.sh
     echo "Installation completed successfully!"
+    deactivate
     exit 0
   fi
 fi
