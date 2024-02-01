@@ -16,39 +16,10 @@ def main():
     properties_dict = input_reader.create_properties_dictionary(input_dict[0]["ADSORBATE_DATA_FILE"])
     data_dict = {}
 
-    for index in input_dict:
-        data_dict[index] = {}
-        properties_dict = input_reader.create_properties_dictionary(input_dict[index]["ADSORBATE_DATA_FILE"])
-
-        file_data = genfromtxt(fname=input_dict[index]["DATA_FILES"], filling_values=nan)
-        if input_dict[index]["DATA_TYPES"] == "isotherm":
-            data_dict[index]["temperature"] = input_dict[index]["TEMPERATURES"]
-            data_dict[index]["pressure"] = file_data[:, 0] * interpreter.convert_input(
-                                                                    unit=input_dict[index]["PRESSURE_UNITS"],
-                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
-
-            data_dict[index]["loading"] = file_data[:, 1] * interpreter.convert_input(
-                                                                    unit=input_dict[index]["LOADING_UNITS"],
-                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
-        elif input_dict[index]["DATA_TYPES"] == "isobar":
-            data_dict[index]["pressure"] = input_dict[index]["PRESSURES"]
-            data_dict[index]["temperature"] = file_data[:, 0] * interpreter.convert_input(
-                                                                    unit=input_dict[index]["TEMPERATURE_UNITS"],
-                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
-
-            data_dict[index]["loading"] = file_data[:, 1] * interpreter.convert_input(
-                                                                    unit=input_dict[index]["LOADING_UNITS"],
-                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
-        elif input_dict[index]["DATA_TYPES"] == "characteristic":
-            data_dict[index]["potential"] = file_data[:, 0] * interpreter.convert_input(
-                                                                    unit=input_dict[index]["POTENTIAL_UNITS"],
-                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
-
-            data_dict[index]["volume"] = file_data[:, 1] * interpreter.convert_input(
-                                                                    unit=input_dict[index]["VOLUME_UNITS"],
-                                                                    molecular_mass=properties_dict["MOLECULAR_MASS"])
-        else:
-            raise ValueError(f"{input_dict[index]['DATA_TYPES']} is not a recognized argument!")
+    interpreter.read_data(
+        source_dictionary=data_dict,
+        properties_dictionary=properties_dict,
+        input_dictionary=input_dict)
 
     if input_dict[0]["PLOT_DATA"] == "yes":
         interpreter.plot_data(source_dictionary=data_dict, input_dictionary=input_dict,
@@ -68,7 +39,7 @@ def main():
     if input_dict[0]["COMPUTE_CHARACTERISTIC_CURVE"] == "yes":
 
         for index in data_dict:
-            if input_dict[index]["DATA_TYPES"] == "isotherm":
+            if input_dict[index]["DATA_TYPES"] in ["isotherm", "langmuir"]:
                 data_dict[index]["saturation_pressure"] = interpreter.compute_saturation_pressure_from_method(
                                                 method=input_dict[index]["ADSORBATE_SATURATION_PRESSURE"],
                                                 temperature=data_dict[index]["temperature"],

@@ -6,6 +6,7 @@ import os
 import density
 import saturation_pressure
 import physics
+import input_reader
 
 # Third-party libraries
 import matplotlib.pyplot as plt
@@ -182,6 +183,405 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
     return adsorbate_saturation_pressure
 
 
+def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictionary: dict) -> None:
+
+    def read_isotherm(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+
+        pressure = numpy.array([row[0] for row in file_data])
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = numpy.array([row[1] for row in file_data])
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_isobar(index: int, file_data: list) -> None:
+        source_dictionary[index]["pressure"] = input_dictionary[index]["PRESSURES"]
+
+        temperature = numpy.array([row[0] for row in file_data])
+        source_dictionary[index]["temperature"] = temperature * convert_input(
+            unit=source_dictionary[index]["TEMPERATURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = numpy.array([row[1] for row in file_data])
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_isostere(index: int, file_data: list) -> None:
+        source_dictionary[index]["loading"] = input_dictionary[index]["LOADINGS"]
+
+        temperature = numpy.array([row[0] for row in file_data])
+        source_dictionary[index]["temperature"] = temperature * convert_input(
+            unit=source_dictionary[index]["TEMPERATURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        pressure = numpy.array([row[1] for row in file_data])
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_characteristic(index: int, file_data: list) -> None:
+
+        potential = numpy.array([row[0] for row in file_data])
+        source_dictionary[index]["potential"] = potential * convert_input(
+            unit=input_dictionary[index]["POTENTIAL_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        volume = numpy.array([row[1] for row in file_data])
+        source_dictionary[index]["volume"] = volume * convert_input(
+            unit=input_dictionary[index]["VOLUME_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_langmuir(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bp = param2 * pressure
+        loading = param1 * bp / (1 + bp)
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+
+    def read_n_langmuir(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        params1 = file_data[1][0]
+        params2 = file_data[2][0]
+        if len(params1) != len(params2):
+            raise ValueError("The number of parameters for the n-Langmuir isotherm does not match!")
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = numpy.zeros(shape=num)
+        for param1, param2 in zip(params1, params2):
+            bp = param2 * pressure
+            loading += param1 * bp / (1 + bp)
+
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_bet(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+        param4 = file_data[4][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        pr = pressure / param1
+        bpr = param3 * pr
+        loading = param2 * bpr / ((1 - param4 * pr) * (1 - param4 + bpr))
+        source_dictionary[index]["loading"] = loading* convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_anti_langmuir(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = (param1 * pressure) / (1 - param2 * pressure)
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_henry(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = param1 * pressure
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_freundlich(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = param1 * numpy.power(pressure, 1/param2)
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_sips(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bpiv = numpy.power(param2 * pressure, 1/param3)
+        loading = param1 * bpiv / (1 + bpiv)
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_n_sips(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        params1 = file_data[1]
+        params2 = file_data[2]
+        params3 = file_data[3]
+        if len(params1) != len(params2) or len(params1) != len(params3):
+            raise ValueError("The number of parameters for the n-Langmuir isotherm does not match!")
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = numpy.zeros(shape=num)
+        for param1, param2, param3 in zip(params1, params2, params3):
+            bpiv = numpy.power(param2 * pressure, 1/param3)
+            loading += param1 * bpiv / (1 + bpiv)
+
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_langmuir_freundlich(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bpv = param2 * numpy.power(pressure, param3)
+        loading = param1 * bpv / (1 + bpv)
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_n_langmuir_freundlich(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        params1 = file_data[1]
+        params2 = file_data[2]
+        params3 = file_data[3]
+        if len(params1) != len(params2) or len(params1) != len(params3):
+            raise ValueError("The number of parameters for the n-Langmuir isotherm does not match!")
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = numpy.zeros(shape=num)
+        for param1, param2, param3 in zip(params1, params2, params3):
+            bpv = param2 * numpy.power(pressure, param3)
+            loading += param1 * bpv / (1 + bpv)
+
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+
+    def read_redlich_peterson(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        loading = param1 * pressure / (1 + param2 * numpy.power(pressure, param3))
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+
+    def read_toth(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bp = param2 * pressure
+        loading = param1 * bp / numpy.power((1 + numpy.power(bp, param3)), 1/param3)
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_unilan(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bp = param2 * pressure
+        loading = (param1 / (2 * param3) * numpy.log((1 + bp * numpy.exp(param3)) / (1 + bp * numpy.exp(-param3))))
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_obrien_myers(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bp = param2 * pressure
+        loading = param1 * (bp / (1 + bp) + param3**2 * bp * (1 - bp) / (2 * numpy.power(1 + bp, 3)))
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_quadratic(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bp = param2 * pressure
+        cp2 = param3 * numpy.power(pressure, 2)
+        loading = param1 * (bp + 2 * cp2 / (1 + bp + cp2))
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_asymptotic_temkin(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        bp = param2 * pressure
+        frac = bp / (1 + bp)
+        loading = param1 * frac + param1 * param3 * numpy.power(frac, 2) * (frac - 1)
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    def read_bingel_walton(index: int, file_data: list) -> None:
+        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
+        param1 = file_data[1][0]
+        param2 = file_data[2][0]
+        param3 = file_data[3][0]
+        pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
+        source_dictionary[index]["pressure"] = pressure * convert_input(
+            unit=input_dictionary[index]["PRESSURE_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+        term = -(param2 + param3) * pressure
+        loading = param1 * (1 - numpy.exp(term) / (1 + param3/param2 * numpy.exp(term)))
+        source_dictionary[index]["loading"] = loading * convert_input(
+            unit=input_dictionary[index]["LOADING_UNITS"],
+            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+
+    data_types = {
+        "isotherm": read_isotherm,
+        "isobar": read_isobar,
+        "isostere": read_isostere,
+        "characteristic": read_characteristic,
+        "langmuir": read_langmuir,
+        "n-langmuir": read_n_langmuir,
+        "bet": read_bet,
+        "anti-langmuir": read_anti_langmuir,
+        "henry": read_henry,
+        "freundlich": read_freundlich,
+        "sips": read_sips,
+        "n-sips": read_n_sips,
+        "langmuir-freundlich": read_langmuir_freundlich,
+        "n-langmuir-freundlich": read_n_langmuir_freundlich,
+        "redlich-peterson": read_redlich_peterson,
+        "toth": read_toth,
+        "unilan": read_unilan,
+        "obrien-myers": read_obrien_myers,
+        "quadratic": read_quadratic,
+        "asymptotic-temkin": read_asymptotic_temkin,
+        "bingel-walton": read_bingel_walton
+    }
+
+    for index in input_dictionary:
+        file_data = input_reader.create_data_list(path=input_dictionary[index]["DATA_FILES"])
+        if input_dictionary[index]["DATA_TYPES"] in data_types:
+            source_dictionary[index] = {}
+            data_types[input_dictionary[index]["DATA_TYPES"]](index, file_data)
+
+
+
 def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str, save: str) -> None:
     """
     Create plot based on the input data type. Supports between isotherm, isobar, and characteristic curve.
@@ -232,7 +632,24 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         "isobar": plot_isobar,
         "isostere": plot_isostere,
         "enthalpy": plot_enthalpy,
-        "characteristic": plot_characteristic
+        "characteristic": plot_characteristic,
+        "langmuir": plot_isotherm,
+        "n-langmuir": plot_isotherm,
+        "bet": plot_isotherm,
+        "anti-langmuir": plot_isotherm,
+        "henry": plot_isotherm,
+        "freundlich": plot_isotherm,
+        "sips": plot_isotherm,
+        "n-sips": plot_isotherm,
+        "langmuir-freundlich": plot_isotherm,
+        "n-langmuir-freundlich": plot_isotherm,
+        "redlich-peterson": plot_isotherm,
+        "toth": plot_isotherm,
+        "unilan": plot_isotherm,
+        "obrien-myers": plot_isotherm,
+        "quadratic": plot_isotherm,
+        "asymptotic-temkin": plot_isotherm,
+        "bingel-walton": plot_isotherm
     }
 
     plt.figure(figsize=FIGURE_SIZE)
@@ -341,7 +758,24 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
         "isobar": write_isobar,
         "isostere": write_isostere,
         "characteristic": write_characteristic,
-        "enthalpy": write_enthalpy
+        "enthalpy": write_enthalpy,
+        "langmuir": write_isotherm,
+        "n-langmuir": write_isotherm,
+        "bet": write_isotherm,
+        "anti-langmuir": write_isotherm,
+        "henry": write_isotherm,
+        "freundlich": write_isotherm,
+        "sips": write_isotherm,
+        "n-sips": write_isotherm,
+        "langmuir-freundlich": write_isotherm,
+        "n-langmuir-freundlich": write_isotherm,
+        "redlich-peterson": write_isotherm,
+        "toth": write_isotherm,
+        "unilan": write_isotherm,
+        "obrien-myers": write_isotherm,
+        "quadratic": write_isotherm,
+        "asymptotic-temkin": write_isotherm,
+        "bingel-walton": write_isotherm
     }
 
     os.makedirs(name="Output", exist_ok=True)
@@ -695,7 +1129,25 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict) -
 
     data_types = {
         "isotherm": isotherm_enthalpy,
-        "isobar": isobar_enthalpy
+        "isobar": isobar_enthalpy,
+        "enthalpy": isotherm_enthalpy,
+        "langmuir": isotherm_enthalpy,
+        "n-langmuir": isotherm_enthalpy,
+        "bet": isotherm_enthalpy,
+        "anti-langmuir": isotherm_enthalpy,
+        "henry": isotherm_enthalpy,
+        "freundlich": isotherm_enthalpy,
+        "sips": isotherm_enthalpy,
+        "n-sips": isotherm_enthalpy,
+        "langmuir-freundlich": isotherm_enthalpy,
+        "n-langmuir-freundlich": isotherm_enthalpy,
+        "redlich-peterson": isotherm_enthalpy,
+        "toth": isotherm_enthalpy,
+        "unilan": isotherm_enthalpy,
+        "obrien-myers": isotherm_enthalpy,
+        "quadratic": isotherm_enthalpy,
+        "asymptotic-temkin": isotherm_enthalpy,
+        "bingel-walton": isotherm_enthalpy
     }
 
     if input_dictionary[0]["DATA_TYPES"] in data_types:
