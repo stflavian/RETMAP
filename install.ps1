@@ -25,7 +25,7 @@ if ($python -ne "Python") {
       Write-Output "Upgrading pip ..."
       python -m pip install --upgrade pip | Out-File -Append "install.log"
       Write-Output "Installing Python dependencies ..."
-      pip install numpy scipy matplotlib | Out-File -Append "install.log"
+      pip install -r requirements.txt | Out-File -Append "install.log"
       Write-Output "Creating run file ..."
       New-Item -Name "run.ps1" -ItemType File | Out-File -Append "install.log"
 

@@ -24,7 +24,7 @@ else
     echo "Upgrading pip ..."
     python -m pip install --upgrade pip >> install.log
     echo "Installing Python dependencies ..."
-    pip install numpy scipy matplotlib >> install.log
+    pip install -r requirements.txt >> install.log
     echo "Creating run file ..."
     touch run.sh >> install.log
     {
