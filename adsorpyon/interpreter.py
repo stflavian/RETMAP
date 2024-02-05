@@ -581,6 +581,87 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             data_types[input_dictionary[index]["DATA_TYPES"]](index, file_data)
 
 
+def compute_characteristic(source_dictionary: dict, input_dictionary: dict, properties_dictionary: dict):
+
+    def from_isotherm(index):
+        source_dictionary[index]["saturation_pressure"] = compute_saturation_pressure_from_method(
+            method=input_dictionary[index]["ADSORBATE_SATURATION_PRESSURE"],
+            temperature=source_dictionary[index]["temperature"],
+            properties_dictionary=properties_dictionary,
+            saturation_pressure_file=input_dictionary[index]["SATURATION_PRESSURE_FILE"])
+
+        source_dictionary[index]["density"] = compute_density_from_method(
+            method=input_dictionary[index]["ADSORBATE_DENSITY"],
+            temperature=source_dictionary[index]["temperature"],
+            properties_dictionary=properties_dictionary)
+
+        source_dictionary[index]["potential"] = physics.get_adsorption_potential(
+            temperature=source_dictionary[index]["temperature"],
+            saturation_pressure=source_dictionary[index]["saturation_pressure"],
+            pressure=source_dictionary[index]["pressure"])
+
+        source_dictionary[index]["volume"] = physics.get_adsorption_volume(
+            adsorbed_amount=source_dictionary[index]["loading"],
+            adsorbate_density=source_dictionary[index]["density"])
+
+    def from_isobar(index):
+        saturation_pressure_array = []
+        density_array = []
+        for temperature in source_dictionary[index]["temperature"]:
+            saturation_pressure_array.append(compute_saturation_pressure_from_method(
+                method=input_dictionary[index]["ADSORBATE_SATURATION_PRESSURE"],
+                temperature=temperature,
+                properties_dictionary=properties_dictionary,
+                saturation_pressure_file=input_dictionary[index]["SATURATION_PRESSURE_FILE"]))
+
+            density_array.append(compute_density_from_method(
+                method=input_dictionary[index]["ADSORBATE_DENSITY"],
+                temperature=temperature,
+                properties_dictionary=properties_dictionary))
+
+        source_dictionary[index]["saturation_pressure"] = numpy.array(saturation_pressure_array)
+        source_dictionary[index]["density"] = numpy.array(density_array)
+
+        source_dictionary[index]["potential"] = physics.get_adsorption_potential(
+            temperature=source_dictionary[index]["temperature"],
+            saturation_pressure=source_dictionary[index]["saturation_pressure"],
+            pressure=source_dictionary[index]["pressure"])
+
+        source_dictionary[index]["volume"] = physics.get_adsorption_volume(
+            adsorbed_amount=source_dictionary[index]["loading"],
+            adsorbate_density=source_dictionary[index]["density"])
+
+    def from_characteristic(index):
+        pass
+
+    data_types = {
+        "isotherm": from_isotherm,
+        "isobar": from_isobar,
+        "isostere": from_characteristic,  # CHANGE LATER
+        "characteristic": from_characteristic,
+        "langmuir": from_isotherm,
+        "n-langmuir": from_isotherm,
+        "bet": from_isotherm,
+        "anti-langmuir": from_isotherm,
+        "henry": from_isotherm,
+        "freundlich": from_isotherm,
+        "sips": from_isotherm,
+        "n-sips": from_isotherm,
+        "langmuir-freundlich": from_isotherm,
+        "n-langmuir-freundlich": from_isotherm,
+        "redlich-peterson": from_isotherm,
+        "toth": from_isotherm,
+        "unilan": from_isotherm,
+        "obrien-myers": from_isotherm,
+        "quadratic": from_isotherm,
+        "asymptotic-temkin": from_isotherm,
+        "bingel-walton": from_isotherm
+    }
+
+    for index in source_dictionary:
+        if input_dictionary[index]["DATA_TYPES"] in data_types:
+            data_types[input_dictionary[index]["DATA_TYPES"]](index)
+
 
 def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str, save: str) -> None:
     """
