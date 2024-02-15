@@ -22,7 +22,8 @@ def main():
             source_dictionary=data_dict,
             input_dictionary=input_dict,
             plot_format=input_dict[0]["DATA_TYPES"],
-            save=input_dict[0]["SAVE_DATA_PLOT"])
+            save=input_dict[0]["SAVE_DATA_PLOT"],
+            from_input=True)
 
     if input_dict[0]["COMPUTE_ENTHALPY"] == "yes":
         enthalpy = interpreter.compute_adsorption_enthalpy(
@@ -34,7 +35,8 @@ def main():
                 source_dictionary=enthalpy,
                 input_dictionary=input_dict,
                 plot_format="enthalpy",
-                save=input_dict[0]["SAVE_ENTHALPY_PLOT"])
+                save=input_dict[0]["SAVE_ENTHALPY_PLOT"],
+                from_input=False)
 
         if input_dict[0]["SAVE_ENTHALPY_DATA"] == "yes":
             interpreter.write_data(
@@ -62,7 +64,8 @@ def main():
                 source_dictionary=data_dict,
                 input_dictionary=input_dict,
                 plot_format="characteristic",
-                save=input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"])
+                save=input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"],
+                from_input=False)
 
     if input_dict[0]["PREDICT_ISOTHERMS"] == "yes":
         predicted_isotherms = interpreter.predict_data(
@@ -76,7 +79,8 @@ def main():
                 source_dictionary=predicted_isotherms,
                 input_dictionary=input_dict,
                 plot_format="isotherm",
-                save=input_dict[0]["SAVE_PREDICTED_ISOTHERMS_PLOT"])
+                save=input_dict[0]["SAVE_PREDICTED_ISOTHERMS_PLOT"],
+                from_input=False)
 
         if input_dict[0]["SAVE_PREDICTED_ISOTHERMS_DATA"] == "yes":
             interpreter.write_data(
@@ -97,7 +101,8 @@ def main():
                 source_dictionary=predicted_isobars,
                 input_dictionary=input_dict,
                 plot_format="isobar",
-                save=input_dict[0]["SAVE_PREDICTED_ISOBARS_PLOT"])
+                save=input_dict[0]["SAVE_PREDICTED_ISOBARS_PLOT"],
+                from_input=False)
 
         if input_dict[0]["SAVE_PREDICTED_ISOBARS_DATA"] == "yes":
             interpreter.write_data(
@@ -118,7 +123,8 @@ def main():
                 source_dictionary=predicted_isosteres,
                 input_dictionary=input_dict,
                 plot_format="isostere",
-                save=input_dict[0]["SAVE_PREDICTED_ISOSTERES_PLOT"])
+                save=input_dict[0]["SAVE_PREDICTED_ISOSTERES_PLOT"],
+                from_input=False)
 
         if input_dict[0]["SAVE_PREDICTED_ISOSTERES_DATA"] == "yes":
             interpreter.write_data(

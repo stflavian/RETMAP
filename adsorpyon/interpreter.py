@@ -663,7 +663,7 @@ def compute_characteristic(source_dictionary: dict, input_dictionary: dict, prop
             data_types[input_dictionary[index]["DATA_TYPES"]](index)
 
 
-def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str, save: str) -> None:
+def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str, save: str, from_input: bool) -> None:
     """
     Create plot based on the input data type. Supports between isotherm, isobar, and characteristic curve.
 
@@ -672,6 +672,7 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
     :param plot_format: Format of the plot, given by the source data format. Can be isobar, isotherm or characteristic
     curve.
     :param save: Dictates if the plot is saved. Saved if "yes", otherwise do not save.
+    :param from_input: Dictates if the data comes from the input files, and sets a separate name for the plot.
     """
 
     def plot_isotherm(index):
@@ -750,7 +751,12 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
 
     if save == "yes":
         os.makedirs(name="Plots", exist_ok=True)
-        figure_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}_{plot_format}"
+
+        if from_input is True:
+            figure_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}_input"
+        else:
+            figure_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}_{plot_format}"
+
         plt.savefig(f"Plots/{figure_name}.png")
 
 
