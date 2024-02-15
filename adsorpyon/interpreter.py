@@ -1079,6 +1079,8 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
                 loading=loading,
                 volume=data_dictionary[0]["volume"])
 
+            boundaries.sort()
+
             if (input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"] is not None and
                     boundaries[0] <= input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][0] <= boundaries[1]):
                 start_temperature = input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][0]
