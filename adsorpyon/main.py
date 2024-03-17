@@ -25,26 +25,6 @@ def main():
             save=input_dict[0]["SAVE_DATA_PLOT"],
             from_input=True)
 
-    if input_dict[0]["COMPUTE_ENTHALPY"] == "yes":
-        enthalpy = interpreter.compute_adsorption_enthalpy(
-            data_dictionary=data_dict,
-            input_dictionary=input_dict)
-
-        if input_dict[0]["PLOT_ENTHALPY"] == "yes":
-            interpreter.plot_data(
-                source_dictionary=enthalpy,
-                input_dictionary=input_dict,
-                plot_format="enthalpy",
-                save=input_dict[0]["SAVE_ENTHALPY_PLOT"],
-                from_input=False)
-
-        if input_dict[0]["SAVE_ENTHALPY_DATA"] == "yes":
-            interpreter.write_data(
-                source_dictionary=enthalpy,
-                input_dictionary=input_dict,
-                properties_dictionary=properties_dict,
-                write_format="enthalpy")
-
     if input_dict[0]["COMPUTE_CHARACTERISTIC_CURVE"] == "yes":
 
         interpreter.compute_characteristic(
@@ -66,6 +46,27 @@ def main():
                 plot_format="characteristic",
                 save=input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"],
                 from_input=False)
+
+    if input_dict[0]["COMPUTE_ENTHALPY"] == "yes":
+        enthalpy = interpreter.compute_adsorption_enthalpy(
+            data_dictionary=data_dict,
+            input_dictionary=input_dict,
+            properties_dictionary=properties_dict)
+
+        if input_dict[0]["PLOT_ENTHALPY"] == "yes":
+            interpreter.plot_data(
+                source_dictionary=enthalpy,
+                input_dictionary=input_dict,
+                plot_format="enthalpy",
+                save=input_dict[0]["SAVE_ENTHALPY_PLOT"],
+                from_input=False)
+
+        if input_dict[0]["SAVE_ENTHALPY_DATA"] == "yes":
+            interpreter.write_data(
+                source_dictionary=enthalpy,
+                input_dictionary=input_dict,
+                properties_dictionary=properties_dict,
+                write_format="enthalpy")
 
     if input_dict[0]["PREDICT_ISOTHERMS"] == "yes":
         predicted_isotherms = interpreter.predict_data(

@@ -25,10 +25,12 @@ DEFAULT_INPUT_DICTIONARY = {
     "OUTPUT_LOADING_UNITS": "mg/g",
     "OUTPUT_POTENTIAL_UNITS": "kJ/mol",
     "OUTPUT_VOLUME_UNITS": "ml/g",
+    "OUTPUT_FORMAT": "raw",
     "PLOT_DATA": "no",
         "LOGARITHMIC_PLOT": "no",
         "SAVE_DATA_PLOT": "no",
     "COMPUTE_ENTHALPY": "no",
+        "NUMBER_ENTHALPY_POINTS": 20,
         "PLOT_ENTHALPY": "yes",
         "SAVE_ENTHALPY_DATA": "no",
         "SAVE_ENTHALPY_PLOT": "no",
@@ -79,6 +81,7 @@ DEFAULT_INPUT_DICTIONARY = {
 }
 
 LIST_INPUT_TAGS = {
+    "ENTHALPY_RANGE": None,
     "PREDICTION_PRESSURES": None,
     "PREDICTION_TEMPERATURES": None,
     "PREDICTION_LOADINGS": None,
