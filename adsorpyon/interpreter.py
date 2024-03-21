@@ -1154,15 +1154,15 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
         "isostere": predict_isostere
     }
 
-    volume_interpolation_function = scipy.interpolate.interp1d(
+    volume_interpolation_function = scipy.interpolate.CubicSpline(
         x=data_dictionary[0]["potential"],
         y=data_dictionary[0]["volume"],
-        fill_value="extrapolate")
+        extrapolate=True)
 
-    potential_interpolation_function = scipy.interpolate.interp1d(
+    potential_interpolation_function = scipy.interpolate.CubicSpline(
         x=data_dictionary[0]["volume"],
         y=data_dictionary[0]["potential"],
-        fill_value="extrapolate")
+        extrapolate=True)
 
     if prediction_type in prediction_formats:
         prediction_dictionary = prediction_formats[prediction_type]()
@@ -1206,10 +1206,9 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         return [minimum_temperature, maximum_temperature]
 
-    potential_interpolation_function = scipy.interpolate.interp1d(
+    potential_interpolation_function = scipy.interpolate.CubicSpline(
         x=data_dictionary[0]["volume"],
-        y=data_dictionary[0]["potential"],
-        fill_value="extrapolate")
+        y=data_dictionary[0]["potential"])
 
     loadings = numpy.linspace(
         start=input_dictionary[0]["ENTHALPY_RANGE"][0],
@@ -1233,7 +1232,7 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
         prediction_dictionary[index]["temperature"] = numpy.linspace(
             start=boundaries[0],
             stop=boundaries[1],
-            num=int(input_dictionary[0]["NUMBER_ISOSTERE_POINTS"]))
+            num=40)
 
         saturation_pressure_list = []
         density_list = []
@@ -1264,8 +1263,9 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         pressures = []
         temperatures = []
+        print(prediction_dictionary[index]["pressure"])
         for press, temp in zip(prediction_dictionary[index]["pressure"], prediction_dictionary[index]["temperature"]):
-            if press <= 0:
+            if press <= 0.01 or np.isnan(press) or np.isnan(temp):
                 continue
             else:
                 pressures.append(press)
@@ -1273,6 +1273,7 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         prediction_dictionary[index]["pressure"] = np.log(pressures)
         prediction_dictionary[index]["temperature"] = np.divide(1, temperatures)
+        print(pressures)
 
         def fit_function(itemperature, heat, offset):
             return heat * 1000 / constants.GAS_CONSTANT * itemperature + offset
@@ -1284,7 +1285,6 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         enthalpy_dictionary["enthalpy"].append(-opt[0])
 
-    enthalpy_dictionary["enthalpy"] = numpy.array(enthalpy_dictionary["enthalpy"])
     return enthalpy_dictionary
 
 
