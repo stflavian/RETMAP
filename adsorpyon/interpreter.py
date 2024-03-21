@@ -18,12 +18,6 @@ import scipy.optimize
 import numpy
 
 
-AXES_SIZE = 19
-TICK_SIZE = 13
-LEGEND_SIZE = 14
-FIGURE_SIZE = (7, 6)
-
-
 def compute_density_from_method(method: str, temperature: float, properties_dictionary: dict) -> float:
     """
     Compute the adsorbate density using the method specified in the input file and the respective molecular properties
@@ -736,11 +730,11 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         "bingel-walton": plot_isotherm
     }
 
-    plt.figure(figsize=FIGURE_SIZE)
-    plt.rc('axes', labelsize=AXES_SIZE)
-    plt.rc('xtick', labelsize=TICK_SIZE)
-    plt.rc('ytick', labelsize=TICK_SIZE)
-    plt.rc('legend', fontsize=LEGEND_SIZE)
+    plt.figure(figsize=(7, 6))
+    plt.rc('axes', labelsize="xx-large")
+    plt.rc('xtick', labelsize="xx-large")
+    plt.rc('ytick', labelsize="xx-large")
+    plt.rc('legend', fontsize="x-large")
 
     for index in source_dictionary:
         if plot_format in plot_formats:
@@ -750,6 +744,7 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, plot_format: str,
         plt.xscale('log')
 
     plt.legend()
+    plt.tight_layout()
 
     if save == "yes":
         os.makedirs(name="Plots", exist_ok=True)
@@ -1263,7 +1258,6 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         pressures = []
         temperatures = []
-        print(prediction_dictionary[index]["pressure"])
         for press, temp in zip(prediction_dictionary[index]["pressure"], prediction_dictionary[index]["temperature"]):
             if press <= 0.01 or np.isnan(press) or np.isnan(temp):
                 continue
@@ -1273,7 +1267,6 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         prediction_dictionary[index]["pressure"] = np.log(pressures)
         prediction_dictionary[index]["temperature"] = np.divide(1, temperatures)
-        print(pressures)
 
         def fit_function(itemperature, heat, offset):
             return heat * 1000 / constants.GAS_CONSTANT * itemperature + offset
