@@ -21,6 +21,7 @@ def main():
         interpreter.plot_data(
             source_dictionary=data_dict,
             input_dictionary=input_dict,
+            properties_dictionary=properties_dict,
             plot_format=input_dict[0]["DATA_TYPES"],
             save=input_dict[0]["SAVE_DATA_PLOT"],
             from_input=True)
@@ -31,6 +32,16 @@ def main():
             source_dictionary=data_dict,
             input_dictionary=input_dict,
             properties_dictionary=properties_dict)
+
+        if input_dict[0]["COMPUTE_SATURATION_PRESSURE_CURVE"] == "yes":
+            interpreter.compute_saturation_pressure_curve(
+                input_dictionary=input_dict,
+                properties_dictionary=properties_dict)
+
+        if input_dict[0]["COMPUTE_DENSITY_CURVE"] == "yes":
+            interpreter.compute_density_curve(
+                input_dictionary=input_dict,
+                properties_dictionary=properties_dict)
 
         if input_dict[0]["SAVE_CHARACTERISTIC_CURVE_DATA"] == "yes":
             interpreter.write_data(
@@ -43,6 +54,7 @@ def main():
             interpreter.plot_data(
                 source_dictionary=data_dict,
                 input_dictionary=input_dict,
+                properties_dictionary=properties_dict,
                 plot_format="characteristic",
                 save=input_dict[0]["SAVE_CHARACTERISTIC_CURVE_PLOT"],
                 from_input=False)
@@ -57,6 +69,7 @@ def main():
             interpreter.plot_data(
                 source_dictionary=enthalpy,
                 input_dictionary=input_dict,
+                properties_dictionary=properties_dict,
                 plot_format="enthalpy",
                 save=input_dict[0]["SAVE_ENTHALPY_PLOT"],
                 from_input=False)
@@ -79,6 +92,7 @@ def main():
             interpreter.plot_data(
                 source_dictionary=predicted_isotherms,
                 input_dictionary=input_dict,
+                properties_dictionary=properties_dict,
                 plot_format="isotherm",
                 save=input_dict[0]["SAVE_PREDICTED_ISOTHERMS_PLOT"],
                 from_input=False)
@@ -101,6 +115,7 @@ def main():
             interpreter.plot_data(
                 source_dictionary=predicted_isobars,
                 input_dictionary=input_dict,
+                properties_dictionary=properties_dict,
                 plot_format="isobar",
                 save=input_dict[0]["SAVE_PREDICTED_ISOBARS_PLOT"],
                 from_input=False)
@@ -123,6 +138,7 @@ def main():
             interpreter.plot_data(
                 source_dictionary=predicted_isosteres,
                 input_dictionary=input_dict,
+                properties_dictionary=properties_dict,
                 plot_format="isostere",
                 save=input_dict[0]["SAVE_PREDICTED_ISOSTERES_PLOT"],
                 from_input=False)
