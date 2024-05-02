@@ -82,7 +82,7 @@ def extrapolation(temperature: float, file: str) -> float:
         return a * x**2 + b * x + c
 
     if temperature <= numpy.max(data[:, 0]):
-        interpolation_function = scipy.interpolate.interp1d(data[:, 0], data[:, 1], fill_value="extrapolate")
+        interpolation_function = scipy.interpolate.CubicSpline(data[:, 0], data[:, 1], extrapolate=True)
         return interpolation_function(temperature)
     else:
         # noinspection PyTupleAssignmentBalance

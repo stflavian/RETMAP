@@ -25,17 +25,24 @@ DEFAULT_INPUT_DICTIONARY = {
     "OUTPUT_LOADING_UNITS": "mg/g",
     "OUTPUT_POTENTIAL_UNITS": "kJ/mol",
     "OUTPUT_VOLUME_UNITS": "ml/g",
+    "OUTPUT_DENSITY_UNITS": "kg/m3",
+    "OUTPUT_FORMAT": "raw",
     "PLOT_DATA": "no",
         "LOGARITHMIC_PLOT": "no",
         "SAVE_DATA_PLOT": "no",
     "COMPUTE_ENTHALPY": "no",
+        "NUMBER_ENTHALPY_POINTS": 20,
         "PLOT_ENTHALPY": "yes",
         "SAVE_ENTHALPY_DATA": "no",
         "SAVE_ENTHALPY_PLOT": "no",
     "COMPUTE_CHARACTERISTIC_CURVE": "no",
         "ADSORBATE_SATURATION_PRESSURE": None,
         "SATURATION_PRESSURE_FILE": None,
+            "COMPUTE_SATURATION_PRESSURE_CURVE": "no",
+            "NUMBER_SATURATION_PRESSURE_POINTS": 50,
         "ADSORBATE_DENSITY": None,
+            "COMPUTE_DENSITY_CURVE": "no",
+            "NUMBER_DENSITY_POINTS": 50,
         "PLOT_CHARACTERISTIC_CURVE": "yes",
         "SAVE_CHARACTERISTIC_CURVE_DATA": "no",
         "SAVE_CHARACTERISTIC_CURVE_PLOT": "no",
@@ -79,6 +86,10 @@ DEFAULT_INPUT_DICTIONARY = {
 }
 
 LIST_INPUT_TAGS = {
+    "ENTHALPY_RANGE": None,
+    "ENTHALPY_TEMPERATURE_RANGE": None,
+    "SATURATION_PRESSURE_RANGE": None,
+    "DENSITY_RANGE": None,
     "PREDICTION_PRESSURES": None,
     "PREDICTION_TEMPERATURES": None,
     "PREDICTION_LOADINGS": None,
@@ -196,3 +207,35 @@ def create_properties_dictionary(path: str) -> dict:
                           f"some methods. In case of errors please add the tag to the properties file!")
 
     return properties_dictionary
+
+
+def create_data_list(path: str) -> list:
+    """
+    Convert the data files to a list.
+
+    Open the data file specified in the path and read it line by line, converting each entry to an integer or a float.
+    The parser supports comments when they are initialized using the "#" sign. The parser does not support strings in
+    the data files.
+    :param path: The path of the properties file.
+    :return: A list.
+    """
+    with open(path, "rt") as file:
+        text = file.read()
+        lines = text.splitlines()
+        output = []
+        for line in lines:
+            if line and line[0] != "#":
+                numbers = line.split()
+                row = []
+                for number in numbers:
+                    try:
+                        value = float(number)
+                    except ValueError:
+                        raise f"Wrong entry in the input file {path}!"
+                    finally:
+                        row.append(value)
+
+                output.append(row)
+
+    return output
+
