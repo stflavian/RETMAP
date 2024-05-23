@@ -1,8 +1,7 @@
 
 # Standard libraries
 import os
-
-import numpy as np
+import logging
 
 # Local libraries
 import density
@@ -16,6 +15,11 @@ import matplotlib.pyplot as plt
 import scipy.interpolate
 import scipy.optimize
 import numpy
+
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename="cappa.log", filemode="w+", level=logging.INFO, datefmt="%d %b %Y %H:%M:%S",
+                    format="%(asctime)s %(levelname)s -> %(message)s")
 
 
 def compute_density_from_method(method: str, temperature: float, properties_dictionary: dict,
@@ -1517,14 +1521,14 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
         pressures = []
         temperatures = []
         for press, temp in zip(prediction_dictionary[index]["pressure"], prediction_dictionary[index]["temperature"]):
-            if press <= 0 or np.isnan(press) or np.isnan(temp):
+            if press <= 0 or numpy.isnan(press) or numpy.isnan(temp):
                 continue
             else:
                 pressures.append(press)
                 temperatures.append(temp)
 
-        prediction_dictionary[index]["pressure"] = np.log(pressures)
-        prediction_dictionary[index]["temperature"] = np.divide(1, temperatures)
+        prediction_dictionary[index]["pressure"] = numpy.log(pressures)
+        prediction_dictionary[index]["temperature"] = numpy.divide(1, temperatures)
 
         plt.scatter(prediction_dictionary[index]["temperature"], prediction_dictionary[index]["pressure"]/prediction_dictionary[index]["pressure"][0])
 
