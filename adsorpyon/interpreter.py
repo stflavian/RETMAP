@@ -18,7 +18,7 @@ import numpy
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="cappa.log", filemode="w+", level=logging.INFO, datefmt="%d %b %Y %H:%M:%S",
+logging.basicConfig(filename="cappa.log", filemode="w+", level=logging.INFO, datefmt="%d-%m-%y %H:%M:%S",
                     format="%(asctime)s %(levelname)s -> %(message)s")
 
 
@@ -31,8 +31,11 @@ def compute_density_from_method(method: str, temperature: float, properties_dict
     :param method: Name of the method used to compute the adsorbate density.
     :param temperature: Temperature at which the adsorbate density is computed in K.
     :param properties_dictionary: Dictionary containing the properties of the molecule used.
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
     :return: Adsorbate density in kg/m3.
     """
+
+    logger.info(f"Computing density at {temperature} K using method {method}.")
 
     def density_empirical() -> float:
         return density.empirical(
@@ -62,7 +65,9 @@ def compute_density_from_method(method: str, temperature: float, properties_dict
 
     if method in density_methods.keys():
         adsorbate_density = density_methods[method]()
+        logger.info(f"Obtained density {adsorbate_density} kg/m3.")
     else:
+        logger.error(f"{method} is not a valid adsorbate density computation method.")
         raise ValueError(f"{method} is not a valid adsorbate density computation method."
                          f" Change the method or check for spelling errors!")
 
@@ -79,8 +84,11 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
     :param temperature: Temperature at which the adsorbate saturation pressure is computed in K.
     :param properties_dictionary: Dictionary containing the properties of the molecule used.
     :param saturation_pressure_file: Path to the file containing saturation pressure data.
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
     :return: Adsorbate saturation pressure in MPa.
     """
+
+    logger.info(f"Computing saturation pressure at {temperature} K using method {method}.")
 
     def saturation_pressure_dubinin() -> float:
         return saturation_pressure.dubinin(
@@ -178,7 +186,9 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
 
     if method in saturation_pressure_methods.keys():
         adsorbate_saturation_pressure = saturation_pressure_methods[method]()
+        logger.info(f"Obtained density {adsorbate_saturation_pressure} MPa.")
     else:
+        logger.error(f"{method} is not a valid adsorbate saturation pressure computation method.")
         raise ValueError(f"{method} is not a valid adsorbate saturation "
                          f"pressure computation method. Change the method or check for spelling errors!")
 
@@ -186,8 +196,24 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
 
 
 def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictionary: dict) -> None:
+    """
+    Read adsorption data from the provided files.
+
+    Takes the list of data files provided in the input dictionary and uses input_reader.create_data_list() to parse it.
+    The data files can either be two-column files or equation parameter files. For the former the data is stored as it,
+    while for the latter the data is generated using the provided parameters.
+
+    :param source_dictionary: Dictionary used to store the parsed data.
+    :param properties_dictionary: Dictionary containing the properties of the molecule used.
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
+    """
+
+    logger.info(f"Starting reading data procedure.")
 
     def read_isotherm(index: int, file_data: list) -> None:
+        """
+        From a two-column file, store the first column as pressure and second column as loading.
+        """
         source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
 
         pressure = numpy.array([row[0] for row in file_data])
@@ -201,6 +227,9 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             molecular_mass=properties_dictionary["MOLECULAR_MASS"])
 
     def read_isobar(index: int, file_data: list) -> None:
+        """
+        From a two-column file, store the first column as temperature and second column as loading.
+        """
         source_dictionary[index]["pressure"] = input_dictionary[index]["PRESSURES"]
 
         temperature = numpy.array([row[0] for row in file_data])
@@ -214,6 +243,9 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             molecular_mass=properties_dictionary["MOLECULAR_MASS"])
 
     def read_isostere(index: int, file_data: list) -> None:
+        """
+        From a two-column file, store the first column as temperature and second column as pressure.
+        """
         source_dictionary[index]["loading"] = input_dictionary[index]["LOADINGS"]
 
         temperature = numpy.array([row[0] for row in file_data])
@@ -227,7 +259,9 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             molecular_mass=properties_dictionary["MOLECULAR_MASS"])
 
     def read_characteristic(index: int, file_data: list) -> None:
-
+        """
+        From a two-column file, store the first column as adsorption potential and second column as volume filling.
+        """
         potential = numpy.array([row[0] for row in file_data])
         source_dictionary[index]["potential"] = potential * convert_input(
             unit=input_dictionary[index]["POTENTIAL_UNITS"],
@@ -577,13 +611,34 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
     }
 
     for index in input_dictionary:
+        logger.info(f"Attempting to parse data from {input_dictionary[index]["DATA_FILES"]}.")
         file_data = input_reader.create_data_list(path=input_dictionary[index]["DATA_FILES"])
+        logger.info(f"Finished parsing data from {input_dictionary[index]["DATA_FILES"]}.")
         if input_dictionary[index]["DATA_TYPES"] in data_types:
+            logger.info(f"Found {input_dictionary[index]["DATA_FILES"]} is {input_dictionary[index]["DATA_TYPES"]}.")
             source_dictionary[index] = {}
             data_types[input_dictionary[index]["DATA_TYPES"]](index, file_data)
+            logger.info(f"Successfully stored data from {input_dictionary[index]['DATA_FILES']} at index {index}.")
+        else:
+            logger.error(f"{input_dictionary[index]['DATA_TYPES']} is not a valid data type.")
+            raise ValueError(f"{input_dictionary[index]['DATA_TYPES']} is not a valid data type. Change the method or "
+                             f"check for spelling errors!")
 
 
-def compute_characteristic(source_dictionary: dict, input_dictionary: dict, properties_dictionary: dict):
+def compute_characteristic(source_dictionary: dict, input_dictionary: dict, properties_dictionary: dict) -> None:
+    """
+    Compute the characteristic curve from the input data.
+
+    If the input data type is either isobar or isotherm, use the appropriate transformation to convert it to
+    a characteristic curve. If the input data is already a characteristic curve, store the data as is. All data is
+    stored in source_dictionary.
+
+    :param source_dictionary: Dictionary used to store the parsed data.
+    :param properties_dictionary: Dictionary containing the properties of the molecule used.
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
+    """
+
+    logger.info(f"Starting characteristic calculation procedure.")
 
     def from_isotherm(index):
         source_dictionary[index]["saturation_pressure"] = compute_saturation_pressure_from_method(
@@ -638,6 +693,9 @@ def compute_characteristic(source_dictionary: dict, input_dictionary: dict, prop
             adsorbate_density=source_dictionary[index]["density"])
 
     def from_characteristic(index):
+        """
+        Do nothing since the data is already stored properly in source_dictionary.
+        """
         pass
 
     data_types = {
@@ -666,19 +724,37 @@ def compute_characteristic(source_dictionary: dict, input_dictionary: dict, prop
 
     for index in source_dictionary:
         if input_dictionary[index]["DATA_TYPES"] in data_types:
+            logger.info(f"Attempting to compute characteristic for {input_dictionary[index]["DATA_FILES"]}.")
             data_types[input_dictionary[index]["DATA_TYPES"]](index)
+            logger.info(f"Finished computing characteristic for {input_dictionary[index]["DATA_FILES"]}.")
+        else:
+            logger.error(f"{input_dictionary[index]["DATA_TYPE"]} is not a valid data type for characteristic "
+                         f"calculations")
+            raise ValueError(f"{input_dictionary[index]["DATA_TYPE"]} is not a valid data type for characteristic "
+                             f"calculations. Earlier checks should have raised this error. Something went "
+                             f"terribly wrong!")
 
 
 def compute_saturation_pressure_curve(input_dictionary: dict, properties_dictionary: dict) -> None:
+    """
+    Compute the saturation pressure curve for a given range and store it in a file in the Output folder.
+
+    :param input_dictionary: Dictionary containing the arguments found in the input file.
+    :param properties_dictionary: Dictionary containing the properties of the molecule used.
+    """
 
     decimals = 4
+
+    logger.info(f"Starting saturation pressure curve calculations.")
 
     start_temperature = input_dictionary[0]["SATURATION_PRESSURE_RANGE"][0]
     end_temperature = input_dictionary[0]["SATURATION_PRESSURE_RANGE"][1]
     num = input_dictionary[0]["NUMBER_SATURATION_PRESSURE_POINTS"]
+    logger.info(f"Found temperature interval {start_temperature}K - {end_temperature}K with {num} points in between.")
 
     temperatures = numpy.linspace(start_temperature, end_temperature, num)
     saturation_pressures = numpy.zeros(num)
+    logger.info(f"Successfully generated temperature interval and saturation pressure variable.")
 
     for index, temperature in enumerate(temperatures):
         saturation_pressures[index] = compute_saturation_pressure_from_method(
@@ -687,6 +763,7 @@ def compute_saturation_pressure_curve(input_dictionary: dict, properties_diction
             properties_dictionary=properties_dictionary,
             saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
             input_dictionary=input_dictionary)
+        logger.info(f"For temperature {temperature}K got saturation pressure {saturation_pressures[index]} MPa.")
 
     molecule = input_dictionary[0]["ADSORBATE"]
 
@@ -694,7 +771,10 @@ def compute_saturation_pressure_curve(input_dictionary: dict, properties_diction
     unit_pressure = input_dictionary[0]['OUTPUT_PRESSURE_UNITS']
     unit_temperature = input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']
 
+    logger.info(f"Starting file writing procedure for saturation pressure curve.")
     with open(file=f"Output/{file_name}", mode="w") as file:
+        logger.info(f"Successfully created file Output/{file_name}.")
+
         file.write(f"# Temperature [{unit_temperature}] \t Saturation pressure [{unit_pressure}] \n")
         cf_pressure = convert_output(
             input_dictionary[0]['OUTPUT_PRESSURE_UNITS'],
@@ -712,6 +792,8 @@ def compute_saturation_pressure_curve(input_dictionary: dict, properties_diction
             temperature = str(temperature).rjust(11)
 
             file.write(f"{temperature} \t {pressure} \n")
+
+    logger.info(f"Finished writing to file Output/{file_name}.")
 
 
 def compute_density_curve(input_dictionary: dict, properties_dictionary: dict):
@@ -1599,7 +1681,10 @@ def convert_input(unit: str, molecular_mass: float) -> float:
 
     # Not a recognized unit
     else:
+        logger.error(f"Input unit {unit} is not a recognized unit!")
         raise ValueError(f"Input unit {unit} is not a recognized unit!")
+
+    logger.info(f"Used conversion factor {conversion_factor} for input {unit}.")
     return conversion_factor
 
 
@@ -1610,11 +1695,18 @@ def convert_output(unit: str, molecular_mass: float) -> float:
     :param molecular_mass: The molecular mass of the molecule.
     :return: A number that the input is multiplied with to be converted to the intended unit.
     """
-    return 1 / convert_input(unit=unit, molecular_mass=molecular_mass)
+
+    logging.disable(level=logging.INFO)
+    conversion_factor = 1 / convert_input(unit, molecular_mass)
+    logging.disable(level=logging.NOTSET)
+
+    logger.info(f"Used conversion factor {conversion_factor} for output {unit}.")
+    return conversion_factor
 
 
 def show_plots() -> None:
     """
     Show all created plots simultaneously in separate windows.
     """
+    logger.info(f"Displaying the plots.")
     plt.show()
