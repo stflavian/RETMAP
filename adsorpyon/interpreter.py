@@ -164,7 +164,7 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
             species_parameter=5.589,
             acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
 
-    def satuartion_pressure_isochore() -> float:
+    def saturation_pressure_isochore() -> float:
         return saturation_pressure.critical_isochore_model(
             temperature=temperature,
             temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
@@ -181,7 +181,7 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
         "prsv1_extrapolation": saturation_pressure_prsv1_extrapolation,
         "prsv2_extrapolation": saturation_pressure_prsv2_extrapolation,
         "widom_banuti": saturation_pressure_widom_banuti,
-        "critical_isochore": satuartion_pressure_isochore
+        "critical_isochore": saturation_pressure_isochore
     }
 
     if method in saturation_pressure_methods.keys():
@@ -611,11 +611,11 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
     }
 
     for index in input_dictionary:
-        logger.info(f"Attempting to parse data from {input_dictionary[index]["DATA_FILES"]}.")
+        logger.info(f"Attempting to parse data from {input_dictionary[index]['DATA_FILES']}.")
         file_data = input_reader.create_data_list(path=input_dictionary[index]["DATA_FILES"])
-        logger.info(f"Finished parsing data from {input_dictionary[index]["DATA_FILES"]}.")
+        logger.info(f"Finished parsing data from {input_dictionary[index]['DATA_FILES']}.")
         if input_dictionary[index]["DATA_TYPES"] in data_types:
-            logger.info(f"Found {input_dictionary[index]["DATA_FILES"]} is {input_dictionary[index]["DATA_TYPES"]}.")
+            logger.info(f"Found {input_dictionary[index]['DATA_FILES']} is {input_dictionary[index]['DATA_TYPES']}.")
             source_dictionary[index] = {}
             data_types[input_dictionary[index]["DATA_TYPES"]](index, file_data)
             logger.info(f"Successfully stored data from {input_dictionary[index]['DATA_FILES']} at index {index}.")
@@ -724,13 +724,13 @@ def compute_characteristic(source_dictionary: dict, input_dictionary: dict, prop
 
     for index in source_dictionary:
         if input_dictionary[index]["DATA_TYPES"] in data_types:
-            logger.info(f"Attempting to compute characteristic for {input_dictionary[index]["DATA_FILES"]}.")
+            logger.info(f"Attempting to compute characteristic for {input_dictionary[index]['DATA_FILES']}.")
             data_types[input_dictionary[index]["DATA_TYPES"]](index)
-            logger.info(f"Finished computing characteristic for {input_dictionary[index]["DATA_FILES"]}.")
+            logger.info(f"Finished computing characteristic for {input_dictionary[index]['DATA_FILES']}.")
         else:
-            logger.error(f"{input_dictionary[index]["DATA_TYPE"]} is not a valid data type for characteristic "
+            logger.error(f"{input_dictionary[index]['DATA_TYPE']} is not a valid data type for characteristic "
                          f"calculations")
-            raise ValueError(f"{input_dictionary[index]["DATA_TYPE"]} is not a valid data type for characteristic "
+            raise ValueError(f"{input_dictionary[index]['DATA_TYPE']} is not a valid data type for characteristic "
                              f"calculations. Earlier checks should have raised this error. Something went "
                              f"terribly wrong!")
 
