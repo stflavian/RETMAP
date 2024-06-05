@@ -51,7 +51,7 @@ def compute_density_from_method(method: str, temperature: float, properties_dict
             thermal_expansion_coefficient=input_dictionary[0]["THERMAL_EXPANSION_COEFFICIENT"])
 
     def density_ozawa() -> float:
-        return density.ozawa_modified(
+        return density.ozawa(
             temperature=temperature,
             temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
             density_boiling=properties_dictionary["DENSITY_BOILING"],

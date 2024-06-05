@@ -23,18 +23,6 @@ import math
 import constants
 
 
-def ozawa(temperature: float, temperature_boiling: float, density_boiling: float) -> float:
-    """
-    Calculates the temperature dependent adsorbate density based on Ozawa's method, represented by an exponential
-    formula.
-    :param temperature: Temperature at which the experiment is conducted in K.
-    :param temperature_boiling: Boiling temperature of the adsorbate in K.
-    :param density_boiling: Density of the adsorbate at the boiling point in kg/m3.
-    :return: Density in kg/m3.
-    """
-    return density_boiling * math.exp(-0.0025 * (temperature - temperature_boiling))
-
-
 def empirical(pressure_critical: float, temperature_critical: float, molecular_mass: float) -> float:
     """
     Calculates the adsorbate density based on an empirical formula, which is not temperature dependent.
@@ -59,8 +47,8 @@ def hauer(temperature: float, temperature_boiling: float, density_boiling: float
     return density_boiling * (1 - thermal_expansion_coefficient * (temperature - temperature_boiling))
 
 
-def ozawa_modified(temperature: float, temperature_boiling: float, density_boiling: float,
-                   thermal_expansion_coefficient: float) -> float:
+def ozawa(temperature: float, temperature_boiling: float, density_boiling: float,
+          thermal_expansion_coefficient: float) -> float:
     """
     Calculates the temperature dependent adsorbate density based on Ozawa's method, represented by an exponential
     formula.
