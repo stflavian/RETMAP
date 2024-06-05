@@ -130,25 +130,25 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
         p_guess = abs(p_guess[0])
-        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation='preos',
+        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation="preos",
                                                             temperature_critical=temperature_critical,
                                                             temperature=temperature, pressure=p_guess,
-                                                            acentric_factor=acentric_factor, state='vapor', kappa1=0,
+                                                            acentric_factor=acentric_factor, state="vapor", kappa1=0,
                                                             kappa2=0, kappa3=0)
 
-        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, equation='preos',
+        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, equation="preos",
                                                              temperature_critical=temperature_critical,
                                                              temperature=temperature, pressure=p_guess,
-                                                             acentric_factor=acentric_factor, state='liquid', kappa1=0,
+                                                             acentric_factor=acentric_factor, state="liquid", kappa1=0,
                                                              kappa2=0, kappa3=0)
 
-        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, equation='preos',
+        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, equation="preos",
                                                           pressure_critical=pressure_critical,
                                                           temperature_critical=temperature_critical,
                                                           temperature=temperature, pressure=p_guess,
                                                           acentric_factor=acentric_factor, kappa1=0, kappa2=0, kappa3=0)
 
-        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, equation='preos',
+        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, equation="preos",
                                                            pressure_critical=pressure_critical,
                                                            temperature_critical=temperature_critical,
                                                            temperature=temperature, pressure=p_guess,
@@ -186,26 +186,26 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
         p_guess = abs(p_guess[0])
-        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation='prsv1',
+        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation="prsv1",
                                                             temperature_critical=temperature_critical,
                                                             temperature=temperature, pressure=p_guess,
-                                                            acentric_factor=acentric_factor, state='vapor',
+                                                            acentric_factor=acentric_factor, state="vapor",
                                                             kappa1=kappa1, kappa2=0, kappa3=0)
 
-        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, equation='prsv1',
+        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, equation="prsv1",
                                                              temperature_critical=temperature_critical,
                                                              temperature=temperature, pressure=p_guess,
-                                                             acentric_factor=acentric_factor, state='liquid',
+                                                             acentric_factor=acentric_factor, state="liquid",
                                                              kappa1=kappa1, kappa2=0, kappa3=0)
 
-        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, equation='prsv1',
+        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, equation="prsv1",
                                                           pressure_critical=pressure_critical,
                                                           temperature_critical=temperature_critical,
                                                           temperature=temperature, pressure=p_guess,
                                                           acentric_factor=acentric_factor, kappa1=kappa1, kappa2=0,
                                                           kappa3=0)
 
-        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, equation='prsv1',
+        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, equation="prsv1",
                                                            pressure_critical=pressure_critical,
                                                            temperature_critical=temperature_critical,
                                                            temperature=temperature, pressure=p_guess,
@@ -245,26 +245,26 @@ def prsv2(temperature: float, temperature_critical: float, pressure_critical: fl
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
         p_guess = abs(p_guess[0])
-        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation='prsv2',
+        compressibility_vapor = physics.get_compressibility(pressure_critical=pressure_critical, equation="prsv2",
                                                             temperature_critical=temperature_critical,
                                                             temperature=temperature, pressure=p_guess,
-                                                            acentric_factor=acentric_factor, state='vapor',
+                                                            acentric_factor=acentric_factor, state="vapor",
                                                             kappa1=kappa1, kappa2=kappa2, kappa3=kappa3)
 
-        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, equation='prsv2',
+        compressibility_liquid = physics.get_compressibility(pressure_critical=pressure_critical, equation="prsv2",
                                                              temperature_critical=temperature_critical,
                                                              temperature=temperature, pressure=p_guess,
-                                                             acentric_factor=acentric_factor, state='liquid',
+                                                             acentric_factor=acentric_factor, state="liquid",
                                                              kappa1=kappa1, kappa2=kappa2, kappa3=kappa3)
 
-        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, equation='prsv2',
+        fugacity_vapor = physics.get_fugacity_coefficient(compressibility=compressibility_vapor, equation="prsv2",
                                                           pressure_critical=pressure_critical,
                                                           temperature_critical=temperature_critical,
                                                           temperature=temperature, pressure=p_guess,
                                                           acentric_factor=acentric_factor, kappa1=kappa1, kappa2=kappa2,
                                                           kappa3=kappa3)
 
-        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, equation='prsv2',
+        fugacity_liquid = physics.get_fugacity_coefficient(compressibility=compressibility_liquid, equation="prsv2",
                                                            pressure_critical=pressure_critical,
                                                            temperature_critical=temperature_critical,
                                                            temperature=temperature, pressure=p_guess,
