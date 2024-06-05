@@ -39,23 +39,23 @@ def compute_density_from_method(method: str, temperature: float, properties_dict
 
     def density_empirical() -> float:
         return density.empirical(
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def density_hauer() -> float:
         return density.hauer(
             temperature=temperature,
-            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
-            density_boiling=properties_dictionary["DENSITY_BOILING"],
-            thermal_expansion_coefficient=input_dictionary[0]["THERMAL_EXPANSION_COEFFICIENT"])
+            temperature_boiling=properties_dictionary['TEMPERATURE_BOILING'],
+            density_boiling=properties_dictionary['DENSITY_BOILING'],
+            thermal_expansion_coefficient=input_dictionary[0]['THERMAL_EXPANSION_COEFFICIENT'])
 
     def density_ozawa() -> float:
         return density.ozawa(
             temperature=temperature,
-            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
-            density_boiling=properties_dictionary["DENSITY_BOILING"],
-            thermal_expansion_coefficient=input_dictionary[0]["THERMAL_EXPANSION_COEFFICIENT"])
+            temperature_boiling=properties_dictionary['TEMPERATURE_BOILING'],
+            density_boiling=properties_dictionary['DENSITY_BOILING'],
+            thermal_expansion_coefficient=input_dictionary[0]['THERMAL_EXPANSION_COEFFICIENT'])
 
     density_methods = {
         "empirical": density_empirical,
@@ -93,15 +93,15 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
     def saturation_pressure_dubinin() -> float:
         return saturation_pressure.dubinin(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"])
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'])
 
     def saturation_pressure_amankwah() -> float:
         return saturation_pressure.amankwah(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-            k=input_dictionary[0]["AMANKWAH_EXPONENT"])
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
+            k=input_dictionary[0]['AMANKWAH_EXPONENT'])
 
     def saturation_pressure_extrapolation() -> float:
         return saturation_pressure.extrapolation(temperature=temperature, file=saturation_pressure_file)
@@ -112,64 +112,64 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
     def saturation_pressure_peng_robinson() -> float:
         return saturation_pressure.pengrobinson(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
             pressure_guess=1,
-            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
+            acentric_factor=properties_dictionary['ACENTRIC_FACTOR'])
 
     def saturation_pressure_preos_extrapolation() -> float:
         return saturation_pressure.equation_extrapolation(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
-            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
+            acentric_factor=properties_dictionary['ACENTRIC_FACTOR'],
+            temperature_boiling=properties_dictionary['TEMPERATURE_BOILING'],
             equation="preos",
-            kappa1=properties_dictionary["PRSV_KAPPA1"],
-            kappa2=properties_dictionary["PRSV_KAPPA2"],
-            kappa3=properties_dictionary["PRSV_KAPPA3"],
+            kappa1=properties_dictionary['PRSV_KAPPA1'],
+            kappa2=properties_dictionary['PRSV_KAPPA2'],
+            kappa3=properties_dictionary['PRSV_KAPPA3'],
             function="polynomial2")
 
     def saturation_pressure_prsv1_extrapolation() -> float:
         return saturation_pressure.equation_extrapolation(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
-            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
+            acentric_factor=properties_dictionary['ACENTRIC_FACTOR'],
+            temperature_boiling=properties_dictionary['TEMPERATURE_BOILING'],
             equation="prsv1",
-            kappa1=properties_dictionary["PRSV_KAPPA1"],
-            kappa2=properties_dictionary["PRSV_KAPPA2"],
-            kappa3=properties_dictionary["PRSV_KAPPA3"],
+            kappa1=properties_dictionary['PRSV_KAPPA1'],
+            kappa2=properties_dictionary['PRSV_KAPPA2'],
+            kappa3=properties_dictionary['PRSV_KAPPA3'],
             function="polynomial2")
 
     def saturation_pressure_prsv2_extrapolation() -> float:
         return saturation_pressure.equation_extrapolation(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"],
-            temperature_boiling=properties_dictionary["TEMPERATURE_BOILING"],
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
+            acentric_factor=properties_dictionary['ACENTRIC_FACTOR'],
+            temperature_boiling=properties_dictionary['TEMPERATURE_BOILING'],
             equation="prsv2",
-            kappa1=properties_dictionary["PRSV_KAPPA1"],
-            kappa2=properties_dictionary["PRSV_KAPPA2"],
-            kappa3=properties_dictionary["PRSV_KAPPA3"],
+            kappa1=properties_dictionary['PRSV_KAPPA1'],
+            kappa2=properties_dictionary['PRSV_KAPPA2'],
+            kappa3=properties_dictionary['PRSV_KAPPA3'],
             function="polynomial2")
 
     def saturation_pressure_widom_banuti() -> float:
         return saturation_pressure.widombanuti(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
             species_parameter=5.589,
-            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
+            acentric_factor=properties_dictionary['ACENTRIC_FACTOR'])
 
     def saturation_pressure_isochore() -> float:
         return saturation_pressure.critical_isochore_model(
             temperature=temperature,
-            temperature_critical=properties_dictionary["TEMPERATURE_CRITICAL"],
-            pressure_critical=properties_dictionary["PRESSURE_CRITICAL"],
-            acentric_factor=properties_dictionary["ACENTRIC_FACTOR"])
+            temperature_critical=properties_dictionary['TEMPERATURE_CRITICAL'],
+            pressure_critical=properties_dictionary['PRESSURE_CRITICAL'],
+            acentric_factor=properties_dictionary['ACENTRIC_FACTOR'])
 
     saturation_pressure_methods = {
         "dubinin": saturation_pressure_dubinin,
@@ -214,84 +214,84 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
         """
         From a two-column file, store the first column as pressure and second column as loading.
         """
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
 
         pressure = numpy.array([row[0] for row in file_data])
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = numpy.array([row[1] for row in file_data])
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_isobar(index: int, file_data: list) -> None:
         """
         From a two-column file, store the first column as temperature and second column as loading.
         """
-        source_dictionary[index]["pressure"] = input_dictionary[index]["PRESSURES"]
+        source_dictionary[index]['pressure'] = input_dictionary[index]['PRESSURES']
 
         temperature = numpy.array([row[0] for row in file_data])
-        source_dictionary[index]["temperature"] = temperature * convert_input(
-            unit=source_dictionary[index]["TEMPERATURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['temperature'] = temperature * convert_input(
+            unit=source_dictionary[index]['TEMPERATURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = numpy.array([row[1] for row in file_data])
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_isostere(index: int, file_data: list) -> None:
         """
         From a two-column file, store the first column as temperature and second column as pressure.
         """
-        source_dictionary[index]["loading"] = input_dictionary[index]["LOADINGS"]
+        source_dictionary[index]['loading'] = input_dictionary[index]['LOADINGS']
 
         temperature = numpy.array([row[0] for row in file_data])
-        source_dictionary[index]["temperature"] = temperature * convert_input(
-            unit=source_dictionary[index]["TEMPERATURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['temperature'] = temperature * convert_input(
+            unit=source_dictionary[index]['TEMPERATURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         pressure = numpy.array([row[1] for row in file_data])
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_characteristic(index: int, file_data: list) -> None:
         """
         From a two-column file, store the first column as adsorption potential and second column as volume filling.
         """
         potential = numpy.array([row[0] for row in file_data])
-        source_dictionary[index]["potential"] = potential * convert_input(
-            unit=input_dictionary[index]["POTENTIAL_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['potential'] = potential * convert_input(
+            unit=input_dictionary[index]['POTENTIAL_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         volume = numpy.array([row[1] for row in file_data])
-        source_dictionary[index]["volume"] = volume * convert_input(
-            unit=input_dictionary[index]["VOLUME_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['volume'] = volume * convert_input(
+            unit=input_dictionary[index]['VOLUME_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_langmuir(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bp = param2 * pressure
         loading = param1 * bp / (1 + bp)
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
 
     def read_n_langmuir(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         params1 = file_data[1][0]
         params2 = file_data[2][0]
@@ -299,21 +299,21 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             raise ValueError("The number of parameters for the n-Langmuir isotherm does not match!")
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = numpy.zeros(shape=num)
         for param1, param2 in zip(params1, params2):
             bp = param2 * pressure
             loading += param1 * bp / (1 + bp)
 
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_bet(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
@@ -321,84 +321,84 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
         param4 = file_data[4][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         pr = pressure / param1
         bpr = param3 * pr
         loading = param2 * bpr / ((1 - param4 * pr) * (1 - param4 + bpr))
-        source_dictionary[index]["loading"] = loading* convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_anti_langmuir(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = (param1 * pressure) / (1 - param2 * pressure)
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_henry(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = param1 * pressure
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_freundlich(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = param1 * numpy.power(pressure, 1/param2)
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_sips(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bpiv = numpy.power(param2 * pressure, 1/param3)
         loading = param1 * bpiv / (1 + bpiv)
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_n_sips(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         params1 = file_data[1]
         params2 = file_data[2]
@@ -407,21 +407,21 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             raise ValueError("The number of parameters for the n-Langmuir isotherm does not match!")
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = numpy.zeros(shape=num)
         for param1, param2, param3 in zip(params1, params2, params3):
             bpiv = numpy.power(param2 * pressure, 1/param3)
             loading += param1 * bpiv / (1 + bpiv)
 
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_langmuir_freundlich(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
@@ -431,16 +431,16 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
         bpv = param2 * numpy.power(pressure, param3)
         loading = param1 * bpv / (1 + bpv)
 
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_n_langmuir_freundlich(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         params1 = file_data[1]
         params2 = file_data[2]
@@ -449,142 +449,142 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             raise ValueError("The number of parameters for the n-Langmuir isotherm does not match!")
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = numpy.zeros(shape=num)
         for param1, param2, param3 in zip(params1, params2, params3):
             bpv = param2 * numpy.power(pressure, param3)
             loading += param1 * bpv / (1 + bpv)
 
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_redlich_peterson(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = param1 * pressure / (1 + param2 * numpy.power(pressure, param3))
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
 
     def read_toth(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bp = param2 * pressure
         loading = param1 * bp / numpy.power((1 + numpy.power(bp, param3)), 1/param3)
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_unilan(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
 
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bp = param2 * pressure
         loading = (param1 / (2 * param3) * numpy.log((1 + bp * numpy.exp(param3)) / (1 + bp * numpy.exp(-param3))))
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_obrien_myers(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bp = param2 * pressure
         loading = param1 * (bp / (1 + bp) + param3**2 * bp * (1 - bp) / (2 * numpy.power(1 + bp, 3)))
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_quadratic(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bp = param2 * pressure
         cp2 = param3 * numpy.power(pressure, 2)
         loading = param1 * (bp + 2 * cp2 / (1 + bp + cp2))
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_asymptotic_temkin(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bp = param2 * pressure
         frac = bp / (1 + bp)
         loading = param1 * frac + param1 * param3 * numpy.power(frac, 2) * (frac - 1)
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     def read_bingel_walton(index: int, file_data: list) -> None:
-        source_dictionary[index]["temperature"] = input_dictionary[index]["TEMPERATURES"]
+        source_dictionary[index]['temperature'] = input_dictionary[index]['TEMPERATURES']
         start_pressure, stop_pressure, num = file_data[0][0], file_data[0][1], int(file_data[0][2])
         param1 = file_data[1][0]
         param2 = file_data[2][0]
         param3 = file_data[3][0]
         pressure = numpy.linspace(start=start_pressure, stop=stop_pressure, num=num)
-        source_dictionary[index]["pressure"] = pressure * convert_input(
-            unit=input_dictionary[index]["PRESSURE_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['pressure'] = pressure * convert_input(
+            unit=input_dictionary[index]['PRESSURE_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         term = -(param2 + param3) * pressure
         loading = param1 * (1 - numpy.exp(term) / (1 + param3/param2 * numpy.exp(term)))
-        source_dictionary[index]["loading"] = loading * convert_input(
-            unit=input_dictionary[index]["LOADING_UNITS"],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+        source_dictionary[index]['loading'] = loading * convert_input(
+            unit=input_dictionary[index]['LOADING_UNITS'],
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
     data_types = {
         "isotherm": read_isotherm,
@@ -612,12 +612,12 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
 
     for index in input_dictionary:
         logger.info(f"Attempting to parse data from {input_dictionary[index]['DATA_FILES']}.")
-        file_data = input_reader.create_data_list(path=input_dictionary[index]["DATA_FILES"])
+        file_data = input_reader.create_data_list(path=input_dictionary[index]['DATA_FILES'])
         logger.info(f"Finished parsing data from {input_dictionary[index]['DATA_FILES']}.")
         if input_dictionary[index]["DATA_TYPES"] in data_types:
             logger.info(f"Found {input_dictionary[index]['DATA_FILES']} is {input_dictionary[index]['DATA_TYPES']}.")
             source_dictionary[index] = {}
-            data_types[input_dictionary[index]["DATA_TYPES"]](index, file_data)
+            data_types[input_dictionary[index]['DATA_TYPES']](index, file_data)
             logger.info(f"Successfully stored data from {input_dictionary[index]['DATA_FILES']} at index {index}.")
         else:
             logger.error(f"{input_dictionary[index]['DATA_TYPES']} is not a valid data type.")
@@ -641,56 +641,56 @@ def compute_characteristic(source_dictionary: dict, input_dictionary: dict, prop
     logger.info(f"Starting characteristic calculation procedure.")
 
     def from_isotherm(index):
-        source_dictionary[index]["saturation_pressure"] = compute_saturation_pressure_from_method(
-            method=input_dictionary[index]["ADSORBATE_SATURATION_PRESSURE"],
-            temperature=source_dictionary[index]["temperature"],
+        source_dictionary[index]['saturation_pressure'] = compute_saturation_pressure_from_method(
+            method=input_dictionary[index]['ADSORBATE_SATURATION_PRESSURE'],
+            temperature=source_dictionary[index]['temperature'],
             properties_dictionary=properties_dictionary,
-            saturation_pressure_file=input_dictionary[index]["SATURATION_PRESSURE_FILE"],
+            saturation_pressure_file=input_dictionary[index]['SATURATION_PRESSURE_FILE'],
             input_dictionary=input_dictionary)
 
-        source_dictionary[index]["density"] = compute_density_from_method(
-            method=input_dictionary[index]["ADSORBATE_DENSITY"],
-            temperature=source_dictionary[index]["temperature"],
+        source_dictionary[index]['density'] = compute_density_from_method(
+            method=input_dictionary[index]['ADSORBATE_DENSITY'],
+            temperature=source_dictionary[index]['temperature'],
             properties_dictionary=properties_dictionary,
             input_dictionary=input_dictionary)
 
-        source_dictionary[index]["potential"] = physics.get_adsorption_potential(
-            temperature=source_dictionary[index]["temperature"],
-            saturation_pressure=source_dictionary[index]["saturation_pressure"],
-            pressure=source_dictionary[index]["pressure"])
+        source_dictionary[index]['potential'] = physics.get_adsorption_potential(
+            temperature=source_dictionary[index]['temperature'],
+            saturation_pressure=source_dictionary[index]['saturation_pressure'],
+            pressure=source_dictionary[index]['pressure'])
 
-        source_dictionary[index]["volume"] = physics.get_adsorption_volume(
-            adsorbed_amount=source_dictionary[index]["loading"],
-            adsorbate_density=source_dictionary[index]["density"])
+        source_dictionary[index]['volume'] = physics.get_adsorption_volume(
+            adsorbed_amount=source_dictionary[index]['loading'],
+            adsorbate_density=source_dictionary[index]['density'])
 
     def from_isobar(index):
         saturation_pressure_array = []
         density_array = []
-        for temperature in source_dictionary[index]["temperature"]:
+        for temperature in source_dictionary[index]['temperature']:
             saturation_pressure_array.append(compute_saturation_pressure_from_method(
-                method=input_dictionary[index]["ADSORBATE_SATURATION_PRESSURE"],
+                method=input_dictionary[index]['ADSORBATE_SATURATION_PRESSURE'],
                 temperature=temperature,
                 properties_dictionary=properties_dictionary,
-                saturation_pressure_file=input_dictionary[index]["SATURATION_PRESSURE_FILE"],
+                saturation_pressure_file=input_dictionary[index]['SATURATION_PRESSURE_FILE'],
                 input_dictionary=input_dictionary))
 
             density_array.append(compute_density_from_method(
-                method=input_dictionary[index]["ADSORBATE_DENSITY"],
+                method=input_dictionary[index]['ADSORBATE_DENSITY'],
                 temperature=temperature,
                 properties_dictionary=properties_dictionary,
                 input_dictionary=input_dictionary))
 
-        source_dictionary[index]["saturation_pressure"] = numpy.array(saturation_pressure_array)
-        source_dictionary[index]["density"] = numpy.array(density_array)
+        source_dictionary[index]['saturation_pressure'] = numpy.array(saturation_pressure_array)
+        source_dictionary[index]['density'] = numpy.array(density_array)
 
-        source_dictionary[index]["potential"] = physics.get_adsorption_potential(
-            temperature=source_dictionary[index]["temperature"],
-            saturation_pressure=source_dictionary[index]["saturation_pressure"],
-            pressure=source_dictionary[index]["pressure"])
+        source_dictionary[index]['potential'] = physics.get_adsorption_potential(
+            temperature=source_dictionary[index]['temperature'],
+            saturation_pressure=source_dictionary[index]['saturation_pressure'],
+            pressure=source_dictionary[index]['pressure'])
 
-        source_dictionary[index]["volume"] = physics.get_adsorption_volume(
-            adsorbed_amount=source_dictionary[index]["loading"],
-            adsorbate_density=source_dictionary[index]["density"])
+        source_dictionary[index]['volume'] = physics.get_adsorption_volume(
+            adsorbed_amount=source_dictionary[index]['loading'],
+            adsorbate_density=source_dictionary[index]['density'])
 
     def from_characteristic(index):
         """
@@ -723,9 +723,9 @@ def compute_characteristic(source_dictionary: dict, input_dictionary: dict, prop
     }
 
     for index in source_dictionary:
-        if input_dictionary[index]["DATA_TYPES"] in data_types:
+        if input_dictionary[index]['DATA_TYPES'] in data_types:
             logger.info(f"Attempting to compute characteristic for {input_dictionary[index]['DATA_FILES']}.")
-            data_types[input_dictionary[index]["DATA_TYPES"]](index)
+            data_types[input_dictionary[index]['DATA_TYPES']](index)
             logger.info(f"Finished computing characteristic for {input_dictionary[index]['DATA_FILES']}.")
         else:
             logger.error(f"{input_dictionary[index]['DATA_TYPE']} is not a valid data type for characteristic "
@@ -747,9 +747,9 @@ def compute_saturation_pressure_curve(input_dictionary: dict, properties_diction
 
     logger.info(f"Starting saturation pressure curve calculations.")
 
-    start_temperature = input_dictionary[0]["SATURATION_PRESSURE_RANGE"][0]
-    end_temperature = input_dictionary[0]["SATURATION_PRESSURE_RANGE"][1]
-    num = input_dictionary[0]["NUMBER_SATURATION_PRESSURE_POINTS"]
+    start_temperature = input_dictionary[0]['SATURATION_PRESSURE_RANGE'][0]
+    end_temperature = input_dictionary[0]['SATURATION_PRESSURE_RANGE'][1]
+    num = input_dictionary[0]['NUMBER_SATURATION_PRESSURE_POINTS']
     logger.info(f"Found temperature interval {start_temperature}K - {end_temperature}K with {num} points in between.")
 
     temperatures = numpy.linspace(start_temperature, end_temperature, num)
@@ -758,14 +758,14 @@ def compute_saturation_pressure_curve(input_dictionary: dict, properties_diction
 
     for index, temperature in enumerate(temperatures):
         saturation_pressures[index] = compute_saturation_pressure_from_method(
-            method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+            method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
             temperature=temperature,
             properties_dictionary=properties_dictionary,
-            saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
+            saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
             input_dictionary=input_dictionary)
         logger.info(f"For temperature {temperature}K got saturation pressure {saturation_pressures[index]} MPa.")
 
-    molecule = input_dictionary[0]["ADSORBATE"]
+    molecule = input_dictionary[0]['ADSORBATE']
 
     file_name = f"{molecule}_saturation_pressure.dat"
     unit_pressure = input_dictionary[0]['OUTPUT_PRESSURE_UNITS']
@@ -778,11 +778,11 @@ def compute_saturation_pressure_curve(input_dictionary: dict, properties_diction
         file.write(f"# Temperature [{unit_temperature}] \t Saturation pressure [{unit_pressure}] \n")
         cf_pressure = convert_output(
             input_dictionary[0]['OUTPUT_PRESSURE_UNITS'],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_temperature = convert_output(
             input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS'],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         for temperature, pressure in zip(temperatures, saturation_pressures):
             pressure = numpy.round(pressure * cf_pressure, decimals=decimals)
@@ -800,21 +800,21 @@ def compute_density_curve(input_dictionary: dict, properties_dictionary: dict):
 
     decimals = 4
 
-    start_temperature = input_dictionary[0]["DENSITY_RANGE"][0]
-    end_temperature = input_dictionary[0]["DENSITY_RANGE"][1]
-    num = input_dictionary[0]["NUMBER_DENSITY_POINTS"]
+    start_temperature = input_dictionary[0]['DENSITY_RANGE'][0]
+    end_temperature = input_dictionary[0]['DENSITY_RANGE'][1]
+    num = input_dictionary[0]['NUMBER_DENSITY_POINTS']
 
     temperatures = numpy.linspace(start_temperature, end_temperature, num)
     densities = numpy.zeros(num)
 
     for index, temperature in enumerate(temperatures):
         densities[index] = compute_density_from_method(
-            method=input_dictionary[0]["ADSORBATE_DENSITY"],
+            method=input_dictionary[0]['ADSORBATE_DENSITY'],
             temperature=temperature,
             properties_dictionary=properties_dictionary,
-        )
+            input_dictionary=input_dictionary)
 
-    molecule = input_dictionary[0]["ADSORBATE"]
+    molecule = input_dictionary[0]['ADSORBATE']
 
     file_name = f"{molecule}_density.dat"
     unit_temperature = input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']
@@ -824,11 +824,11 @@ def compute_density_curve(input_dictionary: dict, properties_dictionary: dict):
 
         cf_density = convert_output(
             input_dictionary[0]['OUTPUT_DENSITY_UNITS'],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_temperature = convert_output(
             input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS'],
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         for temperature, density in zip(temperatures, densities):
             density = numpy.round(density * cf_density, decimals=decimals)
@@ -861,15 +861,15 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
 
         cf_temperature = convert_output(
             unit_temperature,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_pressure = convert_output(
             unit_pressure,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_loading = convert_output(
             unit_loading,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         temperature = source_dictionary[index]['temperature'] * cf_temperature
         pressure = source_dictionary[index]['pressure'] * cf_pressure
@@ -888,15 +888,15 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
 
         cf_temperature = convert_output(
             unit_temperature,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_pressure = convert_output(
             unit_pressure,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_loading = convert_output(
             unit_loading,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         temperature = source_dictionary[index]['temperature'] * cf_temperature
         pressure = source_dictionary[index]['pressure'] * cf_pressure
@@ -915,15 +915,15 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
 
         cf_temperature = convert_output(
             unit_temperature,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_pressure = convert_output(
             unit_pressure,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_loading = convert_output(
             unit_loading,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         temperature = source_dictionary[index]['temperature'] * cf_temperature
         pressure = source_dictionary[index]['pressure'] * cf_pressure
@@ -940,7 +940,7 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
 
         cf_loading = convert_output(
             unit_loading,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         loading = source_dictionary['loading'] * cf_loading
         enthalpy = source_dictionary['enthalpy']
@@ -958,26 +958,26 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
 
         cf_temperature = convert_output(
             unit_temperature,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_pressure = convert_output(
             unit_pressure,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_potential = convert_output(
             unit_potential,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         cf_volume = convert_output(
             unit_volume,
-            molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+            molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         temperature = source_dictionary[index]['temperature'] * cf_temperature
         pressure = source_dictionary[index]['pressure'] * cf_pressure
         potential = source_dictionary[index]['potential'] * cf_potential
         volume = source_dictionary[index]['volume'] * cf_volume
 
-        if type(source_dictionary[index]["temperature"]) is not numpy.ndarray:
+        if type(source_dictionary[index]['temperature']) is not numpy.ndarray:
             label = f"{temperature:.2f}{unit_temperature}"
         else:
             label = f"{pressure:2.f} {unit_pressure}"
@@ -1021,13 +1021,13 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
         if plot_format in plot_formats:
             plot_formats[plot_format](index)
 
-    if plot_format == "isotherm" and input_dictionary[0]["LOGARITHMIC_PLOT"] == "yes":
+    if plot_format == "isotherm" and input_dictionary[0]['LOGARITHMIC_PLOT'] == "yes":
         plt.xscale('log')
 
     plt.legend()
     plt.tight_layout()
 
-    if save == "yes":
+    if save.lower() == "yes":
         os.makedirs(name="Plots", exist_ok=True)
 
         if from_input is True:
@@ -1061,13 +1061,13 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
             file.write(f"# Pressure [{unit_pressure}] \t Loading [{unit_loading}] \n")
             cf_pressure = convert_output(
                 unit_pressure,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
             cf_loading = convert_output(
                 unit_loading,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
-            for pressure, loading in zip(source_dictionary[index]["pressure"], source_dictionary[index]["loading"]):
+            for pressure, loading in zip(source_dictionary[index]['pressure'], source_dictionary[index]['loading']):
                 pressure = numpy.round(pressure * cf_pressure, decimals=decimals)
                 loading = numpy.round(loading * cf_loading, decimals=decimals)
 
@@ -1079,20 +1079,20 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
     def write_isobar(index, base_name) -> None:
 
         file_name = f"{base_name}_isobar_{source_dictionary[index]['pressure']}MPa.dat"
-        unit_temperature = input_dictionary[0]["OUTPUT_TEMPERATURE_UNITS"]
-        unit_loading = input_dictionary[0]["OUTPUT_LOADING_UNITS"]
+        unit_temperature = input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']
+        unit_loading = input_dictionary[0]['OUTPUT_LOADING_UNITS']
 
         with open(file=f"Output/{file_name}", mode="w") as file:
             file.write(f"#Temperature [{unit_temperature}] \t Loading [{unit_loading}] \n")
             cf_temperature = convert_output(
                 unit_temperature,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
             cf_loading = convert_output(
                 unit_loading,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
-            for temp, loading in zip(source_dictionary[index]["temperature"], source_dictionary[index]["loading"]):
+            for temp, loading in zip(source_dictionary[index]['temperature'], source_dictionary[index]['loading']):
                 temp = numpy.round(temp * cf_temperature, decimals=decimals)
                 loading = numpy.round(loading * cf_loading, decimals=decimals)
 
@@ -1105,20 +1105,20 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
     def write_isostere(index, base_name) -> None:
 
         file_name = f"{base_name}_isostere_{source_dictionary[index]['loading']}mgpg.dat"
-        unit_temperature = input_dictionary[0]["OUTPUT_TEMPERATURE_UNITS"]
-        unit_pressure = input_dictionary[0]["OUTPUT_PRESSURE_UNITS"]
+        unit_temperature = input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']
+        unit_pressure = input_dictionary[0]['OUTPUT_PRESSURE_UNITS']
 
         with open(file=f"Output/{file_name}", mode="w") as file:
             file.write(f"#Temperature [{unit_temperature}] \t Pressure [{unit_pressure}] \n")
             cf_temperature = convert_output(
                 unit_temperature,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
             cf_pressure = convert_output(
                 unit_pressure,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
-            for temp, pressure in zip(source_dictionary[index]["temperature"], source_dictionary[index]["pressure"]):
+            for temp, pressure in zip(source_dictionary[index]['temperature'], source_dictionary[index]['pressure']):
                 temp = numpy.round(temp * cf_temperature, decimals=decimals)
                 pressure = numpy.round(pressure * cf_pressure, decimals=decimals)
 
@@ -1130,7 +1130,7 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
 
     def write_characteristic(index, base_name) -> None:
 
-        if type(source_dictionary[index]["temperature"]) is not numpy.ndarray:
+        if type(source_dictionary[index]['temperature']) is not numpy.ndarray:
             condition = f"{source_dictionary[index]['temperature']}K"
         else:
             condition = f"{source_dictionary[index]['pressure']}MPa"
@@ -1144,13 +1144,13 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
 
             cf_potential = convert_output(
                 unit_potential,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
             cf_volume = convert_output(
                 unit_volume,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
-            for potential, volume in zip(source_dictionary[index]["potential"], source_dictionary[index]["volume"]):
+            for potential, volume in zip(source_dictionary[index]['potential'], source_dictionary[index]['volume']):
                 potential = numpy.round(potential * cf_potential, decimals=decimals)
                 volume = numpy.round(volume * cf_volume, decimals=decimals)
 
@@ -1162,16 +1162,16 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
     def write_enthalpy(index, base_name) -> None:
 
         file_name = f"{base_name}_enthalpy.dat"
-        unit_loading = input_dictionary[0]["OUTPUT_LOADING_UNITS"]
+        unit_loading = input_dictionary[0]['OUTPUT_LOADING_UNITS']
 
         with open(file=f"Output/{file_name}", mode="w") as file:
             file.write(f"#Loading [{unit_loading}] \t Enthalpy of adsorption [kJ/mol] \n")
 
             cf_loading = convert_output(
                 unit_loading,
-                molecular_mass=properties_dictionary["MOLECULAR_MASS"])
+                molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
-            for loading, enthalpy in zip(source_dictionary["loading"], source_dictionary["enthalpy"]):
+            for loading, enthalpy in zip(source_dictionary['loading'], source_dictionary['enthalpy']):
                 loading = numpy.round(loading * cf_loading, decimals=decimals)
                 enthalpy = numpy.round(enthalpy, decimals=decimals)
 
@@ -1227,10 +1227,10 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
 
     def _get_pressure_boundaries(temperature: float, potential: numpy.ndarray) -> list:
         sat_pres = compute_saturation_pressure_from_method(
-            method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+            method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
             temperature=temperature,
             properties_dictionary=properties_dictionary,
-            saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
+            saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
             input_dictionary=input_dictionary)
 
         minimum_pressure = physics.get_pressure(
@@ -1248,10 +1248,10 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
     def _get_temperature_boundaries(pressure: float, potential: numpy.ndarray) -> list:
         def minimum_temperature_function(temperature_guess: float) -> float:
             sat_pres = compute_saturation_pressure_from_method(
-                method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+                method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
                 temperature=temperature_guess,
                 properties_dictionary=properties_dictionary,
-                saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
+                saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
                 input_dictionary=input_dictionary)
 
             potential_computed = physics.get_adsorption_potential(
@@ -1263,10 +1263,10 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
 
         def maximum_temperature_function(temperature_guess: float) -> float:
             sat_pres = compute_saturation_pressure_from_method(
-                method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+                method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
                 temperature=temperature_guess,
                 properties_dictionary=properties_dictionary,
-                saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
+                saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
                 input_dictionary=input_dictionary)
 
             potential_computed = physics.get_adsorption_potential(
@@ -1285,7 +1285,7 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
 
         def minimum_temperature_function(temperature_guess: float) -> float:
             ads_dens = compute_density_from_method(
-                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                method=input_dictionary[0]['ADSORBATE_DENSITY'],
                 temperature=temperature_guess,
                 properties_dictionary=properties_dictionary,
                 input_dictionary=input_dictionary)
@@ -1298,7 +1298,7 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
 
         def maximum_temperature_function(temperature_guess: float) -> float:
             ads_dens = compute_density_from_method(
-                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                method=input_dictionary[0]['ADSORBATE_DENSITY'],
                 temperature=temperature_guess,
                 properties_dictionary=properties_dictionary,
                 input_dictionary=input_dictionary)
@@ -1317,170 +1317,170 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
     def predict_isotherm():
 
         prediction_dictionary = {}
-        for index, temperature in enumerate(input_dictionary[0]["PREDICTION_TEMPERATURES"]):
+        for index, temperature in enumerate(input_dictionary[0]['PREDICTION_TEMPERATURES']):
             prediction_dictionary[index] = {}
-            prediction_dictionary[index]["temperature"] = temperature
-            prediction_dictionary[index]["saturation_pressure"] = compute_saturation_pressure_from_method(
-                method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+            prediction_dictionary[index]['temperature'] = temperature
+            prediction_dictionary[index]['saturation_pressure'] = compute_saturation_pressure_from_method(
+                method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
                 temperature=temperature,
                 properties_dictionary=properties_dictionary,
-                saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
+                saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
                 input_dictionary=input_dictionary)
 
-            prediction_dictionary[index]["density"] = compute_density_from_method(
-                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+            prediction_dictionary[index]['density'] = compute_density_from_method(
+                method=input_dictionary[0]['ADSORBATE_DENSITY'],
                 temperature=temperature,
                 properties_dictionary=properties_dictionary,
                 input_dictionary=input_dictionary)
 
             boundaries = _get_pressure_boundaries(
                 temperature=temperature,
-                potential=data_dictionary[0]["potential"])
+                potential=data_dictionary[0]['potential'])
 
-            if (input_dictionary[0]["PREDICTION_PRESSURE_RANGE"] is not None and
-                    boundaries[0] <= input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][0] <= boundaries[1]):
-                start_pressure = input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][0]
+            if (input_dictionary[0]['PREDICTION_PRESSURE_RANGE'] is not None and
+                    boundaries[0] <= input_dictionary[0]['PREDICTION_PRESSURE_RANGE'][0] <= boundaries[1]):
+                start_pressure = input_dictionary[0]['PREDICTION_PRESSURE_RANGE'][0]
             else:
                 start_pressure = boundaries[0]
 
-            if (input_dictionary[0]["PREDICTION_PRESSURE_RANGE"] is not None and
-                    start_pressure <= input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][1] <= boundaries[1]):
-                end_pressure = input_dictionary[0]["PREDICTION_PRESSURE_RANGE"][1]
+            if (input_dictionary[0]['PREDICTION_PRESSURE_RANGE'] is not None and
+                    start_pressure <= input_dictionary[0]['PREDICTION_PRESSURE_RANGE'][1] <= boundaries[1]):
+                end_pressure = input_dictionary[0]['PREDICTION_PRESSURE_RANGE'][1]
             else:
                 end_pressure = boundaries[1]
 
-            prediction_dictionary[index]["pressure"] = numpy.geomspace(
+            prediction_dictionary[index]['pressure'] = numpy.geomspace(
                 start=start_pressure,
                 stop=end_pressure,
-                num=int(input_dictionary[0]["NUMBER_PRESSURE_POINTS"]))
+                num=int(input_dictionary[0]['NUMBER_PRESSURE_POINTS']))
 
             potential_range = physics.get_adsorption_potential(
-                temperature=prediction_dictionary[index]["temperature"],
-                saturation_pressure=prediction_dictionary[index]["saturation_pressure"],
-                pressure=prediction_dictionary[index]["pressure"])
+                temperature=prediction_dictionary[index]['temperature'],
+                saturation_pressure=prediction_dictionary[index]['saturation_pressure'],
+                pressure=prediction_dictionary[index]['pressure'])
 
-            prediction_dictionary[index]["loading"] = physics.get_adsorbed_amount(
+            prediction_dictionary[index]['loading'] = physics.get_adsorbed_amount(
                 adsorption_volume=volume_interpolation_function(potential_range),
-                adsorbate_density=prediction_dictionary[index]["density"])
+                adsorbate_density=prediction_dictionary[index]['density'])
 
         return prediction_dictionary
 
     def predict_isobar():
 
         prediction_dictionary = {}
-        for index, pressure in enumerate(input_dictionary[0]["PREDICTION_PRESSURES"]):
+        for index, pressure in enumerate(input_dictionary[0]['PREDICTION_PRESSURES']):
             prediction_dictionary[index] = {}
-            prediction_dictionary[index]["pressure"] = pressure
+            prediction_dictionary[index]['pressure'] = pressure
             boundaries = _get_temperature_boundaries(
                 pressure=pressure,
-                potential=data_dictionary[0]["potential"])
+                potential=data_dictionary[0]['potential'])
 
-            if (input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"] is not None and
-                    boundaries[0] <= input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][0] <= boundaries[1]):
-                start_temperature = input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][0]
+            if (input_dictionary[0]['PREDICTION_TEMPERATURE_RANGE'] is not None and
+                    boundaries[0] <= input_dictionary[0]['PREDICTION_TEMPERATURE_RANGE'][0] <= boundaries[1]):
+                start_temperature = input_dictionary[0]['PREDICTION_TEMPERATURE_RANGE'][0]
             else:
                 start_temperature = boundaries[0]
 
-            if (input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"] is not None and
-                    start_temperature <= input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][1] <= boundaries[1]):
-                end_temperature = input_dictionary[0]["PREDICTION_TEMPERATURE_RANGE"][1]
+            if (input_dictionary[0]['PREDICTION_TEMPERATURE_RANGE'] is not None and
+                    start_temperature <= input_dictionary[0]['PREDICTION_TEMPERATURE_RANGE'][1] <= boundaries[1]):
+                end_temperature = input_dictionary[0]['PREDICTION_TEMPERATURE_RANGE'][1]
             else:
                 end_temperature = boundaries[1]
 
-            prediction_dictionary[index]["temperature"] = numpy.linspace(
+            prediction_dictionary[index]['temperature'] = numpy.linspace(
                 start=start_temperature,
                 stop=end_temperature,
-                num=int(input_dictionary[0]["NUMBER_TEMPERATURE_POINTS"]))
+                num=int(input_dictionary[0]['NUMBER_TEMPERATURE_POINTS']))
 
             saturation_pressure_list = []
             density_list = []
 
-            for temperature in prediction_dictionary[index]["temperature"]:
+            for temperature in prediction_dictionary[index]['temperature']:
                 saturation_pressure_list.append(compute_saturation_pressure_from_method(
-                    method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+                    method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
                     temperature=temperature,
                     properties_dictionary=properties_dictionary,
-                    saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
+                    saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
                     input_dictionary=input_dictionary))
 
                 density_list.append(compute_density_from_method(
-                    method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                    method=input_dictionary[0]['ADSORBATE_DENSITY'],
                     temperature=temperature,
                     properties_dictionary=properties_dictionary,
                     input_dictionary=input_dictionary))
 
-            prediction_dictionary[index]["saturation_pressure"] = numpy.array(saturation_pressure_list)
-            prediction_dictionary[index]["density"] = numpy.array(density_list)
+            prediction_dictionary[index]['saturation_pressure'] = numpy.array(saturation_pressure_list)
+            prediction_dictionary[index]['density'] = numpy.array(density_list)
 
             potential_range = physics.get_adsorption_potential(
-                temperature=prediction_dictionary[index]["temperature"],
-                saturation_pressure=prediction_dictionary[index]["saturation_pressure"],
-                pressure=prediction_dictionary[index]["pressure"])
+                temperature=prediction_dictionary[index]['temperature'],
+                saturation_pressure=prediction_dictionary[index]['saturation_pressure'],
+                pressure=prediction_dictionary[index]['pressure'])
 
-            prediction_dictionary[index]["loading"] = physics.get_adsorbed_amount(
+            prediction_dictionary[index]['loading'] = physics.get_adsorbed_amount(
                 adsorption_volume=volume_interpolation_function(potential_range),
-                adsorbate_density=prediction_dictionary[index]["density"])
+                adsorbate_density=prediction_dictionary[index]['density'])
 
         return prediction_dictionary
 
     def predict_isostere():
 
         prediction_dictionary = {}
-        for index, loading in enumerate(input_dictionary[0]["PREDICTION_LOADINGS"]):
+        for index, loading in enumerate(input_dictionary[0]['PREDICTION_LOADINGS']):
             prediction_dictionary[index] = {}
-            prediction_dictionary[index]["loading"] = loading
+            prediction_dictionary[index]['loading'] = loading
 
             boundaries = _get_isostere_boundaries(
                 loading=loading,
-                volume=data_dictionary[0]["volume"])
+                volume=data_dictionary[0]['volume'])
 
             boundaries.sort()
 
-            if (input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"] is not None and
-                    boundaries[0] <= input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][0] <= boundaries[1]):
-                start_temperature = input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][0]
+            if (input_dictionary[0]['PREDICTION_ISOSTERE_RANGE'] is not None and
+                    boundaries[0] <= input_dictionary[0]['PREDICTION_ISOSTERE_RANGE'][0] <= boundaries[1]):
+                start_temperature = input_dictionary[0]['PREDICTION_ISOSTERE_RANGE'][0]
             else:
                 start_temperature = boundaries[0]
 
-            if (input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"] is not None and
-                    start_temperature <= input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][1] <= boundaries[1]):
-                end_temperature = input_dictionary[0]["PREDICTION_ISOSTERE_RANGE"][1]
+            if (input_dictionary[0]['PREDICTION_ISOSTERE_RANGE'] is not None and
+                    start_temperature <= input_dictionary[0]['PREDICTION_ISOSTERE_RANGE'][1] <= boundaries[1]):
+                end_temperature = input_dictionary[0]['PREDICTION_ISOSTERE_RANGE'][1]
             else:
                 end_temperature = boundaries[1]
 
-            prediction_dictionary[index]["temperature"] = numpy.linspace(
+            prediction_dictionary[index]['temperature'] = numpy.linspace(
                 start=start_temperature,
                 stop=end_temperature,
-                num=int(input_dictionary[0]["NUMBER_ISOSTERE_POINTS"]))
+                num=int(input_dictionary[0]['NUMBER_ISOSTERE_POINTS']))
 
             saturation_pressure_list = []
             density_list = []
 
-            for temperature in prediction_dictionary[index]["temperature"]:
+            for temperature in prediction_dictionary[index]['temperature']:
                 saturation_pressure_list.append(compute_saturation_pressure_from_method(
-                    method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+                    method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
                     temperature=temperature,
                     properties_dictionary=properties_dictionary,
-                    saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"],
+                    saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
                     input_dictionary=input_dictionary))
 
                 density_list.append(compute_density_from_method(
-                    method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                    method=input_dictionary[0]['ADSORBATE_DENSITY'],
                     temperature=temperature,
                     properties_dictionary=properties_dictionary,
                     input_dictionary=input_dictionary))
 
-            prediction_dictionary[index]["saturation_pressure"] = numpy.array(saturation_pressure_list)
-            prediction_dictionary[index]["density"] = numpy.array(density_list)
+            prediction_dictionary[index]['saturation_pressure'] = numpy.array(saturation_pressure_list)
+            prediction_dictionary[index]['density'] = numpy.array(density_list)
 
             volume_range = physics.get_adsorption_volume(
                 adsorbed_amount=loading,
-                adsorbate_density=prediction_dictionary[index]["density"])
+                adsorbate_density=prediction_dictionary[index]['density'])
 
-            prediction_dictionary[index]["pressure"] = physics.get_pressure(
+            prediction_dictionary[index]['pressure'] = physics.get_pressure(
                 adsorption_potential=potential_interpolation_function(volume_range),
-                saturation_pressure=prediction_dictionary[index]["saturation_pressure"],
-                temperature=prediction_dictionary[index]["temperature"])
+                saturation_pressure=prediction_dictionary[index]['saturation_pressure'],
+                temperature=prediction_dictionary[index]['temperature'])
 
         return prediction_dictionary
 
@@ -1491,13 +1491,13 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
     }
 
     volume_interpolation_function = scipy.interpolate.interp1d(
-        x=data_dictionary[0]["potential"],
-        y=data_dictionary[0]["volume"],
+        x=data_dictionary[0]['potential'],
+        y=data_dictionary[0]['volume'],
         fill_value="extrapolate")
 
     potential_interpolation_function = scipy.interpolate.CubicSpline(
-        x=data_dictionary[0]["volume"],
-        y=data_dictionary[0]["potential"],
+        x=data_dictionary[0]['volume'],
+        y=data_dictionary[0]['potential'],
         extrapolate=True)
 
     if prediction_type in prediction_formats:
@@ -1515,9 +1515,10 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         def minimum_temperature_function(temperature_guess: float) -> float:
             ads_dens = compute_density_from_method(
-                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                method=input_dictionary[0]['ADSORBATE_DENSITY'],
                 temperature=temperature_guess,
-                properties_dictionary=properties_dictionary)
+                properties_dictionary=properties_dictionary,
+                input_dictionary=input_dictionary)
 
             volume_computed = physics.get_adsorption_volume(
                 adsorbed_amount=loading,
@@ -1527,7 +1528,7 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
 
         def maximum_temperature_function(temperature_guess: float) -> float:
             ads_dens = compute_density_from_method(
-                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                method=input_dictionary[0]['ADSORBATE_DENSITY'],
                 temperature=temperature_guess,
                 properties_dictionary=properties_dictionary,
                 input_dictionary=input_dictionary)
@@ -1544,14 +1545,13 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
         return [minimum_temperature, maximum_temperature]
     
     potential_interpolation_function = scipy.interpolate.PchipInterpolator(
-        x=data_dictionary[0]["volume"],
-        y=data_dictionary[0]["potential"])
-        #fill_value="extrapolate")
+        x=data_dictionary[0]['volume'],
+        y=data_dictionary[0]['potential'])
 
     loadings = numpy.linspace(
-        start=input_dictionary[0]["ENTHALPY_RANGE"][0],
-        stop=input_dictionary[0]["ENTHALPY_RANGE"][1],
-        num=int(input_dictionary[0]["NUMBER_ENTHALPY_POINTS"]))
+        start=input_dictionary[0]['ENTHALPY_RANGE'][0],
+        stop=input_dictionary[0]['ENTHALPY_RANGE'][1],
+        num=int(input_dictionary[0]['NUMBER_ENTHALPY_POINTS']))
 
     enthalpy_dictionary = {"loading": loadings, "enthalpy": []}
 
@@ -1559,73 +1559,75 @@ def compute_adsorption_enthalpy(data_dictionary: dict, input_dictionary: dict, p
     plt.figure()
     for index, loading in enumerate(loadings):
         prediction_dictionary[index] = {}
-        prediction_dictionary[index]["loading"] = loading
+        prediction_dictionary[index]['loading'] = loading
 
         boundaries = _get_isostere_boundaries(
             loading=loading,
-            volume=data_dictionary[0]["volume"])
+            volume=data_dictionary[0]['volume'])
 
         boundaries.sort()
         boundaries[0] = max(boundaries[0], 0)
 
-        prediction_dictionary[index]["temperature"] = numpy.linspace(
-            start=input_dictionary[0]["ENTHALPY_TEMPERATURE_RANGE"][0],
-            stop=input_dictionary[0]["ENTHALPY_TEMPERATURE_RANGE"][1],
+        prediction_dictionary[index]['temperature'] = numpy.linspace(
+            start=input_dictionary[0]['ENTHALPY_TEMPERATURE_RANGE'][0],
+            stop=input_dictionary[0]['ENTHALPY_TEMPERATURE_RANGE'][1],
             num=3)
 
         saturation_pressure_list = []
         density_list = []
 
-        for temperature in prediction_dictionary[index]["temperature"]:
+        for temperature in prediction_dictionary[index]['temperature']:
             saturation_pressure_list.append(compute_saturation_pressure_from_method(
-                method=input_dictionary[0]["ADSORBATE_SATURATION_PRESSURE"],
+                method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
                 temperature=temperature,
                 properties_dictionary=properties_dictionary,
-                saturation_pressure_file=input_dictionary[0]["SATURATION_PRESSURE_FILE"]))
+                saturation_pressure_file=input_dictionary[0]['SATURATION_PRESSURE_FILE'],
+                input_dictionary=input_dictionary))
 
             density_list.append(compute_density_from_method(
-                method=input_dictionary[0]["ADSORBATE_DENSITY"],
+                method=input_dictionary[0]['ADSORBATE_DENSITY'],
                 temperature=temperature,
-                properties_dictionary=properties_dictionary))
+                properties_dictionary=properties_dictionary,
+                input_dictionary=input_dictionary))
 
-        prediction_dictionary[index]["saturation_pressure"] = numpy.array(saturation_pressure_list)
-        prediction_dictionary[index]["density"] = numpy.array(density_list)
+        prediction_dictionary[index]['saturation_pressure'] = numpy.array(saturation_pressure_list)
+        prediction_dictionary[index]['density'] = numpy.array(density_list)
 
         volume_range = physics.get_adsorption_volume(
             adsorbed_amount=loading,
-            adsorbate_density=prediction_dictionary[index]["density"])
+            adsorbate_density=prediction_dictionary[index]['density'])
 
-        prediction_dictionary[index]["pressure"] = physics.get_pressure(
+        prediction_dictionary[index]['pressure'] = physics.get_pressure(
             adsorption_potential=potential_interpolation_function(volume_range),
-            saturation_pressure=prediction_dictionary[index]["saturation_pressure"],
-            temperature=prediction_dictionary[index]["temperature"])
+            saturation_pressure=prediction_dictionary[index]['saturation_pressure'],
+            temperature=prediction_dictionary[index]['temperature'])
 
         pressures = []
         temperatures = []
-        for press, temp in zip(prediction_dictionary[index]["pressure"], prediction_dictionary[index]["temperature"]):
+        for press, temp in zip(prediction_dictionary[index]['pressure'], prediction_dictionary[index]['temperature']):
             if press <= 0 or numpy.isnan(press) or numpy.isnan(temp):
                 continue
             else:
                 pressures.append(press)
                 temperatures.append(temp)
 
-        prediction_dictionary[index]["pressure"] = numpy.log(pressures)
-        prediction_dictionary[index]["temperature"] = numpy.divide(1, temperatures)
+        prediction_dictionary[index]['pressure'] = numpy.log(pressures)
+        prediction_dictionary[index]['temperature'] = numpy.divide(1, temperatures)
 
-        plt.scatter(prediction_dictionary[index]["temperature"], prediction_dictionary[index]["pressure"]/prediction_dictionary[index]["pressure"][0])
+        plt.scatter(prediction_dictionary[index]['temperature'], prediction_dictionary[index]['pressure']/prediction_dictionary[index]['pressure'][0])
 
         def fit_function(itemperature, heat, offset):
             return heat * 1000 / constants.GAS_CONSTANT * itemperature + offset
 
         opt, cvt = scipy.optimize.curve_fit(
             fit_function,
-            prediction_dictionary[index]["temperature"],
-            prediction_dictionary[index]["pressure"])
+            prediction_dictionary[index]['temperature'],
+            prediction_dictionary[index]['pressure'])
 
-        plt.plot(prediction_dictionary[index]["temperature"],
-                 fit_function(prediction_dictionary[index]["temperature"], *opt)/prediction_dictionary[index]["pressure"][0])
+        plt.plot(prediction_dictionary[index]['temperature'],
+                 fit_function(prediction_dictionary[index]['temperature'], *opt)/prediction_dictionary[index]['pressure'][0])
 
-        enthalpy_dictionary["enthalpy"].append(-opt[0])
+        enthalpy_dictionary['enthalpy'].append(-opt[0])
 
     return enthalpy_dictionary
 
