@@ -1,3 +1,7 @@
 .idea/
 __pycache__/
-/other/
+other/
+env/
+run.ps1
+run.sh
+install.log

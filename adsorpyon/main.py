@@ -8,6 +8,7 @@ import sys
 import input_reader
 import interpreter
 
+
 parser = argparse.ArgumentParser(
     prog='cappa',
     description='A tool for computing characteristic curves and isotherms from experimental and simulated data.')
@@ -28,17 +29,60 @@ parser.add_argument(
 
 args = parser.parse_args()
 INPUT_FILE_NAME = args.input[0]
+output_file = open("cappa.out", "w+")
 
 
 def main():
+    
+    output_file.write("\n")
     input_dict = input_reader.create_input_dictionary(INPUT_FILE_NAME)
+    message = " Input file data "
+    message = message.center(80, "=")
+    output_file.write(f"{message}\n")
+    for entry in input_dict:
+        output_file.write("\n")
+        message = f" Entry {entry} "
+        message = message.center(80, "-")
+        output_file.write(f"{message}\n")
+        for key in input_dict[entry]:
+            key_message = f" {key} "
+            key_message = key_message.ljust(40)
+            value_message = f" {input_dict[entry][key]} "
+            value_message = value_message.rjust(40)
+            output_file.write(f"{key_message} {value_message}\n")
+
+    output_file.write("\n")
     properties_dict = input_reader.create_properties_dictionary(input_dict[0]['ADSORBATE_DATA_FILE'])
+    message = " Molecular properties "
+    message = message.center(80, "=")
+    output_file.write(f"{message}\n")
+    for key in properties_dict:
+        key_message = f" {key} "
+        key_message = key_message.ljust(40)
+        value_message = f" {properties_dict[key]} "
+        value_message = value_message.rjust(40)
+        output_file.write(f"{key_message} {value_message}\n")
+
     data_dict = {}
 
     interpreter.read_data(
         source_dictionary=data_dict,
         properties_dictionary=properties_dict,
         input_dictionary=input_dict)
+
+    output_file.write("\n")
+    message = " Input data "
+    message = message.center(80, "=")
+    output_file.write(f"{message}\n")
+    for entry in data_dict:
+        output_file.write("\n")
+        message = f" Entry {entry} "
+        message = message.center(80, "-")
+        output_file.write(f"{message}\n")
+        for key in data_dict[entry]:
+            output_file.write(f" {key} \n")
+            output_file.write(f" {data_dict[entry][key]} \n")
+            output_file.write("\n")
 
     if input_dict[0]['PLOT_DATA'].lower() == "yes":
         interpreter.plot_data(
@@ -55,6 +99,20 @@ def main():
             source_dictionary=data_dict,
             input_dictionary=input_dict,
             properties_dictionary=properties_dict)
+
+        output_file.write("\n")
+        message = " Characteristic curve calculations "
+        message = message.center(80, "=")
+        output_file.write(f"{message}\n")
+        for entry in data_dict:
+            output_file.write("\n")
+            message = f" Entry {entry} "
+            message = message.center(80, "-")
+            output_file.write(f"{message}\n")
+            for key in ["potential", "volume"]:
+                output_file.write(f" {key} \n")
+                output_file.write(f" {data_dict[entry][key]} \n")
+                output_file.write("\n")
 
         if input_dict[0]['COMPUTE_SATURATION_PRESSURE_CURVE'].lower() == "yes":
             interpreter.compute_saturation_pressure_curve(
@@ -88,6 +146,14 @@ def main():
             input_dictionary=input_dict,
             properties_dictionary=properties_dict)
 
+        output_file.write("\n")
+        message = " Enthalpy of adsorption calculations "
+        message = message.center(80, "=")
+        output_file.write(f"{message}\n")
+        for key in enthalpy:
+            output_file.write(f" {key} \n")
+            output_file.write(f" {enthalpy[key]} \n")
+
         if input_dict[0]['PLOT_ENTHALPY'].lower() == "yes":
             interpreter.plot_data(
                 source_dictionary=enthalpy,
@@ -111,6 +177,20 @@ def main():
             prediction_type="isotherm",
             properties_dictionary=properties_dict)
 
+        output_file.write("\n")
+        message = " Isotherm predictions "
+        message = message.center(80, "=")
+        output_file.write(f"{message}\n")
+        for entry in predicted_isotherms:
+            output_file.write("\n")
+            message = f" Entry {entry} "
+            message = message.center(80, "-")
+            output_file.write(f"{message}\n")
+            for key in predicted_isotherms[entry]:
+                output_file.write(f" {key} \n")
+                output_file.write(f" {predicted_isotherms[entry][key]} \n")
+                output_file.write("\n")
+
         if input_dict[0]['PLOT_PREDICTED_ISOTHERMS'].lower() == "yes":
             interpreter.plot_data(
                 source_dictionary=predicted_isotherms,
@@ -133,6 +213,20 @@ def main():
             input_dictionary=input_dict,
             prediction_type="isobar",
             properties_dictionary=properties_dict)
+        
+        output_file.write("\n")
+        message = " Isobar predictions "
+        message = message.center(80, "=")
+        output_file.write(f"{message}\n")
+        for entry in predicted_isobars:
+            output_file.write("\n")
+            message = f" Entry {entry} "
+            message = message.center(80, "-")
+            output_file.write(f"{message}\n")
+            for key in predicted_isobars[entry]:
+                output_file.write(f" {key} \n")
+                output_file.write(f" {predicted_isobars[entry][key]} \n")
+                output_file.write("\n")
 
         if input_dict[0]['PLOT_PREDICTED_ISOBARS'].lower() == "yes":
             interpreter.plot_data(
@@ -156,6 +250,20 @@ def main():
             input_dictionary=input_dict,
             prediction_type="isostere",
             properties_dictionary=properties_dict)
+        
+        output_file.write("\n")
+        message = " Isostere predictions "
+        message = message.center(80, "=")
+        output_file.write(f"{message}\n")
+        for entry in predicted_isosteres:
+            output_file.write("\n")
+            message = f" Entry {entry} "
+            message = message.center(80, "-")
+            output_file.write(f"{message}\n")
+            for key in predicted_isosteres[entry]:
+                output_file.write(f" {key} \n")
+                output_file.write(f" {predicted_isosteres[entry][key]} \n")
+                output_file.write("\n")
 
         if input_dict[0]['PLOT_PREDICTED_ISOSTERES'].lower() == "yes":
             interpreter.plot_data(
