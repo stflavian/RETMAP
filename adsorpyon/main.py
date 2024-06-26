@@ -1,34 +1,11 @@
 #!/home/flavian/.venv/envScience/bin/python
 
-# Standard libraries
-import argparse
-import sys
-
 # Local libraries
 import input_reader
 import interpreter
 
 
-parser = argparse.ArgumentParser(
-    prog='cappa',
-    description='A tool for computing characteristic curves and isotherms from experimental and simulated data.')
-
-parser.add_argument(
-    "-i", "--input",
-    type=str,
-    default="config.in",
-    nargs=1,
-    metavar="",
-    required=False,
-    help="path to input file (default: config.in)")
-
-parser.add_argument(
-    "-v", "--version",
-    action="version",
-    version=f"CAPPA 2024.6-alpha (Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro})")
-
-args = parser.parse_args()
-INPUT_FILE_NAME = args.input[0]
+INPUT_FILE_NAME = "config.in"
 output_file = open("cappa.out", "w+")
 
 
