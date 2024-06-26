@@ -21,7 +21,7 @@ if ($python -ne "Python") {
       New-Item -Name "install.log" -ItemType File
       Write-Output "Creating virtual environment using Python version found ($major.$minor) ..."
       python -m venv env | Out-File -Append "install.log"
-      ./env/Scripts/Activate.ps1 | Out-File -Append "install.log"
+      .\env\Scripts\Activate.ps1 | Out-File -Append "install.log"
       Write-Output "Upgrading pip ..."
       python -m pip install --upgrade pip | Out-File -Append "install.log"
       Write-Output "Installing Python dependencies ..."
@@ -29,8 +29,8 @@ if ($python -ne "Python") {
       Write-Output "Creating run file ..."
       New-Item -Name "run.ps1" -ItemType File | Out-File -Append "install.log"
 
-      Write-Output "./env/Scripts/Activate.ps1" | Out-File -Append "run.ps1"
-      Write-Output "python $ADSORPYON_PATH/adsorpyon/main.py" | Out-File -Append "run.ps1"
+      Write-Output ". $ADSORPYON_PATH\env\Scripts\Activate.ps1" | Out-File -Append "run.ps1"
+      Write-Output "python $ADSORPYON_PATH\adsorpyon\main.py" | Out-File -Append "run.ps1"
       Write-Output "deactivate" | Out-File -Append "run.ps1"
 
       Write-Output "Installation completed successfully!"
