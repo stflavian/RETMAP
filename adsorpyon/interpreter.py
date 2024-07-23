@@ -772,6 +772,7 @@ def compute_saturation_pressure_curve(input_dictionary: dict, properties_diction
     unit_temperature = input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']
 
     logger.info(f"Starting file writing procedure for saturation pressure curve.")
+    os.makedirs(name="Output", exist_ok=True)
     with open(file=f"Output/{file_name}", mode="w") as file:
         logger.info(f"Successfully created file Output/{file_name}.")
 
@@ -800,12 +801,16 @@ def compute_density_curve(input_dictionary: dict, properties_dictionary: dict):
 
     decimals = 4
 
+    logger.info(f"Starting density curve calculations.")
+
     start_temperature = input_dictionary[0]['DENSITY_RANGE'][0]
     end_temperature = input_dictionary[0]['DENSITY_RANGE'][1]
     num = input_dictionary[0]['NUMBER_DENSITY_POINTS']
+    logger.info(f"Found temperature interval {start_temperature}K - {end_temperature}K with {num} points in between.")
 
     temperatures = numpy.linspace(start_temperature, end_temperature, num)
     densities = numpy.zeros(num)
+    logger.info(f"Successfully generated temperature interval and saturation pressure variable.")
 
     for index, temperature in enumerate(temperatures):
         densities[index] = compute_density_from_method(
@@ -813,15 +818,19 @@ def compute_density_curve(input_dictionary: dict, properties_dictionary: dict):
             temperature=temperature,
             properties_dictionary=properties_dictionary,
             input_dictionary=input_dictionary)
+        logger.info(f"For temperature {temperature}K got density {densities[index]} kg/m3.")
 
     molecule = input_dictionary[0]['ADSORBATE']
 
     file_name = f"{molecule}_density.dat"
     unit_temperature = input_dictionary[0]['OUTPUT_TEMPERATURE_UNITS']
 
+    logger.info(f"Starting file writing procedure for density curve.")
+    os.makedirs(name="Output", exist_ok=True)
     with open(file=f"Output/{file_name}", mode="w") as file:
-        file.write(f"# Temperature [{unit_temperature}] \t Density [kg/m3] \n")
+        logger.info(f"Successfully created file Output/{file_name}.")
 
+        file.write(f"# Temperature [{unit_temperature}] \t Density [kg/m3] \n")
         cf_density = convert_output(
             input_dictionary[0]['OUTPUT_DENSITY_UNITS'],
             molecular_mass=properties_dictionary['MOLECULAR_MASS'])
@@ -839,6 +848,8 @@ def compute_density_curve(input_dictionary: dict, properties_dictionary: dict):
 
             file.write(f"{temperature} \t {density} \n")
 
+    logger.info(f"Finished writing to file Output/{file_name}.")
+
 
 def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictionary: dict, plot_format: str,
               save: str, from_input: bool) -> None:
@@ -852,6 +863,8 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
     :param save: Dictates if the plot is saved. Saved if "yes", otherwise do not save.
     :param from_input: Dictates if the data comes from the input files, and sets a separate name for the plot.
     """
+
+    logger.info(f"Starting plotting procedure.")
 
     def plot_isotherm(index):
 
@@ -1019,7 +1032,12 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
 
     for index in source_dictionary:
         if plot_format in plot_formats:
+            logger.info(f"Attempting to plot {plot_format} {index}.")
             plot_formats[plot_format](index)
+            logger.info(f"Finished plotting {plot_format} {index}.")
+        else:
+            logger.error(f"{plot_format} at index {index} is not a valid data type for plotting!")
+            raise ValueError(f"{plot_format} at index {index} is not a valid data type for plotting!")
 
     if plot_format == "isotherm" and input_dictionary[0]['LOGARITHMIC_PLOT'] == "yes":
         plt.xscale('log')
@@ -1036,6 +1054,7 @@ def plot_data(source_dictionary: dict, input_dictionary: dict, properties_dictio
             figure_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}_{plot_format}"
 
         plt.savefig(f"Plots/{figure_name}.png")
+        logger.info(f"Successfully saved plot at Plots/{figure_name}.png.")
 
 
 def write_data(source_dictionary: dict, properties_dictionary: dict, input_dictionary: dict, write_format: str) -> None:
@@ -1050,6 +1069,7 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
     """
 
     decimals = 4
+    logger.info(f"Starting writing procedure.")
 
     def write_isotherm(index, base_name) -> None:
 
@@ -1210,7 +1230,12 @@ def write_data(source_dictionary: dict, properties_dictionary: dict, input_dicti
     for index in source_dictionary:
         base_name = f"{input_dictionary[0]['ADSORBATE']}_in_{input_dictionary[0]['ADSORBENT']}"
         if write_format in file_write_formats:
+            logger.info(f"Attempting to write {write_format} {index}.")
             file_write_formats[write_format](index, base_name)
+            logger.info(f"Finished writing {write_format} {index}.")
+        else:
+            logger.error(f"{write_format} at index {index} is not a valid data type for writing!")
+            raise ValueError(f"{write_format} at index {index} is not a valid data type for writing!")
 
 
 def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type: str,
@@ -1225,7 +1250,10 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
     :return: Dictionary containing the predicted data.
     """
 
+    logger.info(f"Starting predicting procedure.")
+
     def _get_pressure_boundaries(temperature: float, potential: numpy.ndarray) -> list:
+        logger.info(f"Computing pressure boundaries procedure.")
         sat_pres = compute_saturation_pressure_from_method(
             method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
             temperature=temperature,
@@ -1243,9 +1271,11 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
             saturation_pressure=sat_pres,
             temperature=temperature)
 
+        logger.info(f"Obtained pressure interval between {minimum_pressure} MPa and {maximum_pressure} MPa.")
         return [minimum_pressure, maximum_pressure]
 
     def _get_temperature_boundaries(pressure: float, potential: numpy.ndarray) -> list:
+        logger.info(f"Computing temperature boundaries procedure.")
         def minimum_temperature_function(temperature_guess: float) -> float:
             sat_pres = compute_saturation_pressure_from_method(
                 method=input_dictionary[0]['ADSORBATE_SATURATION_PRESSURE'],
@@ -1279,10 +1309,11 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
         minimum_temperature = scipy.optimize.fsolve(minimum_temperature_function, x0=273)[0]
         maximum_temperature = scipy.optimize.fsolve(maximum_temperature_function, x0=273)[0]
 
+        logger.info(f"Obtained temperature interval between {minimum_temperature} MPa and {maximum_temperature} MPa.")
         return [minimum_temperature, maximum_temperature]
 
     def _get_isostere_boundaries(loading: float, volume: numpy.ndarray) -> list:
-
+        logger.info(f"Computing isostere boundaries procedure.")
         def minimum_temperature_function(temperature_guess: float) -> float:
             ads_dens = compute_density_from_method(
                 method=input_dictionary[0]['ADSORBATE_DENSITY'],
@@ -1312,12 +1343,16 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
         minimum_temperature = scipy.optimize.fsolve(minimum_temperature_function, x0=273)[0]
         maximum_temperature = scipy.optimize.fsolve(maximum_temperature_function, x0=273)[0]
 
+        logger.info(f"Obtained isostere interval between {minimum_temperature} MPa and {maximum_temperature} MPa.")
         return [minimum_temperature, maximum_temperature]
 
     def predict_isotherm():
+        logger.info(f"Starting isotherm prediction procedure.")
 
         prediction_dictionary = {}
         for index, temperature in enumerate(input_dictionary[0]['PREDICTION_TEMPERATURES']):
+            logger.info(f"Predicting isotherm at {temperature} K.")
+
             prediction_dictionary[index] = {}
             prediction_dictionary[index]['temperature'] = temperature
             prediction_dictionary[index]['saturation_pressure'] = compute_saturation_pressure_from_method(
@@ -1362,13 +1397,15 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
             prediction_dictionary[index]['loading'] = physics.get_adsorbed_amount(
                 adsorption_volume=volume_interpolation_function(potential_range),
                 adsorbate_density=prediction_dictionary[index]['density'])
-
         return prediction_dictionary
 
     def predict_isobar():
+        logger.info(f"Starting isobar prediction procedure.")
 
         prediction_dictionary = {}
         for index, pressure in enumerate(input_dictionary[0]['PREDICTION_PRESSURES']):
+            logger.info(f"Predicting isobar at {pressure} MPa.")
+
             prediction_dictionary[index] = {}
             prediction_dictionary[index]['pressure'] = pressure
             boundaries = _get_temperature_boundaries(
@@ -1424,9 +1461,12 @@ def predict_data(data_dictionary: dict, input_dictionary: dict, prediction_type:
         return prediction_dictionary
 
     def predict_isostere():
+        logger.info(f"Starting isostere prediction procedure.")
 
         prediction_dictionary = {}
         for index, loading in enumerate(input_dictionary[0]['PREDICTION_LOADINGS']):
+            logger.info(f"Predicting isostere at {loading} mg/g.")
+
             prediction_dictionary[index] = {}
             prediction_dictionary[index]['loading'] = loading
 
