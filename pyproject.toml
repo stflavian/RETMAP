@@ -11,12 +11,11 @@ authors = [
     {name = "Sofía Calero", email = "s.calero@tue.nl"},
     {name = "José Manuel Vicent-Luna", email = "j.vicent.luna@tue.nl"}
 ]
-url = "https://stflavian.github.io/adsorpyon/"
 description = "A Python tool for computing and predicting characteristic curves and isotherms from experimental and simulated data."
 readme = "README.md"
 requires-python = ">=3.7"
 keywords = ["adsorption", "adsorption potential theory"]
-license = {text = "MIT"}
+license = {text = "MIT License"}
 classifiers = [
     "Environment :: Console",
     "Development Status :: 3 - Alpha",
@@ -31,6 +30,12 @@ dependencies = [
     "numpy",
     "matplotlib"
 ]
+
+[project.urls]
+Homepage = "https://stflavian.github.io/adsorpyon/"
+Documentation = "https://stflavian.github.io/adsorpyon/manual/configuration/"
+Repository = "https://github.com/stflavian/adsorpyont"
+Issues = "https://github.com/stflavian/adsorpyon/issues"
 
 [project.scripts]
 my-script = "adsorpyon.main:main"
