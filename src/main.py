@@ -1,8 +1,8 @@
 #!/home/flavian/.venv/envScience/bin/python
 
 # Local libraries
-from adsorpyon import input_reader
-from adsorpyon import interpreter
+from src import input_reader
+from src import interpreter
 
 
 INPUT_FILE_NAME = "config.in"
