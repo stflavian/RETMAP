@@ -20,7 +20,7 @@ Usage:
 import math
 
 # Local libraries
-import constants
+from adsorpyon import constants
 
 
 def empirical(pressure_critical: float, temperature_critical: float, molecular_mass: float) -> float:

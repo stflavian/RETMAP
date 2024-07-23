@@ -4,11 +4,11 @@ import os
 import logging
 
 # Local libraries
-import density
-import saturation_pressure
-import physics
-import input_reader
-import constants
+from adsorpyon import density
+from adsorpyon import saturation_pressure
+from adsorpyon import physics
+from adsorpyon import input_reader
+from adsorpyon import constants
 
 # Third-party libraries
 import matplotlib.pyplot as plt

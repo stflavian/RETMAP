@@ -10,7 +10,7 @@ Usage:
 """
 
 # Local libraries
-import constants
+from adsorpyon import constants
 
 # Third-party libraries
 import numpy
