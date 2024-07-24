@@ -25,7 +25,7 @@ functions is not recommended, as it may break other modules that make use of thi
 import warnings
 
 # Local libraries
-from src import physics
+from adsorpyon import physics
 
 # Third-party libraries
 import numpy

@@ -4,11 +4,11 @@ import os
 import logging
 
 # Local libraries
-from src import density
-from src import saturation_pressure
-from src import physics
-from src import input_reader
-from src import constants
+from adsorpyon import density
+from adsorpyon import saturation_pressure
+from adsorpyon import physics
+from adsorpyon import input_reader
+from adsorpyon import constants
 
 # Third-party libraries
 import matplotlib.pyplot as plt
@@ -186,7 +186,7 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
 
     if method in saturation_pressure_methods.keys():
         adsorbate_saturation_pressure = saturation_pressure_methods[method]()
-        logger.info(f"Obtained density {adsorbate_saturation_pressure} MPa.")
+        logger.info(f"Obtained saturation pressure {adsorbate_saturation_pressure} MPa.")
     else:
         logger.error(f"{method} is not a valid adsorbate saturation pressure computation method.")
         raise ValueError(f"{method} is not a valid adsorbate saturation "

@@ -5,7 +5,7 @@ site_description: >-
   A python tool for computing and predicting characteristic curves and 
   isotherms from experimental and simulated data.
 
-repo_name: stflavian/src
+repo_name: stflavian/adsorpyon
 repo_url: https://github.com/stflavian/adsorpyon
 
 copyright: Copyright (c) 2023 Flavian Stavarache, Azahara Luna-Triguero, Sofia Calero, Jose Manuel Vicent-Luna
