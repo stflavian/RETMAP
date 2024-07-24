@@ -202,7 +202,7 @@ def create_properties_dictionary(path: str) -> dict:
                                      f"tag or check for spelling errors!")
 
     for key_word in properties_dictionary.keys():
-        if not properties_dictionary[key_word]:
+        if properties_dictionary[key_word] is None:
             warnings.warn(f"{key_word} was not found in the properties file at {path}, which may be a requirement for "
                           f"some methods. In case of errors please add the tag to the properties file!")
 

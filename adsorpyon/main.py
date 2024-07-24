@@ -4,15 +4,25 @@
 from adsorpyon import input_reader
 from adsorpyon import interpreter
 
-
-INPUT_FILE_NAME = "config.in"
-output_file = open("cappa.out", "w+")
+# Standard libraries
+import argparse
 
 
 def main():
-    
+
+    parser = argparse.ArgumentParser(
+        prog="CAPPA",
+        description="A Python tool for computing and predicting characteristic curves and isotherms from experimental "
+                    "and simulated data.",
+    )
+
+    parser.add_argument("infile")
+    parser.add_argument("--version", action="version", version="1.0a1")
+    args = parser.parse_args()
+    output_file = open("cappa.out", "w+")
+
     output_file.write("\n")
-    input_dict = input_reader.create_input_dictionary(INPUT_FILE_NAME)
+    input_dict = input_reader.create_input_dictionary(args.infile)
     message = " Input file data "
     message = message.center(80, "=")
     output_file.write(f"{message}\n")

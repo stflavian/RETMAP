@@ -38,4 +38,4 @@ Repository = "https://github.com/stflavian/adsorpyont"
 Issues = "https://github.com/stflavian/adsorpyon/issues"
 
 [project.scripts]
-my-script = "adsorpyon.main:main"
+cappa = "adsorpyon.main:main"
