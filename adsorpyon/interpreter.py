@@ -1698,6 +1698,8 @@ def convert_input(unit: str, molecular_mass: float) -> float:
     # Temperature
     elif unit == "K":
         conversion_factor = 1
+    elif unit == "R":
+        conversion_factor = 1.8
 
     # Adsorbed amount
     elif unit in ["mg/g", "g/kg"]:
