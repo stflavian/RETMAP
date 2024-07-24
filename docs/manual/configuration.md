@@ -1,8 +1,8 @@
 # Configuration file
 
-When running the `run.py` script, the first thing that the program does it look for a
-configuration file called `config.in`. This contains all the information needed by the
-application to run, such as the location of the needed files and the expected output.
+When running `cappa`, the only required argument is the name of the configuration file, 
+usually called `config.in`. This contains all the information needed by the application 
+to run, such as the location of the needed files and the expected output.
 
 The configuration file is a plain text file structured as:
 
