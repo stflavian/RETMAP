@@ -6,6 +6,7 @@ be interpreted by the main functions.
 # Standard libraries
 import warnings
 import pkgutil
+from typing import TextIO
 
 DEFAULT_INPUT_DICTIONARY = {
     "DATA_FILES": None,
@@ -212,6 +213,9 @@ def create_properties_dictionary(path: str, adsorbate_name: str) -> dict:
         else:
             raise ValueError(f"{key_word} in {path} is not a recognised tag for a properties file. Remove the "
                              f"tag or check for spelling errors!")
+
+    if from_path:
+        properties_source.close()
 
     for key_word in properties_dictionary.keys():
         if properties_dictionary[key_word] is None:
