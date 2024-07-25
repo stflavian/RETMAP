@@ -97,7 +97,6 @@ DEFAULT_PROPERTIES_DICTIONARY = {
     "PRSV_KAPPA1": None,
     "PRSV_KAPPA2": None,
     "PRSV_KAPPA3": None,
-    "__SOURCE__": None
 }
 
 
