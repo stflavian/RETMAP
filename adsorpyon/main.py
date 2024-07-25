@@ -39,7 +39,9 @@ def main():
             output_file.write(f"{key_message} {value_message}\n")
 
     output_file.write("\n")
-    properties_dict = input_reader.create_properties_dictionary(input_dict[0]['ADSORBATE_DATA_FILE'])
+    properties_dict = input_reader.create_properties_dictionary(
+        path=input_dict[0]['ADSORBATE_DATA_FILE'],
+        adsorbate_name=input_dict[0]['ADSORBATE'])
     message = " Molecular properties "
     message = message.center(80, "=")
     output_file.write(f"{message}\n")
