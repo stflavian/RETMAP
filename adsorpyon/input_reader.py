@@ -184,31 +184,34 @@ def create_properties_dictionary(path: str, adsorbate_name: str) -> dict:
     properties_dictionary = DEFAULT_PROPERTIES_DICTIONARY.copy()
 
     if path == "local":
-        properties_source = pkgutil.get_data("adsorpyon", f"Properties/{adsorbate_name}.prop")
+        f = pkgutil.get_data("adsorpyon", f"Properties/{adsorbate_name}.prop")
+        f = f.decode("ascii")
+        from_path = False
     else:
         properties_source = open(path, "rt")
+        f = properties_source.read()
+        from_path = True
 
-    with properties_source as properties_file:
-        f = properties_file.read()
-        lines = f.splitlines()
-        for line in lines:
-            if not line:
-                continue
+    lines = f.splitlines()
+    for line in lines:
 
-            line_input = line.split()
-            key_word = line_input[0]
-            line_input.pop(0)
+        if not line:
+            continue
 
-            if key_word in properties_dictionary:
-                try:
-                    converted_type = float(line_input[0])
-                except ValueError:
-                    properties_dictionary[key_word] = line_input[0]
-                else:
-                    properties_dictionary[key_word] = converted_type
+        line_input = line.split()
+        key_word = line_input[0]
+        line_input.pop(0)
+
+        if key_word in properties_dictionary:
+            try:
+                converted_type = float(line_input[0])
+            except ValueError:
+                properties_dictionary[key_word] = line_input[0]
             else:
-                raise ValueError(f"{key_word} in {path} is not a recognised tag for a properties file. Remove the "
-                                 f"tag or check for spelling errors!")
+                properties_dictionary[key_word] = converted_type
+        else:
+            raise ValueError(f"{key_word} in {path} is not a recognised tag for a properties file. Remove the "
+                             f"tag or check for spelling errors!")
 
     for key_word in properties_dictionary.keys():
         if properties_dictionary[key_word] is None:
