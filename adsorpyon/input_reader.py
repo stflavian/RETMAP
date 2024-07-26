@@ -13,6 +13,7 @@ DEFAULT_INPUT_DICTIONARY = {
     "DATA_TYPES": None,
     "ADSORBATE_DATA_FILE": None,
     "PRESSURES": None,
+    "LOADINGS": None,
     "TEMPERATURES": None,
     "ADSORBATE": None,
     "ADSORBENT": None,
