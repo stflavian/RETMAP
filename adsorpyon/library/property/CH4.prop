@@ -1,0 +1,10 @@
+NAME                                CH4
+MOLECULAR_MASS                      16.042
+TEMPERATURE_CRITICAL                190.56
+PRESSURE_CRITICAL                   4.5992
+TEMPERATURE_BOILING                 111.51
+DENSITY_BOILING                     422.6
+ACENTRIC_FACTOR                     0.01142
+PRSV_KAPPA1                         -0.00159
+PRSV_KAPPA2                         0.1521
+PRSV_KAPPA3                         0.517

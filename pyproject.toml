@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cappa"
+version = "1.0a1"
+authors = [
+    {name = "Flavian Stavarache", email = "f.stavarache@student.tue.nl"},
+    {name = "Azahara Luna-Triguero", email = "a.luna.triguero@tue.nl"},
+    {name = "Sofía Calero", email = "s.calero@tue.nl"},
+    {name = "José Manuel Vicent-Luna", email = "j.vicent.luna@tue.nl"}
+]
+description = "A Python tool for computing and predicting characteristic curves and isotherms from experimental and simulated data."
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["adsorption", "adsorption potential theory"]
+license = {text = "MIT License"}
+classifiers = [
+    "Environment :: Console",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics"
+]
+dependencies = [
+    "scipy",
+    "numpy",
+    "matplotlib"
+]
+
+[project.urls]
+Homepage = "https://stflavian.github.io/adsorpyon/"
+Documentation = "https://stflavian.github.io/adsorpyon/manual/configuration/"
+Repository = "https://github.com/stflavian/adsorpyont"
+Issues = "https://github.com/stflavian/adsorpyon/issues"
+
+[project.scripts]
+cappa = "adsorpyon.main:main"
