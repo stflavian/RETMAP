@@ -3,10 +3,8 @@ MOLECULAR_MASS                      39.792
 TEMPERATURE_CRITICAL                150.687
 PRESSURE_CRITICAL                   4.863
 TEMPERATURE_BOILING                 87.3
-TEMPERATURE_TRIPLE_POINT            90.69
 DENSITY_BOILING                     1395.4
 ACENTRIC_FACTOR                     0.000
 PRSV_KAPPA1                         0.000
 PRSV_KAPPA2                         0.000
 PRSV_KAPPA3                         0.000
-__SOURCE__                          https://www.engineeringtoolbox.com/methane-d_1420.html

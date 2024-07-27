@@ -1,0 +1,10 @@
+NAME                                CO2
+MOLECULAR_MASS                      44.0095
+TEMPERATURE_CRITICAL                304.13
+PRESSURE_CRITICAL                   7.38
+TEMPERATURE_BOILING                 194.686
+DENSITY_BOILING                     1101
+ACENTRIC_FACTOR                     0.228
+PRSV_KAPPA1                         0.04285
+PRSV_KAPPA2                         0.0
+PRSV_KAPPA3                         0.0
