@@ -1,9 +1,5 @@
 # CAPPA
 
-!!! warning
-
-    Does this work?
-
 CAPPA (Calculator for Adsorption Properties in Porous Adsorbents) is a Python application 
 for calculating adsorption properties, such as isobars and isotherms, using experimental 
 or simulated data. For this, it makes use of Polanyi's adsorption potential model, which
