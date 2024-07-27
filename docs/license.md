@@ -1,4 +1,4 @@
-Copyright (c) 2023 Flavian Stavarache, Azahara Luna-Triguero, Sofia Calero, 
+Copyright (c) 2024 Flavian Stavarache, Azahara Luna-Triguero, Sofia Calero, 
 Jose Manuel Vicent-Luna
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -13,12 +13,12 @@ application to run.[^1]
 - Run the application using `./run.py` on Linux/MacOS or `python run.py` on any 
 platform.
 
->**NOTE**
-> 
-> Depending on the settings you use in `config.in` the application will create separate
-folders for plots and written output. To keep the working folder clean it is
-recommended that you also place the adsorption data and the properties file in a folder
-named `Input`.
+!!! note
+ 
+    Depending on the settings you use in `config.in` the application will create separate
+    folders for plots and written output. To keep the working folder clean it is
+    recommended that you also place the adsorption data and the properties file in a folder
+    named `Input`.
 
 There is no notification or update tracker implemented in the application at the 
 moment. The application will stop once it completes all the tasks mentioned in 

@@ -1,5 +1,9 @@
 # Installation
 
+!!! warning
+
+    This page is out of date. The information presented below is no longer correct.
+
 Adsorpyon is an application built using Python 3.7, meaning that it should be
 compatible with most Python versions in use at the moment. In terms of libraries,
 adsorpyon is built using Numpy, Scipy, and Matplotlib, all of which should be installed
@@ -34,11 +38,11 @@ env that contains a copy of the Python interpreter and pip package manager.
 - Activate the virtual environment by running `source env/bin/activate` on Linux/MacOS or 
 `env\Scripts\activate.bat` on Windows.
 
->**Note**
->
->Make sure that the Python virtual environment is active during the next step of the 
-installation and when using the code. When the environment is active, its name is 
-displayed before the terminal prompt inside parenthesis, e.g. `(env) John@PC: ~`.
+!!! note
+
+    Make sure that the Python virtual environment is active during the next step of the 
+    installation and when using the code. When the environment is active, its name is 
+    displayed before the terminal prompt inside parenthesis, e.g. `(env) John@PC: ~`.
 
 
 ### Install requirements and set up the run.py file
@@ -49,8 +53,8 @@ directory. This will install all the packages listed in the `requirements.txt` f
 you downloaded adsorpyon, e.g. `"/home/john/Desktop/adsorpyon"` on Linux or 
 `C:\Users\John\Desktop\adsorpyon` on Windows.
 
->**Note**
->
-> Make sure to use the updated version of the `run.py` when creating new working 
-folders. 
+!!! note
+
+    Make sure to use the updated version of the `run.py` when creating new working 
+    folders. 
 

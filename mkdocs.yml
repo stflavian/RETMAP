@@ -8,38 +8,72 @@ site_description: >-
 repo_name: stflavian/adsorpyon
 repo_url: https://github.com/stflavian/adsorpyon
 
-copyright: Copyright (c) 2023 Flavian Stavarache, Azahara Luna-Triguero, Sofia Calero, Jose Manuel Vicent-Luna
+copyright: Copyright (c) 2024 Flavian Stavarache, Azahara Luna-Triguero, Sofia Calero, Jose Manuel Vicent-Luna
 
 nav:
   - Home: index.md
   - Setup:
       - installation.md
       - Usage: usage.md
-  - "User Guide":
-      - "Configuration file": manual/configuration.md
-      - "Properties file": manual/properties_file.md
-      - "Compatible data formats": manual/data_formats.md
-      - "Units used": manual/units.md
-      - "Computing characteristic curves": manual/characteristic_curves.md
-      - "Predicting data": manual/predicting_data.md
+  - User Guide:
+      - Configuration file: manual/configuration_file.md
+      - Properties file: manual/properties_file.md
+      - Input data file: manual/input_data_file.md
+      - Measurement units: manual/units.md
+      - Saturation pressure models: manual/saturation_pressure.md
+      - Density models: manual/density.md
+      - Computing characteristic curves: manual/characteristic_curves.md
+      - Predicting data: manual/predicting_data.md
+  - Examples:
+      - Example 1: examples/example_1.md
+      - Example 2: examples/example_2.md
   - About:
-      - about.md
-      - "Release notes": release_notes.md
+      - About: about.md
+      - Release notes: release_notes.md
       - License: license.md
-  - Contact: contact.md
+      - Contact: contact.md
 
 theme:
+  icon:
+    repo: material/github
   name: material
   palette:
-    primary: teal
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
   features:
     - navigation.tabs
     - navigation.path
+    - navigation.footer
 
 markdown_extensions:
+  - attr_list
+  - md_in_html
   - footnotes
+  - def_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 extra_javascript:
   - javascripts/mathjax.js
