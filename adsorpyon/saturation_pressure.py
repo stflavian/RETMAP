@@ -23,9 +23,11 @@ functions is not recommended, as it may break other modules that make use of thi
 
 # Standard libraries
 import warnings
+import importlib.resources
 
 # Local libraries
 from adsorpyon import physics
+from adsorpyon import input_reader
 
 # Third-party libraries
 import numpy
@@ -64,7 +66,7 @@ def amankwah(temperature: float, temperature_critical: float, pressure_critical:
     return pressure_critical * (temperature / temperature_critical) ** k
 
 
-def extrapolation(temperature: float, file: str) -> float:
+def extrapolation(temperature: float, file: str, adsorbate_name: str) -> float:
     """
     Calculates the saturation pressure by extrapolating the data found in a data file.
 
@@ -76,7 +78,12 @@ def extrapolation(temperature: float, file: str) -> float:
     :param file: Path to file containing reference data.
     :return: Saturation pressure in the same units as the input file.
     """
-    data = numpy.genfromtxt(file)
+
+    if file == "local":
+        file = importlib.resources.files("adsorpyon").joinpath(f"library/saturation-pressure/{adsorbate_name}.dat")
+
+    data = input_reader.create_data_list(file)
+    data = numpy.array(data)
 
     def fit_function(x, a, b, c):
         return a * x**2 + b * x + c

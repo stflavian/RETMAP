@@ -2,6 +2,7 @@
 # Standard libraries
 import os
 import logging
+import importlib.resources
 
 # Local libraries
 from adsorpyon import density
@@ -57,10 +58,17 @@ def compute_density_from_method(method: str, temperature: float, properties_dict
             density_boiling=properties_dictionary['DENSITY_BOILING'],
             thermal_expansion_coefficient=input_dictionary[0]['THERMAL_EXPANSION_COEFFICIENT'])
 
+    def density_extrapolation() -> float:
+        return density.extrapolation(
+            temperature=temperature,
+            file=input_dictionary[0]['DENSITY_FILE'],
+            adsorbate_name=input_dictionary[0]['ADSORBATE'])
+
     density_methods = {
         "empirical": density_empirical,
         "hauer": density_hauer,
-        "ozawa": density_ozawa
+        "ozawa": density_ozawa,
+        "extrapolation": density_extrapolation
     }
 
     if method in density_methods.keys():
@@ -104,7 +112,10 @@ def compute_saturation_pressure_from_method(method: str, temperature: float, pro
             k=input_dictionary[0]['AMANKWAH_EXPONENT'])
 
     def saturation_pressure_extrapolation() -> float:
-        return saturation_pressure.extrapolation(temperature=temperature, file=saturation_pressure_file)
+        return saturation_pressure.extrapolation(
+            temperature=temperature,
+            file=saturation_pressure_file,
+            adsorbate_name=input_dictionary[0]['ADSORBATE'])
 
     def saturation_pressure_polynomial_water() -> float:
         return saturation_pressure.polynomial_water(temperature=temperature)
@@ -511,7 +522,7 @@ def read_data(source_dictionary: dict, properties_dictionary: dict, input_dictio
             molecular_mass=properties_dictionary['MOLECULAR_MASS'])
 
         bp = param2 * pressure
-        loading = (param1 / (2 * param3) * numpy.log((1 + bp * numpy.exp(param3)) / (1 + bp * numpy.exp(-param3))))
+        loading = param1 / (2 * param3) * numpy.log((1 + bp * numpy.exp(param3)) / (1 + bp * numpy.exp(-param3)))
         source_dictionary[index]['loading'] = loading * convert_input(
             unit=input_dictionary[index]['LOADING_UNITS'],
             molecular_mass=properties_dictionary['MOLECULAR_MASS'])

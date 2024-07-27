@@ -5,8 +5,8 @@ be interpreted by the main functions.
 
 # Standard libraries
 import warnings
-import pkgutil
-from typing import TextIO
+import importlib.resources
+
 
 DEFAULT_INPUT_DICTIONARY = {
     "DATA_FILES": None,
@@ -43,6 +43,7 @@ DEFAULT_INPUT_DICTIONARY = {
             "NUMBER_SATURATION_PRESSURE_POINTS": 50,
             "AMANKWAH_EXPONENT": 3.0,
         "ADSORBATE_DENSITY": None,
+        "DENSITY_FILE": None,
             "COMPUTE_DENSITY_CURVE": "no",
             "NUMBER_DENSITY_POINTS": 50,
             "THERMAL_EXPANSION_COEFFICIENT": 0.00165,
@@ -116,39 +117,42 @@ def create_input_dictionary(path: str) -> dict:
         f = input_file.read()
         lines = f.splitlines()
         for line in lines:
-            if line:
-                line_input = line.split()
-                key_word = line_input[0]
-                line_input.pop(0)
 
-                if key_word == "DATA_FILES":
-                    for index, _ in enumerate(line_input):
-                        input_dictionary[index] = DEFAULT_INPUT_DICTIONARY.copy()
+            if not line:
+                continue
 
-                for index in input_dictionary.keys():
-                    if key_word in DEFAULT_INPUT_DICTIONARY and key_word not in LIST_INPUT_TAGS and len(line_input) == len(input_dictionary):
+            line_input = line.split()
+            key_word = line_input[0]
+            line_input.pop(0)
+
+            if key_word == "DATA_FILES":
+                for index, _ in enumerate(line_input):
+                    input_dictionary[index] = DEFAULT_INPUT_DICTIONARY.copy()
+
+            for index in input_dictionary.keys():
+                if key_word in DEFAULT_INPUT_DICTIONARY and key_word not in LIST_INPUT_TAGS and len(line_input) == len(input_dictionary):
+                    try:
+                        converted_type = float(line_input[index])
+                    except ValueError:
+                        input_dictionary[index][key_word] = line_input[index]
+                    else:
+                        input_dictionary[index][key_word] = converted_type
+                elif key_word in DEFAULT_INPUT_DICTIONARY and key_word not in LIST_INPUT_TAGS and len(line_input) == 1:
+                    try:
+                        converted_type = float(line_input[0])
+                    except ValueError:
+                        input_dictionary[index][key_word] = line_input[0]
+                    else:
+                        input_dictionary[index][key_word] = converted_type
+                elif key_word in LIST_INPUT_TAGS:
+                    input_dictionary[index][key_word] = []
+                    for line_input_index, _ in enumerate(line_input):
                         try:
-                            converted_type = float(line_input[index])
+                            converted_type = float(line_input[line_input_index])
                         except ValueError:
-                            input_dictionary[index][key_word] = line_input[index]
+                            input_dictionary[index][key_word].append(line_input[line_input_index])
                         else:
-                            input_dictionary[index][key_word] = converted_type
-                    elif key_word in DEFAULT_INPUT_DICTIONARY and key_word not in LIST_INPUT_TAGS and len(line_input) == 1:
-                        try:
-                            converted_type = float(line_input[0])
-                        except ValueError:
-                            input_dictionary[index][key_word] = line_input[0]
-                        else:
-                            input_dictionary[index][key_word] = converted_type
-                    elif key_word in LIST_INPUT_TAGS:
-                        input_dictionary[index][key_word] = []
-                        for line_input_index, _ in enumerate(line_input):
-                            try:
-                                converted_type = float(line_input[line_input_index])
-                            except ValueError:
-                                input_dictionary[index][key_word].append(line_input[line_input_index])
-                            else:
-                                input_dictionary[index][key_word].append(converted_type)
+                            input_dictionary[index][key_word].append(converted_type)
 
     return input_dictionary
 
@@ -166,13 +170,10 @@ def create_properties_dictionary(path: str, adsorbate_name: str) -> dict:
     properties_dictionary = DEFAULT_PROPERTIES_DICTIONARY.copy()
 
     if path == "local":
-        f = pkgutil.get_data("adsorpyon", f"Properties/{adsorbate_name}.prop")
-        f = f.decode("ascii")
-        from_path = False
-    else:
-        properties_source = open(path, "rt")
-        f = properties_source.read()
-        from_path = True
+        path = importlib.resources.files("adsorpyon").joinpath(f"library/property/{adsorbate_name}.prop")
+
+    properties_source = open(path, "rt")
+    f = properties_source.read()
 
     lines = f.splitlines()
     for line in lines:
@@ -195,8 +196,7 @@ def create_properties_dictionary(path: str, adsorbate_name: str) -> dict:
             raise ValueError(f"{key_word} in {path} is not a recognised tag for a properties file. Remove the "
                              f"tag or check for spelling errors!")
 
-    if from_path:
-        properties_source.close()
+    properties_source.close()
 
     for key_word in properties_dictionary.keys():
         if properties_dictionary[key_word] is None:
@@ -216,23 +216,32 @@ def create_data_list(path: str) -> list:
     :param path: The path of the properties file.
     :return: A list.
     """
-    with open(path, "rt") as file:
-        text = file.read()
-        lines = text.splitlines()
-        output = []
-        for line in lines:
-            if line and line[0] != "#":
-                numbers = line.split()
-                row = []
-                for number in numbers:
-                    try:
-                        value = float(number)
-                    except ValueError:
-                        raise f"Wrong entry in the input file {path}!"
-                    finally:
-                        row.append(value)
 
-                output.append(row)
+    properties_source = open(path, "rt")
+    f = properties_source.read()
+
+    lines = f.splitlines()
+    output = []
+    for line in lines:
+        if not line:
+            continue
+
+        if line[0] == "#":
+            continue
+
+        numbers = line.split()
+        row = []
+        for number in numbers:
+            try:
+                value = float(number)
+            except ValueError:
+                raise f"Wrong entry in the input file {path}!"
+            finally:
+                row.append(value)
+
+        output.append(row)
+
+    properties_source.close()
 
     return output
 
