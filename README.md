@@ -1,46 +1,46 @@
 # RETMAP
 
-RETMAP (REfined Thermodynamical Model for Adsorption Prediction) is a Python application 
-for calculating adsorption properties, such as isobars and isotherms, using experimental 
-or simulated data. For this, it makes use of Polanyi's adsorption potential model, which
-is an effective method for predicting adsorption properties in the neighbourhood of
-known data. 
+> [!WARNING]
+> This software is still in alpha development, so certain features may not work as
+> intended and the documentation may not be up to date. If you run into any problems, 
+> please contact the maintainer or open a new issue. 
 
-The documentation for the software can be found at https://stflavian.github.io/adsorpyon/.
+RETMAP (REfined Thermodynamical Model for Adsorption Prediction) is a Python 
+application used for calculating adsorption properties, such as isobars and isotherms, 
+using experimental or simulated data. For this, it makes use of Polanyi's adsorption 
+potential theory, which is an effective method for predicting adsorption properties 
+in the neighborhood of recorded data. 
+
+The full documentation for the software can be found 
+[here](https://stflavian.github.io/RETMAP/).
 
 ## Quick setup
 
-RETMAP is an application built using Python 3.7, meaning that it should be
-compatible with most Python versions in use at the moment. In terms of libraries,
-RETMAP is built using Numpy, Scipy, and Matplotlib, all of which should be installed
-on the machine for the application to work. 
+> [!IMPORTANT]
+> Most testing has been done using Python 3.12 on Windows and Linux. If you run into
+> any issues when installing the application, please let us know by opening a new 
+> issue.
 
-To decrease the chances of errors, it is recommended that the application is run inside 
-a Python [virtual environment](https://docs.python.org/3/library/venv.html) containing the exact versions of the libraries 
-listed in the `requirements.txt` file. Also, since the application was created in Linux, 
-little to no testing has been done on Windows. For this reason, we encourage you to 
-install RETMAP inside [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install) or to contact us in case 
-any unexpected bugs are encountered.
+RETMAP is an application built using Python 3.12, but should be compatible with all
+supported versions of Python. In terms of dependencies, RETMAP is built using 
+Numpy, Scipy, and Matplotlib, which are automatically installed alongside the 
+application. RETMAP can be installed directly from PyPI using:
 
-### Setting it up on Linux (Ubuntu, Debian, Fedora, Arch, etc.)
+> pip install retmap
 
-> git clone https://github.com/stflavian/adsorpyon.git \
-> cd adsorpyon \
-> pip install -r requirements.txt \
-> vim /examples/run/run.py
-
-Change the path in line 4 from `"/home/user/path/to/adsorpyon"` to the path in which 
-you downloaded RETMAP, e.g. `"/home/john/Desktop/adsorpyon"`.
+The application is platform independent, and should behave identically on all 
+operating systems (Windows, MacOS, Linux, etc.). More details about the installation 
+can be found [here](https://stflavian.github.io/RETMAP/installation/).
 
 ### Running RETMAP
 
-In the working folder run:
+In the working folder containing the configuration file, run:
 
-> ./run.py
+> retmap config.in
 
 ## Terms of use
 
-RETMAP is an open-source project licenced under the MIT licence. Usage of this software
+RETMAP is an open-source project licensed under the MIT licence. Usage of this software
 in a scientific work should be cited accordingly.
 
 ## Authorship
