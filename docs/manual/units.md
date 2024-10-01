@@ -4,7 +4,7 @@ icon: material/ruler
 
 # Measurements units
 
-CAPPA works with six main metrics: pressure, temperature, loading, potential, volume,
+RETMAP works with six main metrics: pressure, temperature, loading, potential, volume,
 and density. These metrics are stored and processed using the following units: MPa, K,
 mg/g, kJ/mol, ml/g, and kg/m3. As such, all values provided inside the configuration 
 file (e.g. `PREDICTION_TEMPERATURES`) should be provided using the aforementioned units.
@@ -23,7 +23,7 @@ Currently, the following measurement units are supported:
     to the data read from isobars and isosteres, and not to the input provided inside the 
     configuration file. Moreover, it accepts an entry for each input data file. The 
     keyword `OUTPUT_TEMPERATURE_UNITS` is used for both writing the results to files
-    and plotting the results. However, the `cappa.out` file will still use the standard
+    and plotting the results. However, the `retmap.out` file will still use the standard
     units. Only one output unit can be provided.
 
     __Options__: _K_, _R_
@@ -36,7 +36,7 @@ Currently, the following measurement units are supported:
     to the data read from isotherms and isosteres, and not to the input provided inside 
     the configuration file. Moreover, it accepts an entry for each input data file. The 
     keyword `OUTPUT_PRESSURE_UNITS` is used for both writing the results to files
-    and plotting the results. However, the `cappa.out` file will still use the standard
+    and plotting the results. However, the `retmap.out` file will still use the standard
     units. Only one output unit can be provided.
 
     __Options__: _MPa_, _kPa_, _Pa_, _bar_, _atm_, _Torr_, _mmHg_
@@ -49,7 +49,7 @@ Currently, the following measurement units are supported:
     to the data read from isotherms and isobars, and not to the input provided inside 
     the configuration file. Moreover, it accepts an entry for each input data file. The 
     keyword `OUTPUT_LOADING_UNITS` is used for both writing the results to files
-    and plotting the results. However, the `cappa.out` file will still use the standard
+    and plotting the results. However, the `retmap.out` file will still use the standard
     units. Only one output unit can be provided.
 
     __Options__: mg/g, _g/kg_, _mol/kg_, _mmol/g_, _cm3/g_, _mm3/mg_, _dm3/kg_, _l/kg_, 
@@ -62,7 +62,7 @@ Currently, the following measurement units are supported:
     for the input and output files, respectively. The keyword `POTENTIAL_UNITS` only 
     applies to the data read from characteristics. Moreover, it accepts an entry for each 
     input data file. The keyword `OUTPUT_POTENTIAL_UNITS` is used for both writing the 
-    results to files and plotting the results. However, the `cappa.out` file will still 
+    results to files and plotting the results. However, the `retmap.out` file will still 
     use the standard units. Only one output unit can be provided.
 
     __Options__: _kJ/mol_, _J/mol_
@@ -74,7 +74,7 @@ Currently, the following measurement units are supported:
     input and output files, respectively. The keyword `VOLUME_UNITS` only applies
     to the data read from characteristics. Moreover, it accepts an entry for each input 
     data file. The keyword `OUTPUT_VOLUME_UNITS` is used for both writing the results to 
-    files and plotting the results. However, the `cappa.out` file will still use the 
+    files and plotting the results. However, the `retmap.out` file will still use the 
     standard units. Only one output unit can be provided.
 
     __Options__: _ml/g_, _l/kg_, _cm3/g_, _dm3/kg_
@@ -83,7 +83,7 @@ Currently, the following measurement units are supported:
 !!! info "`OUTPUT_DENSITY_UNITS` (default: kg/m3, type: String)"
 
     The keyword `OUTPUT_DENSITY_UNITS` is used for both writing the results to files
-    and plotting the results. However, the `cappa.out` file will still use the standard
+    and plotting the results. However, the `retmap.out` file will still use the standard
     units. Only one output unit can be provided.
 
     __Options__: _kg/m3_

@@ -172,7 +172,7 @@ def create_properties_dictionary(path: str, adsorbate_name: str) -> dict:
     properties_dictionary = DEFAULT_PROPERTIES_DICTIONARY.copy()
 
     if path == "local":
-        path = importlib.resources.files("adsorpyon").joinpath(f"library/property/{adsorbate_name}.prop")
+        path = importlib.resources.files("retmap").joinpath(f"library/property/{adsorbate_name}.prop")
 
     properties_source = open(path, "rt")
     f = properties_source.read()

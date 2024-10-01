@@ -1,6 +1,10 @@
 # How to use
 
-Adsorpyon is a command line application, meaning that it is intended to be used solely
+!!! warning
+
+    This page is out of date. The information presented below is no longer correct.
+
+RETMAP is a command line application, meaning that it is intended to be used solely
 from a terminal. 
 
 - Copy the updated `run.py` file to your working folder.

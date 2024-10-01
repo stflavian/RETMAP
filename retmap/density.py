@@ -81,7 +81,7 @@ def extrapolation(temperature: float, file: str, adsorbate_name: str = None) -> 
     """
 
     if file == "local":
-        file = importlib.resources.files("adsorpyon").joinpath(f"library/density/{adsorbate_name}.dat")
+        file = importlib.resources.files("retmap").joinpath(f"library/density/{adsorbate_name}.dat")
 
     data = input_reader.create_data_list(file)
     data = numpy.array(data)

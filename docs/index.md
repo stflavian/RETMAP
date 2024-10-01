@@ -4,13 +4,18 @@ hide:
   - toc
 ---
 
+!!! warning
+    
+    The documentation is still being worked on! Not all information is accurate!
+
+
 <div class="grid cards" markdown>
 
 -   :material-clock-fast:{ .lg .middle } __Easy to set up__
 
     ---
 
-    Install [`cappa`](#) with [`pip`](#) and get up
+    Install [`retmap`](#) with [`pip`](#) and get up
     and running in minutes
 
     [:octicons-arrow-right-24: Getting started](installation.md)
@@ -56,7 +61,7 @@ hide:
 
     ---
 
-    CAPPA is licensed under MIT and available on [GitHub](https://github.com/stflavian/adsorpyon)
+    RETMAP is licensed under MIT and available on [GitHub](https://github.com/stflavian/RETMAP/)
 
     [:octicons-arrow-right-24: License](license.md)
 
