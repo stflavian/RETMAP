@@ -1,6 +1,6 @@
 import unittest
 import logging
-from adsorpyon import density
+from retmap import density
 
 
 class TestDensityCase(unittest.TestCase):
