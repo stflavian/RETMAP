@@ -67,7 +67,7 @@ def ozawa(temperature: float, temperature_boiling: float, density_boiling: float
     return density_boiling * math.exp(-thermal_expansion_coefficient * (temperature - temperature_boiling))
 
 
-def extrapolation(temperature: float, file: str, adsorbate_name: str) -> float:
+def extrapolation(temperature: float, file: str, adsorbate_name: str = None) -> float:
     """
     Calculates the density by extrapolating the data found in a data file.
 
@@ -86,12 +86,12 @@ def extrapolation(temperature: float, file: str, adsorbate_name: str) -> float:
     data = input_reader.create_data_list(file)
     data = numpy.array(data)
 
-    def fit_function(x, a, b, c):
-        return a * x**2 + b * x + c
+    def fit_function(x, a, b):
+        return a * x + b
 
     if temperature <= numpy.max(data[:, 0]):
         interpolation_function = scipy.interpolate.CubicSpline(data[:, 0], data[:, 1], extrapolate=True)
-        return interpolation_function(temperature)
+        return interpolation_function(temperature).item()
     else:
         # noinspection PyTupleAssignmentBalance
         popt, pcov = scipy.optimize.curve_fit(fit_function, data[:, 0], data[:, 1])

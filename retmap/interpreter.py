@@ -1717,8 +1717,8 @@ def convert_input(unit: str, molecular_mass: float) -> float:
         conversion_factor = 1
     elif unit in ["mol/kg", "mmol/g"]:
         conversion_factor = molecular_mass
-    elif unit in ["cm3/g", "mm3/mg", "dm3/kg", "l/kg", "ml/g"]:
-        conversion_factor = molecular_mass / 22.4139757476
+    # elif unit in ["cm3/g", "mm3/mg", "dm3/kg", "l/kg", "ml/g"]:
+    #     conversion_factor = molecular_mass / 22.4139757476
 
     # Adsorption potential
     elif unit == "kJ/mol":
