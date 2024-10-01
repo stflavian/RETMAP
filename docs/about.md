@@ -1,6 +1,6 @@
 # About
 
-Adsorpyon is a Python application for computing and predicting characteristic curves and 
+RETMAP is a Python application for computing and predicting characteristic curves and 
 isotherms from experimental and simulated data. The project started development during 
 Flavian's Bachelor's End Project at Eindhoven University of Technology. 
 

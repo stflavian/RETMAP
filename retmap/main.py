@@ -1,8 +1,8 @@
 #!/home/flavian/.venv/envScience/bin/python
 
 # Local libraries
-from adsorpyon import input_reader
-from adsorpyon import interpreter
+from retmap import input_reader
+from retmap import interpreter
 
 # Standard libraries
 import argparse
@@ -11,7 +11,7 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser(
-        prog="CAPPA",
+        prog="RETMAP",
         description="A Python tool for computing and predicting characteristic curves and isotherms from experimental "
                     "and simulated data.",
     )
@@ -19,7 +19,7 @@ def main():
     parser.add_argument("infile")
     parser.add_argument("--version", action="version", version="1.0a1")
     args = parser.parse_args()
-    output_file = open("cappa.out", "w+")
+    output_file = open("retmap.out", "w+")
 
     output_file.write("\n")
     input_dict = input_reader.create_input_dictionary(args.infile)

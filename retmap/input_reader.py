@@ -29,50 +29,50 @@ DEFAULT_INPUT_DICTIONARY = {
     "OUTPUT_VOLUME_UNITS": "ml/g",
     "OUTPUT_DENSITY_UNITS": "kg/m3",
     "PLOT_DATA": "no",
-        "LOGARITHMIC_PLOT": "no",
-        "SAVE_DATA_PLOT": "no",
+    "LOGARITHMIC_PLOT": "no",
+    "SAVE_DATA_PLOT": "no",
     "COMPUTE_ENTHALPY": "no",
-        "NUMBER_ENTHALPY_POINTS": 20,
-        "PLOT_ENTHALPY": "yes",
-        "SAVE_ENTHALPY_DATA": "no",
-        "SAVE_ENTHALPY_PLOT": "no",
+    "NUMBER_ENTHALPY_POINTS": 20,
+    "PLOT_ENTHALPY": "yes",
+    "SAVE_ENTHALPY_DATA": "no",
+    "SAVE_ENTHALPY_PLOT": "no",
     "COMPUTE_CHARACTERISTIC_CURVE": "no",
-        "ADSORBATE_SATURATION_PRESSURE": None,
-        "SATURATION_PRESSURE_FILE": None,
-            "COMPUTE_SATURATION_PRESSURE_CURVE": "no",
-            "SATURATION_PRESSURE_RANGE": None,
-            "NUMBER_SATURATION_PRESSURE_POINTS": 50,
-            "AMANKWAH_EXPONENT": 3.0,
-        "ADSORBATE_DENSITY": None,
-        "DENSITY_FILE": None,
-            "COMPUTE_DENSITY_CURVE": "no",
-            "DENSITY_RANGE": None,
-            "NUMBER_DENSITY_POINTS": 50,
-            "THERMAL_EXPANSION_COEFFICIENT": 0.00165,
-        "PLOT_CHARACTERISTIC_CURVE": "yes",
-        "SAVE_CHARACTERISTIC_CURVE_DATA": "no",
-        "SAVE_CHARACTERISTIC_CURVE_PLOT": "no",
+    "ADSORBATE_SATURATION_PRESSURE": None,
+    "SATURATION_PRESSURE_FILE": None,
+    "COMPUTE_SATURATION_PRESSURE_CURVE": "no",
+    "SATURATION_PRESSURE_RANGE": None,
+    "NUMBER_SATURATION_PRESSURE_POINTS": 50,
+    "AMANKWAH_EXPONENT": 3.0,
+    "ADSORBATE_DENSITY": None,
+    "DENSITY_FILE": None,
+    "COMPUTE_DENSITY_CURVE": "no",
+    "DENSITY_RANGE": None,
+    "NUMBER_DENSITY_POINTS": 50,
+    "THERMAL_EXPANSION_COEFFICIENT": 0.00165,
+    "PLOT_CHARACTERISTIC_CURVE": "yes",
+    "SAVE_CHARACTERISTIC_CURVE_DATA": "no",
+    "SAVE_CHARACTERISTIC_CURVE_PLOT": "no",
     "PREDICT_ISOTHERMS": "no",
-        "PREDICTION_TEMPERATURES": None,
-        "PREDICTION_PRESSURE_RANGE": None,
-        "NUMBER_PRESSURE_POINTS": 50,
-        "PLOT_PREDICTED_ISOTHERMS": "yes",
-        "SAVE_PREDICTED_ISOTHERMS_DATA": "no",
-        "SAVE_PREDICTED_ISOTHERMS_PLOT": "no",
+    "PREDICTION_TEMPERATURES": None,
+    "PREDICTION_PRESSURE_RANGE": None,
+    "NUMBER_PRESSURE_POINTS": 50,
+    "PLOT_PREDICTED_ISOTHERMS": "yes",
+    "SAVE_PREDICTED_ISOTHERMS_DATA": "no",
+    "SAVE_PREDICTED_ISOTHERMS_PLOT": "no",
     "PREDICT_ISOBARS": "no",
-        "PREDICTION_PRESSURES": None,
-        "PREDICTION_TEMPERATURE_RANGE": None,
-        "NUMBER_TEMPERATURE_POINTS": 50,
-        "PLOT_PREDICTED_ISOBARS": "yes",
-        "SAVE_PREDICTED_ISOBARS_DATA": "no",
-        "SAVE_PREDICTED_ISOBARS_PLOT": "no",
+    "PREDICTION_PRESSURES": None,
+    "PREDICTION_TEMPERATURE_RANGE": None,
+    "NUMBER_TEMPERATURE_POINTS": 50,
+    "PLOT_PREDICTED_ISOBARS": "yes",
+    "SAVE_PREDICTED_ISOBARS_DATA": "no",
+    "SAVE_PREDICTED_ISOBARS_PLOT": "no",
     "PREDICT_ISOSTERES": "no",
-        "PREDICTION_LOADINGS": None,
-        "PREDICTION_ISOSTERE_RANGE": None,
-        "NUMBER_ISOSTERE_POINTS": 50,
-        "PLOT_PREDICTED_ISOSTERES": "yes",
-        "SAVE_PREDICTED_ISOSTERES_DATA": "no",
-        "SAVE_PREDICTED_ISOSTERES_PLOT": "no",
+    "PREDICTION_LOADINGS": None,
+    "PREDICTION_ISOSTERE_RANGE": None,
+    "NUMBER_ISOSTERE_POINTS": 50,
+    "PLOT_PREDICTED_ISOSTERES": "yes",
+    "SAVE_PREDICTED_ISOSTERES_DATA": "no",
+    "SAVE_PREDICTED_ISOSTERES_PLOT": "no",
     "SHOW_PLOTS": "no",
 }
 
@@ -172,7 +172,7 @@ def create_properties_dictionary(path: str, adsorbate_name: str) -> dict:
     properties_dictionary = DEFAULT_PROPERTIES_DICTIONARY.copy()
 
     if path == "local":
-        path = importlib.resources.files("adsorpyon").joinpath(f"library/property/{adsorbate_name}.prop")
+        path = importlib.resources.files("retmap").joinpath(f"library/property/{adsorbate_name}.prop")
 
     properties_source = open(path, "rt")
     f = properties_source.read()
@@ -236,10 +236,9 @@ def create_data_list(path: str) -> list:
         for number in numbers:
             try:
                 value = float(number)
+                row.append(value)
             except ValueError:
                 raise f"Wrong entry in the input file {path}!"
-            finally:
-                row.append(value)
 
         output.append(row)
 

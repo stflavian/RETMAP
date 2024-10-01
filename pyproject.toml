@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cappa"
+name = "retmap"
 version = "1.0a1"
 authors = [
     {name = "Flavian Stavarache", email = "f.stavarache@student.tue.nl"},
@@ -32,10 +32,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://stflavian.github.io/adsorpyon/"
-Documentation = "https://stflavian.github.io/adsorpyon/manual/configuration/"
-Repository = "https://github.com/stflavian/adsorpyont"
-Issues = "https://github.com/stflavian/adsorpyon/issues"
+Homepage = "https://stflavian.github.io/RETMAP/"
+Documentation = "https://stflavian.github.io/RETMAP/manual/configuration/"
+Repository = "https://github.com/stflavian/RETMAP"
+Issues = "https://github.com/stflavian/RETMAP/issues"
 
 [project.scripts]
-cappa = "adsorpyon.main:main"
+retmap = "retmap.main:main"

@@ -26,8 +26,8 @@ import warnings
 import importlib.resources
 
 # Local libraries
-from adsorpyon import physics
-from adsorpyon import input_reader
+from retmap import physics
+from retmap import input_reader
 
 # Third-party libraries
 import numpy
@@ -80,7 +80,7 @@ def extrapolation(temperature: float, file: str, adsorbate_name: str) -> float:
     """
 
     if file == "local":
-        file = importlib.resources.files("adsorpyon").joinpath(f"library/saturation-pressure/{adsorbate_name}.dat")
+        file = importlib.resources.files("retmap").joinpath(f"library/saturation-pressure/{adsorbate_name}.dat")
 
     data = input_reader.create_data_list(file)
     data = numpy.array(data)

@@ -5,11 +5,11 @@ import logging
 import importlib.resources
 
 # Local libraries
-from adsorpyon import density
-from adsorpyon import saturation_pressure
-from adsorpyon import physics
-from adsorpyon import input_reader
-from adsorpyon import constants
+from retmap import density
+from retmap import saturation_pressure
+from retmap import physics
+from retmap import input_reader
+from retmap import constants
 
 # Third-party libraries
 import matplotlib.pyplot as plt
@@ -19,7 +19,7 @@ import numpy
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="cappa.log", filemode="w+", level=logging.INFO, datefmt="%d-%m-%y %H:%M:%S",
+logging.basicConfig(filename="retmap.log", filemode="w+", level=logging.INFO, datefmt="%d-%m-%y %H:%M:%S",
                     format="%(asctime)s %(levelname)s -> %(message)s")
 
 
@@ -1717,8 +1717,8 @@ def convert_input(unit: str, molecular_mass: float) -> float:
         conversion_factor = 1
     elif unit in ["mol/kg", "mmol/g"]:
         conversion_factor = molecular_mass
-    elif unit in ["cm3/g", "mm3/mg", "dm3/kg", "l/kg", "ml/g"]:
-        conversion_factor = molecular_mass / 22.4139757476
+    # elif unit in ["cm3/g", "mm3/mg", "dm3/kg", "l/kg", "ml/g"]:
+    #     conversion_factor = molecular_mass / 22.4139757476
 
     # Adsorption potential
     elif unit == "kJ/mol":

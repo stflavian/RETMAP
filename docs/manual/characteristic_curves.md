@@ -4,7 +4,7 @@ icon: material/cached
 
 # Computing characteristic curves
 
-The most important feature of CAPPA is the ability to compute adsorption characteristic 
+The most important feature of RETMAP is the ability to compute adsorption characteristic 
 curves based on the adsorption properties provided. 
 
 !!! info "`COMPUTE_CHARACTERISTIC_CURVE` (default: no, type: String)"

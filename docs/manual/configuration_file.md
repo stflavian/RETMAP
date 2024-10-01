@@ -4,7 +4,7 @@ icon: material/cog-outline
 
 # Configuration file
 
-When running `cappa`, the only required argument is the name of the configuration file, 
+When running `retmap`, the only required argument is the name of the configuration file, 
 usually called `config.in`. This contains all the information needed by the application 
 to run, such as the location of the needed files and the expected output.
 

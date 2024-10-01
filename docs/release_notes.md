@@ -1,5 +1,12 @@
 # Release notes
 
+### 1.0a1
+
+This is the alpha version of RETMAP, featuring new file formats, unit conversions,
+extended prediction algorithms, improved plotting and much more. This version is still
+in development and may contain many bugs.
+
+
 ### Bachelor's End Project Edition (Pre-release)
 
 This edition represents the code used for the completion of the Bachelor's End Project 

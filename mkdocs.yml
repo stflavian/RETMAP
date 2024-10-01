@@ -1,12 +1,12 @@
-site_name: Adsorpyon
-site_url: https://adsorpyon.com
+site_name: RETMAP
+site_url: https://retmap.com
 site_author: Flavian Stavarache
 site_description: >-
   A python tool for computing and predicting characteristic curves and 
   isotherms from experimental and simulated data.
 
-repo_name: stflavian/adsorpyon
-repo_url: https://github.com/stflavian/adsorpyon
+repo_name: stflavian/RETMAP
+repo_url: https://github.com/stflavian/RETMAP/
 
 copyright: Copyright (c) 2024 Flavian Stavarache, Azahara Luna-Triguero, Sofia Calero, Jose Manuel Vicent-Luna
 
