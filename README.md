@@ -1,6 +1,6 @@
-# CAPPA
+# RETMAP
 
-CAPPA (Calculator for Adsorption Properties in Porous Adsorbents) is a Python application 
+RETMAP (REfined Thermodynamical Model for Adsorption Prediction) is a Python application 
 for calculating adsorption properties, such as isobars and isotherms, using experimental 
 or simulated data. For this, it makes use of Polanyi's adsorption potential model, which
 is an effective method for predicting adsorption properties in the neighbourhood of
@@ -10,16 +10,16 @@ The documentation for the software can be found at https://stflavian.github.io/a
 
 ## Quick setup
 
-CAPPA is an application built using Python 3.7, meaning that it should be
+RETMAP is an application built using Python 3.7, meaning that it should be
 compatible with most Python versions in use at the moment. In terms of libraries,
-CAPPA is built using Numpy, Scipy, and Matplotlib, all of which should be installed
+RETMAP is built using Numpy, Scipy, and Matplotlib, all of which should be installed
 on the machine for the application to work. 
 
 To decrease the chances of errors, it is recommended that the application is run inside 
 a Python [virtual environment](https://docs.python.org/3/library/venv.html) containing the exact versions of the libraries 
 listed in the `requirements.txt` file. Also, since the application was created in Linux, 
 little to no testing has been done on Windows. For this reason, we encourage you to 
-install CAPPA inside [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install) or to contact us in case 
+install RETMAP inside [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install) or to contact us in case 
 any unexpected bugs are encountered.
 
 ### Setting it up on Linux (Ubuntu, Debian, Fedora, Arch, etc.)
@@ -30,9 +30,9 @@ any unexpected bugs are encountered.
 > vim /examples/run/run.py
 
 Change the path in line 4 from `"/home/user/path/to/adsorpyon"` to the path in which 
-you downloaded CAPPA, e.g. `"/home/john/Desktop/adsorpyon"`.
+you downloaded RETMAP, e.g. `"/home/john/Desktop/adsorpyon"`.
 
-### Running CAPPA
+### Running RETMAP
 
 In the working folder run:
 
@@ -40,7 +40,7 @@ In the working folder run:
 
 ## Terms of use
 
-CAPPA is an open-source project licenced under the MIT licence. Usage of this software
+RETMAP is an open-source project licenced under the MIT licence. Usage of this software
 in a scientific work should be cited accordingly.
 
 ## Authorship
