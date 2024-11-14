@@ -25,7 +25,7 @@ from retmap import constants
 from retmap import input_reader
 
 # Third-party libraries
-import numpy
+import numpy as np
 import scipy.interpolate
 
 
@@ -84,12 +84,12 @@ def extrapolation(temperature: float, file: str, adsorbate_name: str = None) -> 
         file = importlib.resources.files("retmap").joinpath(f"library/density/{adsorbate_name}.dat")
 
     data = input_reader.create_data_list(file)
-    data = numpy.array(data)
+    data = np.array(data)
 
     def fit_function(x, a, b):
         return a * x + b
 
-    if temperature <= numpy.max(data[:, 0]):
+    if np.min(data[:, 0]) <= temperature <= np.max(data[:, 0]):
         interpolation_function = scipy.interpolate.CubicSpline(data[:, 0], data[:, 1], extrapolate=True)
         return interpolation_function(temperature).item()
     else:
