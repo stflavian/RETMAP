@@ -30,7 +30,7 @@ from retmap import physics
 from retmap import input_reader
 
 # Third-party libraries
-import numpy
+import numpy as np
 import scipy.optimize
 import scipy.interpolate
 
@@ -83,12 +83,12 @@ def extrapolation(temperature: float, file: str, adsorbate_name: str) -> float:
         file = importlib.resources.files("retmap").joinpath(f"library/saturation-pressure/{adsorbate_name}.dat")
 
     data = input_reader.create_data_list(file)
-    data = numpy.array(data)
+    data = np.array(data)
 
     def fit_function(x, a, b, c):
         return a * x**2 + b * x + c
 
-    if temperature <= numpy.max(data[:, 0]):
+    if np.min(data[:, 0]) <= temperature <= np.max(data[:, 0]):
         interpolation_function = scipy.interpolate.CubicSpline(data[:, 0], data[:, 1], extrapolate=True)
         return interpolation_function(temperature)
     else:
@@ -132,7 +132,7 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
     """
 
     # Ignore warning regarding Deprecation since Python3.7 is used
-    warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
+    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
@@ -164,7 +164,7 @@ def pengrobinson(temperature: float, temperature_critical: float, pressure_criti
 
         return fugacity_vapor / fugacity_liquid - 1
     
-    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0])
+    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=np.array(pressure_guess))[0])
 
 
 def prsv1(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
@@ -188,7 +188,7 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
     """
 
     # Ignore warning regarding Deprecation since Python3.7 is used
-    warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
+    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
@@ -221,7 +221,7 @@ def prsv1(temperature: float, temperature_critical: float, pressure_critical: fl
 
         return fugacity_vapor / fugacity_liquid - 1
 
-    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0])
+    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=np.array(pressure_guess))[0])
 
 
 def prsv2(temperature: float, temperature_critical: float, pressure_critical: float, pressure_guess: float,
@@ -247,7 +247,7 @@ def prsv2(temperature: float, temperature_critical: float, pressure_critical: fl
     """
 
     # Ignore warning regarding Deprecation since Python3.7 is used
-    warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
+    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
     # Create a function for the solver to determine the saturation pressure
     def fugacity_ratio(p_guess):
@@ -280,7 +280,7 @@ def prsv2(temperature: float, temperature_critical: float, pressure_critical: fl
 
         return fugacity_vapor / fugacity_liquid - 1
 
-    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=numpy.array(pressure_guess))[0])
+    return abs(scipy.optimize.fsolve(func=fugacity_ratio, x0=np.array(pressure_guess))[0])
 
 
 def equation_extrapolation(temperature: float, temperature_critical: float, pressure_critical: float,
@@ -307,8 +307,8 @@ def equation_extrapolation(temperature: float, temperature_critical: float, pres
     :return: Saturation pressure in MPa.
     """
 
-    temp_range = numpy.linspace(start=temperature_boiling, stop=temperature_critical, num=50)
-    temp_range = numpy.flipud(temp_range)
+    temp_range = np.linspace(start=temperature_boiling, stop=temperature_critical, num=50)
+    temp_range = np.flipud(temp_range)
 
     pressure_guess = 1
 
@@ -335,7 +335,7 @@ def equation_extrapolation(temperature: float, temperature_critical: float, pres
     else:
         raise ValueError(f"Equation type {equation} is not 'preos', 'prsv1' or 'prsv2'. Check the string!")
 
-    subcritical_pressures = numpy.array(subcritical_pressures)
+    subcritical_pressures = np.array(subcritical_pressures)
 
     if function == "polynomial2":
         def fit_function(x, a, b, c):
@@ -373,7 +373,7 @@ def widombanuti(temperature: float, temperature_critical: float, pressure_critic
     :return: Saturation pressure in MPa.
     """
     if temperature >= temperature_critical:
-        return numpy.exp(species_parameter*(temperature/temperature_critical - 1)) * pressure_critical
+        return np.exp(species_parameter*(temperature/temperature_critical - 1)) * pressure_critical
     else:
         return pengrobinson(temperature=temperature, temperature_critical=temperature_critical,
                             pressure_critical=pressure_critical, pressure_guess=0.001, acentric_factor=acentric_factor)
