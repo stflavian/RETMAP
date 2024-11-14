@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "retmap"
-version = "1.0a1"
+version = "1.0b1"
 authors = [
     {name = "Flavian Stavarache", email = "f.stavarache@student.tue.nl"},
     {name = "Azahara Luna-Triguero", email = "a.luna.triguero@tue.nl"},

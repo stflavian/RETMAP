@@ -17,7 +17,7 @@ def main():
     )
 
     parser.add_argument("infile")
-    parser.add_argument("--version", action="version", version="1.0a1")
+    parser.add_argument("--version", action="version", version="1.0b1")
     args = parser.parse_args()
     output_file = open("retmap.out", "w+")
 
